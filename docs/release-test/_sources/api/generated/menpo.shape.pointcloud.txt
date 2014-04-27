@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.pointcloud`
+===============================
+.. automodule:: menpo.shape.pointcloud
+
+.. currentmodule:: menpo.shape.pointcloud
+
+1 Class
+-------
+
+.. autoclass:: PointCloud
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

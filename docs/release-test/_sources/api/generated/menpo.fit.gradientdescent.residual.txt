@@ -1,0 +1,52 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.gradientdescent.residual`
+===========================================
+.. automodule:: menpo.fit.gradientdescent.residual
+
+.. currentmodule:: menpo.fit.gradientdescent.residual
+
+10 Classes
+----------
+
+.. autoclass:: Residual
+  :members:
+  :show-inheritance:
+
+.. autoclass:: SSD
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Robust
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: Fair
+  :members:
+  :show-inheritance:
+
+.. autoclass:: L1L2
+  :members:
+  :show-inheritance:
+
+.. autoclass:: GemanMcClure
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Cauchy
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Welsch
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Huber
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Turkey
+  :members:
+  :show-inheritance:

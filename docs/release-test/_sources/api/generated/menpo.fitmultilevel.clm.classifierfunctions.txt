@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.clm.classifierfunctions`
+====================================================
+.. automodule:: menpo.fitmultilevel.clm.classifierfunctions
+
+.. currentmodule:: menpo.fitmultilevel.clm.classifierfunctions
+
+2 Functions
+-----------
+
+.. autofunction:: menpo.fitmultilevel.clm.classifierfunctions.classifier
+
+
+.. autofunction:: menpo.fitmultilevel.clm.classifierfunctions.linear_svm_lr
+

@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.graph`
+==========================
+.. automodule:: menpo.shape.graph
+
+.. currentmodule:: menpo.shape.graph
+
+1 Class
+-------
+
+.. autoclass:: Graph
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

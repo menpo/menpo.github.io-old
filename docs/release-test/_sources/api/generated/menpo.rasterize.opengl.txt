@@ -1,0 +1,14 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`rasterize.opengl`
+===============================
+.. automodule:: menpo.rasterize.opengl
+
+.. currentmodule:: menpo.rasterize.opengl
+
+1 Class
+-------
+
+.. autoclass:: GLRasterizer
+  :members:
+  :show-inheritance:

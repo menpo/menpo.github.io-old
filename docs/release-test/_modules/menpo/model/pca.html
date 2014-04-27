@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.model.pca &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.model.pca</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg.blas</span> <span class="kn">import</span> <span class="n">dgemm</span>
+<span class="kn">from</span> <span class="nn">menpo.decomposition</span> <span class="kn">import</span> <span class="n">principal_component_decomposition</span>
+<span class="kn">from</span> <span class="nn">menpo.model.base</span> <span class="kn">import</span> <span class="n">MeanInstanceLinearModel</span>
+
+
+<div class="viewcode-block" id="PCAModel"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel">[docs]</a><span class="k">class</span> <span class="nc">PCAModel</span><span class="p">(</span><span class="n">MeanInstanceLinearModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A :class:`MeanLinearInstanceModel` where the components are Principal</span>
+<span class="sd">    Components.</span>
+
+<span class="sd">    Principal Component Analysis (PCA) by Eigenvalue Decomposition of the</span>
+<span class="sd">    data&#39;s scatter matrix.</span>
+
+<span class="sd">    For details of the implementation of PCA, see :func:`menpo.decomposition</span>
+<span class="sd">    .principal_component_decomposition`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    samples: list of :class:`menpo.base.Vectorizable`</span>
+<span class="sd">        List of samples to build the model from.</span>
+
+<span class="sd">    center : bool, optional</span>
+<span class="sd">        When True (True by default) PCA is performed after mean centering the</span>
+<span class="sd">        data. If False the data is assumed to be centred, and the mean will</span>
+<span class="sd">        be 0.</span>
+
+<span class="sd">    bias: bool, optional</span>
+<span class="sd">        When True (False by default) a biased estimator of the covariance</span>
+<span class="sd">        matrix is used, i.e.:</span>
+
+<span class="sd">            \frac{1}{N} \sum_i^N \mathbf{x}_i \mathbf{x}_i^T</span>
+
+<span class="sd">        instead of default:</span>
+
+<span class="sd">            \frac{1}{N-1} \sum_i^N \mathbf{x}_i \mathbf{x}_i^T</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PCAModel.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">center</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="c"># build data matrix</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">n_features</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">n_parameters</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+
+        <span class="n">eigenvectors</span><span class="p">,</span> <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">mean_vector</span> <span class="o">=</span> \
+            <span class="n">principal_component_decomposition</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">whiten</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                              <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span> <span class="o">=</span> <span class="n">eigenvalues</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PCAModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">eigenvectors</span><span class="p">,</span> <span class="n">mean_vector</span><span class="p">,</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trimmed_variance</span> <span class="o">=</span> <span class="mi">0</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_active_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of components currently in use on this model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_components</span>
+
+    <span class="nd">@n_active_components.setter</span>
+<div class="viewcode-block" id="PCAModel.n_active_components"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.n_active_components">[docs]</a>    <span class="k">def</span> <span class="nf">n_active_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_components</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Tried setting n_components as {} - has to be an int and &quot;</span>
+                <span class="s">&quot;0 &lt; n_components &lt;= n_available_components &quot;</span>
+                <span class="s">&quot;(which is {}) &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
+</div>
+    <span class="nd">@MeanInstanceLinearModel.components.getter</span>
+<div class="viewcode-block" id="PCAModel.components"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.components">[docs]</a>    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The matrix containing the active components on this model.</span>
+
+<span class="sd">        type: (n_active_components, n_features) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">,</span> <span class="p">:]</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">whitened_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance</span><span class="p">)[:,</span> <span class="bp">None</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eigenvalues_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">noise_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trimmed_variance</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_trimmed_variance</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inverse_noise_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">noise_variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_variance</span>
+        <span class="k">if</span> <span class="n">noise_variance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;noise variance is nil - cannot take the &quot;</span>
+                             <span class="s">&quot;inverse&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">noise_variance</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PCAModel.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the Jacobian of the PCA model. In this case, simply the</span>
+<span class="sd">        components of the model reshaped to have the standard Jacobian shape:</span>
+
+<span class="sd">            n_points    x  n_params      x  n_dims</span>
+<span class="sd">            n_features  x  n_components  x  n_dims</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        jacobian : (n_features, n_components, n_dims) ndarray</span>
+<span class="sd">            The Jacobian of the model in the standard Jacobian shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">template_instance</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jacobian</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PCAModel.component_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.component_vector">[docs]</a>    <span class="k">def</span> <span class="nf">component_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">with_mean</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        A particular component of the model, in vectorized form.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The component that is to be returned</span>
+
+<span class="sd">        with_mean: boolean (optional)</span>
+<span class="sd">            If True, the component will be blended with the mean vector</span>
+<span class="sd">            before being returned. If not, the component is returned on it&#39;s</span>
+<span class="sd">            own.</span>
+
+<span class="sd">            Default: True</span>
+<span class="sd">        scale : float</span>
+<span class="sd">            A scale factor that should be applied to the component. Only</span>
+<span class="sd">            valid in the case where with_mean is True. The scale is applied</span>
+<span class="sd">            in units of standard deviations (so a scale of 1.0</span>
+<span class="sd">            with_mean visualizes the mean plus 1 std. dev of the component</span>
+<span class="sd">            in question).</span>
+
+<span class="sd">        :type: (n_features,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">with_mean</span><span class="p">:</span>
+            <span class="c"># on PCA, scale is in units of std. deviations...</span>
+            <span class="n">scaled_eigval</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">scaled_eigval</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_vector</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="PCAModel.instance_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.instance_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">instance_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates new vectorized instances of the model using the first</span>
+<span class="sd">        components in a particular weighting.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weights : (n_vectors, n_weights) ndarray or list of lists</span>
+<span class="sd">            The weightings for the first n_weights components that</span>
+<span class="sd">            should be used per instance that is to be produced</span>
+
+<span class="sd">            ``weights[i, j]`` is the linear contribution of the j&#39;th</span>
+<span class="sd">            principal component to the i&#39;th instance vector produced. Note</span>
+<span class="sd">            that if n_weights &lt; n_components, only the first n_weight</span>
+<span class="sd">            components are used in the reconstruction (i.e. unspecified</span>
+<span class="sd">            weights are implicitly 0)</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError: If n_weights &gt; n_components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vectors : (n_vectors, n_features) ndarray</span>
+<span class="sd">            The instance vectors for the weighting provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c"># if eg a list is provided</span>
+        <span class="n">n_instances</span><span class="p">,</span> <span class="n">n_weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">n_weights</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Number of weightings cannot be greater than {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">full_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_instances</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">))</span>
+            <span class="n">full_weights</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">n_weights</span><span class="p">]</span> <span class="o">=</span> <span class="n">weights</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">full_weights</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_vectors_for_full_weights</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PCAModel.trim_components"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.trim_components">[docs]</a>    <span class="k">def</span> <span class="nf">trim_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Permanently trims the components down to a certain amount.</span>
+
+<span class="sd">        This will reduce `n_available_components` down to `n_components`</span>
+<span class="sd">        (either provided or as currently set), freeing up memory in the</span>
+<span class="sd">        process.</span>
+
+<span class="sd">        Once the model is trimmed, the trimmed components cannot be recovered.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        n_components: int, optional</span>
+<span class="sd">            The number of components that are kept. If None,</span>
+<span class="sd">            self.n_components is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_components</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># by default trim using self.n_components</span>
+            <span class="n">n_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span>
+
+        <span class="c"># trim components</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">n_components</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;n_components ({}) needs to be less than &quot;</span>
+                <span class="s">&quot;n_available_components ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">n_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[:</span><span class="n">n_components</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="c"># set n_components if necessary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span>
+        <span class="c"># store the amount of variance captured by the discarded components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trimmed_variance</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="c"># make sure that the eigenvalues are trimmed too</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eigenvalues</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="PCAModel.distance_to_subspace"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.distance_to_subspace">[docs]</a>    <span class="k">def</span> <span class="nf">distance_to_subspace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a version of ``instance`` where all the basis of the model</span>
+<span class="sd">        have been projected out and which has been scaled by the inverse of</span>
+<span class="sd">        the ``noise_variance``</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : :class:`menpo.base.Vectorizable`</span>
+<span class="sd">            A novel instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scaled_projected_out : ``self.instance_class``</span>
+<span class="sd">            A copy of ``instance``, with all basis of the model projected out</span>
+<span class="sd">            and scaled by the inverse of the ``noise_variance``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vec_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_to_subspace_vector</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vec_instance</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PCAModel.distance_to_subspace_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.distance_to_subspace_vector">[docs]</a>    <span class="k">def</span> <span class="nf">distance_to_subspace_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a version of ``instance`` where all the basis of the model</span>
+<span class="sd">        have been projected out and which has been scaled by the inverse of</span>
+<span class="sd">        the ``noise_variance``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector_instance : (n_features,) ndarray</span>
+<span class="sd">            A novel vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scaled_projected_out: (n_features,) ndarray</span>
+<span class="sd">            A copy of ``vector_instance`` with all basis of the model projected</span>
+<span class="sd">            out and scaled by the inverse of the ``noise_variance``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse_noise_variance</span> <span class="o">*</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_out_vectors</span><span class="p">(</span><span class="n">vector_instance</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="PCAModel.project_whitened"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.project_whitened">[docs]</a>    <span class="k">def</span> <span class="nf">project_whitened</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a sheared (non-orthogonal) reconstruction of ``instance``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : :class:`menpo.base.Vectorizable`</span>
+<span class="sd">            A novel instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sheared_reconstruction : ``self.instance_class``</span>
+<span class="sd">            A sheared (non-orthogonal) reconstruction of ``instance``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vector_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_whitened_vector</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vector_instance</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PCAModel.project_whitened_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.project_whitened_vector">[docs]</a>    <span class="k">def</span> <span class="nf">project_whitened_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a sheared (non-orthogonal) reconstruction of</span>
+<span class="sd">        ``vector_instance``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector_instance : (n_features,) ndarray</span>
+<span class="sd">            A novel vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sheared_reconstruction : (n_features,) ndarray</span>
+<span class="sd">            A sheared (non-orthogonal) reconstruction of ``vector_instance``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">whitened_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">whitened_components</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">vector_instance</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                        <span class="n">b</span><span class="o">=</span><span class="n">whitened_components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">weights</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">whitened_components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                     <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">trans_b</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PCAModel.orthonormalize_against_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.model.pca.html#menpo.model.pca.PCAModel.orthonormalize_against_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">orthonormalize_against_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_model</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Enforces that the union of this model&#39;s components and another are</span>
+<span class="sd">        both mutually orthonormal.</span>
+
+<span class="sd">        Note that the model passed in is guaranteed to not have it&#39;s number</span>
+<span class="sd">        of available components changed. This model, however, may loose some</span>
+<span class="sd">        dimensionality due to reaching a degenerate state.</span>
+
+<span class="sd">        The removed components will always be trimmed from the end of</span>
+<span class="sd">        components (i.e. the components which capture the least variance).</span>
+<span class="sd">        If trimming is performed, `n_components` and</span>
+<span class="sd">        `n_available_components` would be altered - see</span>
+<span class="sd">        :meth:`trim_components` for details.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        linear_model : :class:`LinearModel`</span>
+<span class="sd">            A second linear model to orthonormalize this against.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># take the QR decomposition of the model components</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">linear_model</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">T</span><span class="p">)))[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+        <span class="c"># the model passed to us went first, so all it&#39;s components will</span>
+        <span class="c"># survive. Pull them off, and update the other model.</span>
+        <span class="n">linear_model</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[:</span><span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="c"># it&#39;s possible that all of our components didn&#39;t survive due to</span>
+        <span class="c"># degeneracy. We need to trim our components down before replacing</span>
+        <span class="c"># them to ensure the number of components is consistent (otherwise</span>
+        <span class="c"># the components setter will complain at us)</span>
+        <span class="n">n_available_components</span> <span class="o">=</span> <span class="n">Q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span>
+        <span class="k">if</span> <span class="n">n_available_components</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="c"># oh dear, we&#39;ve lost some components from the end of our model.</span>
+            <span class="c"># call trim_components to update our state.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trim_components</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_available_components</span><span class="p">)</span>
+        <span class="c"># now we can set our own components with the updated orthogonal ones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[</span><span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span><span class="p">:,</span> <span class="p">:]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

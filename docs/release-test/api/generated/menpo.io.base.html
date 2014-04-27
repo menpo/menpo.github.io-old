@@ -1,0 +1,678 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: io.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.io.base">
+<span id="module-io-base"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">io.base</span></tt><a class="headerlink" href="#module-menpo.io.base" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.io.base.Importer">
+<em class="property">class </em><tt class="descclassname">menpo.io.base.</tt><tt class="descname">Importer</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#Importer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.Importer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Abstract representation of an Importer. Construction of an importer simply
+sets the filepaths etc up. To actually import the object and build a valid
+representation, the <tt class="docutils literal"><span class="pre">build</span></tt> method must be called. This allows a set
+of importers to be instantiated but the heavy duty importing to happen
+separately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : string</p>
+<blockquote class="last">
+<div><p>An absolute filepath</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.base.Importer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#Importer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.Importer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.io.base.Importer.build">
+<tt class="descname">build</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#Importer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.Importer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the heavy lifting for the importer class. This actually reads
+the file in from disk and does any necessary parsing of the data in to
+an appropriate format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>object</strong> : object or list</p>
+<blockquote class="last">
+<div><p>An instantiated class of the expected type. For example, for an
+<tt class="docutils literal"><span class="pre">.obj</span></tt> importer, this would be a
+<tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.mesh.base.Trimesh</span></tt>. If multiple objects need
+to be returned from one importer, a list must be returned.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.base.IOInfo">
+<em class="property">class </em><tt class="descclassname">menpo.io.base.</tt><tt class="descname">IOInfo</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#IOInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.IOInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Simple state object for recording IO information.</p>
+<dl class="method">
+<dt id="menpo.io.base.IOInfo.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#IOInfo.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.IOInfo.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>15 Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="menpo.io.base.data_dir_path">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">data_dir_path</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#data_dir_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.data_dir_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path to the Menpo built in ./data folder on this machine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>string</strong> :</p>
+<blockquote class="last">
+<div><p>The path to the local Menpo ./data folder</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.data_path_to">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">data_path_to</tt><big>(</big><em>asset_filename</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#data_path_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.data_path_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path to a builtin asset in the ./data folder on this machine.</p>
+<p>Parameters:
+asset_filename : string</p>
+<blockquote>
+<div>The filename (with extension) of a file builtin to Menpo. The full
+set of allowed names is given by <a class="reference internal" href="#menpo.io.base.ls_builtin_assets" title="menpo.io.base.ls_builtin_assets"><tt class="xref py py-func docutils literal"><span class="pre">ls_builtin_assets()</span></tt></a></div></blockquote>
+<dl class="docutils">
+<dt>string</dt>
+<dd>The path to a given asset in the ./data folder</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>If the asset_filename doesn&#8217;t exist in the ./data folder.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_auto">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_auto</tt><big>(</big><em>pattern</em>, <em>max_meshes=None</em>, <em>max_images=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_auto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_auto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smart mixed asset import generator.</p>
+<p>Makes it&#8217;s best effort to import and attach relevant related
+information such as landmarks. It searches the directory for files that
+begin with the same filename and end in a supported extension.
+Furthermore, this method attempts to handle mixed assets (e.g. textured
+meshes in the same folder as images) without &#8216;double importing&#8217; anything.</p>
+<p>Note that this is a generator function. This allows for pre-processing
+of data to take place as data is imported (e.g. cropping images to
+landmarks as they are imported for memory efficiency).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pattern</strong> : String</p>
+<blockquote>
+<div><p>The glob path pattern to search for textures and meshes.</p>
+</div></blockquote>
+<p><strong>max_meshes: positive integer, optional</strong> :</p>
+<blockquote>
+<div><p>If not <tt class="docutils literal"><span class="pre">None</span></tt>, only import the first max_mesh meshes found. Else,
+import all.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div></blockquote>
+<p><strong>max_images: positive integer, optional</strong> :</p>
+<blockquote class="last">
+<div><p>If not <tt class="docutils literal"><span class="pre">None</span></tt>, only import the first max_images found. Else,
+import all.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Import all meshes that have file extension <tt class="docutils literal"><span class="pre">.obj</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">meshes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">import_auto</span><span class="p">(</span><span class="s">&#39;*.obj&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>(note the cast to a list as auto_import is a generator and we want to
+exhaust it&#8217;s values)</p>
+<p>Look for all files that begin with the string <tt class="docutils literal"><span class="pre">test</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">test_images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">import_auto</span><span class="p">(</span><span class="s">&#39;test.*&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Assuming that in the current directory that are two files, <tt class="docutils literal"><span class="pre">bunny.obj</span></tt>
+and <tt class="docutils literal"><span class="pre">bunny.pts</span></tt>, which represent a mesh and it&#8217;s landmarks, calling</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bunny</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">import_auto</span><span class="p">(</span><span class="s">&#39;bunny.obj&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Will create a mesh object that <strong>includes</strong> the landmarks automatically.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_image">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_image</tt><big>(</big><em>filepath</em>, <em>landmark_resolver=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single image (and associated landmarks) importer.</p>
+<p>Iff an image file is found at <cite>filepath</cite>, returns a <tt class="xref py py-class docutils literal"><span class="pre">menpo.image</span>
+<span class="pre">.MaskedImage</span></tt> representing it. Landmark files sharing the same filename
+will be imported and attached too. If the image defines a mask,
+this mask will be imported.</p>
+<p>This method is valid for both traditional images and spatial image types.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : String</p>
+<blockquote>
+<div><p>A relative or absolute filepath to an image file.</p>
+</div></blockquote>
+<p><strong>landmark_resolver: function, optional</strong> :</p>
+<blockquote>
+<div><p>If not None, this function will be used to find landmarks for the
+image. The function should take one argument (the image itself) and
+return a dictionary of the form {&#8216;group_name&#8217;: &#8216;landmark_filepath&#8217;}</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>:class:`menpo.image.Image`</strong> :</p>
+<blockquote class="last">
+<div><p>An instantiated image class built from the image file.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_mesh">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_mesh</tt><big>(</big><em>filepath</em>, <em>landmark_resolver=None</em>, <em>texture=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single mesh (and associated landmarks and texture) importer.</p>
+<p>Iff an mesh file is found at <cite>filepath</cite>, returns a <tt class="xref py py-class docutils literal"><span class="pre">menpo.shape</span>
+<span class="pre">.TriMesh</span></tt> representing it. Landmark files sharing the same filename
+will be imported and attached too. If texture coordinates and a suitable
+texture are found the object returned will be a <tt class="xref py py-class docutils literal"><span class="pre">menpo.shape</span>
+<span class="pre">.TexturedTriMesh</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : String</p>
+<blockquote>
+<div><p>A relative or absolute filepath to an image file.</p>
+</div></blockquote>
+<p><strong>landmark_resolver: function, optional</strong> :</p>
+<blockquote>
+<div><p>If not None, this function will be used to find landmarks for the
+mesh. The function should take one argument (the mesh itself) and
+provide a string or list of strings detailing the landmarks to be
+imported.</p>
+</div></blockquote>
+<p><strong>texture: Boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If False, don&#8217;t search for textures.</p>
+<p>Default: True</p>
+</div></blockquote>
+<p><strong>Returns</strong> :</p>
+<p><strong>&#8212;&#8212;-</strong> :</p>
+<p><strong>:class:`menpo.shape.TriMesh`</strong> :</p>
+<blockquote class="last">
+<div><p>An instantiated trimesh (or textured trimesh) file object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_landmark_file">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_landmark_file</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_landmark_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_landmark_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single landmark group importer.</p>
+<p>Iff an landmark file is found at <cite>filepath</cite>, returns a <tt class="xref py py-class docutils literal"><span class="pre">menpo</span>
+<span class="pre">.landmarks.LandmarkGroup</span></tt> representing it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : String</p>
+<blockquote>
+<div><p>A relative or absolute filepath to an landmark file.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>:class:`menpo.shape.LandmarkGroup`</strong> :</p>
+<blockquote class="last">
+<div><p>The LandmarkGroup that the file format represents.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_images">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_images</tt><big>(</big><em>pattern</em>, <em>max_images=None</em>, <em>landmark_resolver=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiple image import generator.</p>
+<p>Makes it&#8217;s best effort to import and attach relevant related
+information such as landmarks. It searches the directory for files that
+begin with the same filename and end in a supported extension.</p>
+<p>Note that this is a generator function. This allows for pre-processing
+of data to take place as data is imported (e.g. cropping images to
+landmarks as they are imported for memory efficiency).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pattern</strong> : String</p>
+<blockquote>
+<div><p>The glob path pattern to search for images.</p>
+</div></blockquote>
+<p><strong>max_images: positive integer, optional</strong> :</p>
+<blockquote>
+<div><p>If not <tt class="docutils literal"><span class="pre">None</span></tt>, only import the first max_images found. Else,
+import all.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div></blockquote>
+<p><strong>landmark_resolver: function, optional</strong> :</p>
+<blockquote class="last">
+<div><p>If not None, this function will be used to find landmarks for each
+image. The function should take one argument (an image itself) and
+return a dictionary of the form {&#8216;group_name&#8217;: &#8216;landmark_filepath&#8217;}</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Import crops of the top 100 square pixels from a huge collection of images</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">import_images</span><span class="p">(</span><span class="s">&#39;./massive_image_db/*&#39;</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">im</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>  <span class="c"># crop to a sensible size as we go</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_meshes">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_meshes</tt><big>(</big><em>pattern</em>, <em>max_meshes=None</em>, <em>landmark_resolver=None</em>, <em>textures=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_meshes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_meshes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiple mesh import generator.</p>
+<p>Makes it&#8217;s best effort to import and attach relevant related
+information such as landmarks. It searches the directory for files that
+begin with the same filename and end in a supported extension.</p>
+<p>If texture coordinates and a suitable texture are found the object
+returned will be a <tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.TexturedTriMesh</span></tt>.</p>
+<p>Note that this is a generator function. This allows for pre-processing
+of data to take place as data is imported (e.g. cleaning meshes
+as they are imported for memory efficiency).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pattern</strong> : String</p>
+<blockquote>
+<div><p>The glob path pattern to search for textures and meshes.</p>
+</div></blockquote>
+<p><strong>max_meshes: positive integer, optional</strong> :</p>
+<blockquote>
+<div><p>If not <tt class="docutils literal"><span class="pre">None</span></tt>, only import the first max_mesh meshes found. Else,
+import all.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div></blockquote>
+<p><strong>landmark_resolver: function, optional</strong> :</p>
+<blockquote>
+<div><p>If not None, this function will be used to find landmarks for each
+mesh. The function should take one argument (a mesh itself) and
+return a dictionary of the form {&#8216;group_name&#8217;: &#8216;landmark_filepath&#8217;}</p>
+</div></blockquote>
+<p><strong>texture: Boolean, optional</strong> :</p>
+<blockquote class="last">
+<div><p>If False, don&#8217;t search for textures.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_landmark_files">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_landmark_files</tt><big>(</big><em>pattern</em>, <em>max_landmarks=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_landmark_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_landmark_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiple landmark file import generator.</p>
+<p>Note that this is a generator function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pattern</strong> : String</p>
+<blockquote>
+<div><p>The glob path pattern to search for images.</p>
+</div></blockquote>
+<p><strong>max_landmark_files: positive integer, optional</strong> :</p>
+<blockquote class="last">
+<div><p>If not <tt class="docutils literal"><span class="pre">None</span></tt>, only import the first max_landmark_files found. Else,
+import all.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.import_builtin_asset">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">import_builtin_asset</tt><big>(</big><em>asset_name</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#import_builtin_asset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.import_builtin_asset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single builtin asset (mesh or image) importer.</p>
+<p>Imports the relevant builtin asset from the ./data directory that
+ships with Menpo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>asset_name</strong> : String</p>
+<blockquote>
+<div><p>The filename of a builtin asset (see <tt class="xref py py-func docutils literal"><span class="pre">ls_ls_builtin_assets()</span></tt>
+for allowed values)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>asset</strong> :</p>
+<blockquote class="last">
+<div><p>An instantiated asset (mesh, trimesh, or image)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.ls_builtin_assets">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">ls_builtin_assets</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#ls_builtin_assets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.ls_builtin_assets" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all the builtin asset examples provided in Menpo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>list of strings</strong> :</p>
+<blockquote class="last">
+<div><p>Filenames of all assets in the data directory shipped with Menpo</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.map_filepath_to_importer">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">map_filepath_to_importer</tt><big>(</big><em>filepath</em>, <em>extensions_map</em>, <em>importer_kwargs=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#map_filepath_to_importer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.map_filepath_to_importer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a filepath, return the appropriate importer as mapped by the
+extension map.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : string</p>
+<blockquote>
+<div><p>The filepath to get importers for</p>
+</div></blockquote>
+<p><strong>extensions_map</strong> : dictionary (String, <a class="reference internal" href="#menpo.io.base.Importer" title="menpo.io.base.Importer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.base.Importer</span></tt></a>)</p>
+<blockquote>
+<div><p>A map from extensions to importers. The importers are expected to be
+a subclass of <a class="reference internal" href="#menpo.io.base.Importer" title="menpo.io.base.Importer"><tt class="xref py py-class docutils literal"><span class="pre">Importer</span></tt></a>. The extensions are expected to
+contain the leading period eg. <tt class="docutils literal"><span class="pre">.obj</span></tt>.</p>
+</div></blockquote>
+<p><strong>importer_kwargs: dictionary, optional</strong> :</p>
+<blockquote>
+<div><p>kwargs that will be supplied to the importer if not None.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>importer: :class:`menpo.io.base.Importer` instance</strong> :</p>
+<blockquote class="last">
+<div><p>Importer as found in the <tt class="docutils literal"><span class="pre">extensions_map</span></tt> instantiated for the
+filepath provided.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.find_extensions_from_basename">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">find_extensions_from_basename</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#find_extensions_from_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.find_extensions_from_basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a filepath, find all the files that share the same name.</p>
+<p>Can be used to find all potential matching images and landmark files for a
+given mesh for instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : string</p>
+<blockquote>
+<div><p>An absolute filepath</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>files</strong> : list of strings</p>
+<blockquote class="last">
+<div><p>A list of absolute filepaths to files that share the same basename
+as filepath. These files are found using <tt class="docutils literal"><span class="pre">glob</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.filter_extensions">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">filter_extensions</tt><big>(</big><em>filepaths</em>, <em>extensions_map</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#filter_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.filter_extensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a set of filepaths, filter the files who&#8217;s extensions are in the
+given map. This is used to find images and landmarks from a given basename.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepaths</strong> : list of strings</p>
+<blockquote>
+<div><p>A list of absolute filepaths</p>
+</div></blockquote>
+<p><strong>extensions_map</strong> : dictionary (String, <a class="reference internal" href="#menpo.io.base.Importer" title="menpo.io.base.Importer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.base.Importer</span></tt></a>)</p>
+<blockquote>
+<div><p>A map from extensions to importers. The importers are expected to be
+non-instantiated classes. The extensions are expected to
+contain the leading period eg. <tt class="docutils literal"><span class="pre">.obj</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>basenames</strong> : list of strings</p>
+<blockquote class="last">
+<div><p>A list of basenames</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.io.base.find_alternative_files">
+<tt class="descclassname">menpo.io.base.</tt><tt class="descname">find_alternative_files</tt><big>(</big><em>file_type</em>, <em>filepath</em>, <em>extensions_map</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/base.html#find_alternative_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.base.find_alternative_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a filepath, search for files with the same basename that match
+a given extension type, eg images. If more than one file is found, an error
+is printed and the first such basename is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_type</strong> : string</p>
+<blockquote>
+<div><p>The type of file being found. Used for the error outputs.</p>
+</div></blockquote>
+<p><strong>filepath</strong> : string</p>
+<blockquote>
+<div><p>An absolute filepath</p>
+</div></blockquote>
+<p><strong>extensions_map</strong> : dictionary (String, <a class="reference internal" href="#menpo.io.base.Importer" title="menpo.io.base.Importer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.base.Importer</span></tt></a>)</p>
+<blockquote>
+<div><p>A map from extensions to importers. The importers are expected to be
+non-instantiated classes. The extensions are expected to
+contain the leading period eg. <tt class="docutils literal"><span class="pre">.obj</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>base_name</strong> : string</p>
+<blockquote>
+<div><p>The basename of the file that was found eg <tt class="docutils literal"><span class="pre">mesh.bmp</span></tt>. Only <strong>one</strong>
+file is ever returned. If more than one is found, the first is taken.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ImportError</strong> :</p>
+<blockquote class="last">
+<div><p>If no alternative file is found</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">io.base</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+<li><a class="reference internal" href="#functions">15 Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.io.base.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

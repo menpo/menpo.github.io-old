@@ -1,0 +1,607 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.transform.modeldriven &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.transform.modeldriven</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.base</span> <span class="kn">import</span> <span class="n">Targetable</span><span class="p">,</span> <span class="n">Vectorizable</span>
+<span class="kn">from</span> <span class="nn">menpo.model.pdm</span> <span class="kn">import</span> <span class="n">PDM</span><span class="p">,</span> <span class="n">GlobalPDM</span><span class="p">,</span> <span class="n">OrthoPDM</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">VComposable</span><span class="p">,</span> <span class="n">VInvertible</span>
+
+
+<div class="viewcode-block" id="ModelDrivenTransform"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform">[docs]</a><span class="k">class</span> <span class="nc">ModelDrivenTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">,</span> <span class="n">Targetable</span><span class="p">,</span> <span class="n">Vectorizable</span><span class="p">,</span>
+                           <span class="n">VComposable</span><span class="p">,</span> <span class="n">VInvertible</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A transform that couples a traditional landmark-based transform to a</span>
+<span class="sd">    statistical model such that source points of the alignment transform</span>
+<span class="sd">    are the points of the model. The weights of the transform are just</span>
+<span class="sd">    the weights of statistical model.</span>
+
+<span class="sd">    If no source is provided, the mean of the model is defined as the</span>
+<span class="sd">    source landmarks of the transform.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : :class:`menpo.model.base.StatisticalModel`</span>
+<span class="sd">        A linear statistical shape model.</span>
+<span class="sd">    transform_cls : :class:`menpo.transform.AlignableTransform`</span>
+<span class="sd">        A class of :class:`menpo.transform.base.AlignableTransform`</span>
+<span class="sd">        The align constructor will be called on this with the source</span>
+<span class="sd">        and target landmarks. The target is</span>
+<span class="sd">        set to the points generated from the model using the</span>
+<span class="sd">        provide weights - the source is either given or set to the</span>
+<span class="sd">        model&#39;s mean.</span>
+<span class="sd">    source : :class:`menpo.shape.base.PointCloud`</span>
+<span class="sd">        The source landmarks of the transform. If None, the mean of the model</span>
+<span class="sd">         is used.</span>
+
+<span class="sd">        Default: None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ModelDrivenTransform.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transform_cls</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span> <span class="o">=</span> <span class="n">PDM</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform_cls</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ModelDrivenTransform.n_dims"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.n_dims">[docs]</a>    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of dimensions that the transform supports.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">n_dims</span>
+</div>
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Apply this transform to the given object. Uses the internal transform.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (N, D) ndarray or a transformable object</span>
+<span class="sd">            The object to be transformed.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to transforms ``apply_inplace`` method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transformed : (N, D) ndarray or object</span>
+<span class="sd">            The transformed object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">target</span>
+
+    <span class="k">def</span> <span class="nf">_target_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_target</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        On a new target being set, we need to:</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        new_target: :class:`PointCloud`</span>
+<span class="sd">            The new_target that we want to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_new_target_from_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># We delegate to PDM to handle all our Targetable duties. As a</span>
+        <span class="c"># result, *we* never need to call _sync_target_for_state, so we have</span>
+        <span class="c"># no need for an implementation of this method. Of course the</span>
+        <span class="c"># interface demands it, so the stub is here. Contrast with</span>
+        <span class="c"># _target_setter, which is required, because we will have to handle</span>
+        <span class="c"># external calls to set_target().</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Let the pdm update its state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">_sync_state_from_target</span><span class="p">()</span>
+        <span class="c"># and update our transform to the new state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="ModelDrivenTransform.n_parameters"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.n_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">n_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The total number of parameters.</span>
+
+<span class="sd">        Simply ``n_weights``.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">n_parameters</span>
+</div>
+<div class="viewcode-block" id="ModelDrivenTransform.as_vector"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the current weights of this transform - this is the</span>
+<span class="sd">        just the linear model&#39;s weights</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        params : (``n_parameters``,) ndarray</span>
+<span class="sd">            The vector of weights</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ModelDrivenTransform.from_vector_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Updates the ModelDrivenTransform&#39;s state from it&#39;s</span>
+<span class="sd">        vectorized form.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="c"># By here the pdm has updated our target state, we just need to</span>
+        <span class="c"># update the transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ModelDrivenTransform.compose_after_from_vector_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.compose_after_from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">compose_after_from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Composes two ModelDrivenTransforms together based on the</span>
+<span class="sd">        first order approximation proposed by Papandreou and Maragos in [1].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        delta : (N,) ndarray</span>
+<span class="sd">            Vectorized :class:`ModelDrivenTransform` to be applied **before**</span>
+<span class="sd">            self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : self</span>
+<span class="sd">            self, updated to the result of the composition</span>
+
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        .. [1] G. Papandreou and P. Maragos, &quot;Adaptive and Constrained</span>
+<span class="sd">               Algorithms for Inverse Compositional Active Appearance Model</span>
+<span class="sd">               Fitting&quot;, CVPR08</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">jacobian</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">n_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">n_points</span>
+
+        <span class="c"># compute:</span>
+        <span class="c"># -&gt; dW/dp when p=0</span>
+        <span class="c"># -&gt; dW/dp when p!=0</span>
+        <span class="c"># -&gt; dW/dx when p!=0 evaluated at the source landmarks</span>
+
+        <span class="c"># dW/dp when p=0 and when p!=0 are the same and simply given by</span>
+        <span class="c"># the Jacobian of the model</span>
+        <span class="n">dW_dp_0</span> <span class="o">=</span> <span class="n">model_jacobian</span>
+        <span class="n">dW_dp</span> <span class="o">=</span> <span class="n">dW_dp_0</span>
+        <span class="c"># dW_dp_0:  n_points  x     n_params     x  n_dims</span>
+        <span class="c"># dW_dp:    n_points  x     n_params     x  n_dims</span>
+
+        <span class="n">dW_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c"># dW_dx:  n_points  x  n_dims  x  n_dims</span>
+
+        <span class="c">#TODO: Can we do this without splitting across the two dimensions?</span>
+        <span class="n">dW_dx_x</span> <span class="o">=</span> <span class="n">dW_dx</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">dW_dx_y</span> <span class="o">=</span> <span class="n">dW_dx</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">dW_dp_0_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dW_dp_0</span><span class="p">,</span> <span class="p">(</span><span class="n">n_points</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">))</span>
+        <span class="n">dW_dx_dW_dp_0</span> <span class="o">=</span> <span class="n">dW_dp_0_mat</span> <span class="o">*</span> <span class="n">dW_dx_x</span> <span class="o">+</span> <span class="n">dW_dp_0_mat</span> <span class="o">*</span> <span class="n">dW_dx_y</span>
+        <span class="n">dW_dx_dW_dp_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dW_dx_dW_dp_0</span><span class="p">,</span>
+                                   <span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="c"># dW_dx:          n_points  x  n_dims    x  n_dims</span>
+        <span class="c"># dW_dp_0:        n_points  x  n_params  x  n_dims</span>
+        <span class="c"># dW_dx_dW_dp_0:  n_points  x  n_params  x  n_dims</span>
+
+        <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ijk, ilk -&gt; jl&#39;</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">,</span> <span class="n">dW_dx_dW_dp_0</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ijk, ilk -&gt; jl&#39;</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">)</span>
+
+        <span class="n">Jp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+        <span class="c"># Jp:  n_params  x  n_params</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Jp</span><span class="p">,</span> <span class="n">delta</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_true_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ModelDrivenTransform.pseudoinverse_vector"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.pseudoinverse_vector">[docs]</a>    <span class="k">def</span> <span class="nf">pseudoinverse_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The vectorized pseudoinverse of a provided vector instance.</span>
+
+<span class="sd">        Syntactic sugar for</span>
+
+<span class="sd">        self.from_vector(vector).pseudoinverse.as_vector()</span>
+
+<span class="sd">        On ModelDrivenTransform this is especially fast - we just negate the</span>
+<span class="sd">        vector provided.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector :  (P,) ndarray</span>
+<span class="sd">            A vectorized version of self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pseudoinverse_vector : (N,) ndarray</span>
+<span class="sd">            The pseudoinverse of the vector provided</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">vector</span>
+</div>
+<div class="viewcode-block" id="ModelDrivenTransform.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.ModelDrivenTransform.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the ModelDrivenTransform wrt to</span>
+<span class="sd">        its weights (the weights). This is done by chaining the relative</span>
+<span class="sd">        weight of each point wrt the source landmarks, i.e. the Jacobian of</span>
+<span class="sd">        the warp wrt the source landmarks when the target is assumed to be</span>
+<span class="sd">        equal to the source (dW/dx), together with the Jacobian of the</span>
+<span class="sd">        linear model  wrt its weights (dX/dp).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        points: (N, D) ndarray</span>
+<span class="sd">            The points at which the Jacobian will be evaluated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dp : (N, P, D) ndarray</span>
+<span class="sd">            The Jacobian of the ModelDrivenTransform evaluated at the</span>
+<span class="sd">            previous points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># check if re-computation of dW/dx can be avoided</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+            <span class="c"># recompute dW/dx, i.e. the relative weight of each point wrt</span>
+            <span class="c"># the source landmarks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dW_dX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">weight_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+            <span class="c"># cache points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span> <span class="o">=</span> <span class="n">points</span>
+
+        <span class="c"># dX/dp is simply the Jacobian of the model</span>
+        <span class="n">dX_dp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">jacobian</span>
+
+        <span class="c"># dW_dX:    n_points   x    n_points    x  n_dims</span>
+        <span class="c"># dX_dp:  n_points  x     n_params      x  n_dims</span>
+        <span class="n">dW_dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ild, lpd -&gt; ipd&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dW_dX</span><span class="p">,</span> <span class="n">dX_dp</span><span class="p">)</span>
+        <span class="c"># dW_dp:    n_points   x     n_params      x  n_dims</span>
+
+        <span class="k">return</span> <span class="n">dW_dp</span>
+
+
+<span class="c"># noinspection PyMissingConstructor</span></div></div>
+<div class="viewcode-block" id="GlobalMDTransform"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.GlobalMDTransform">[docs]</a><span class="k">class</span> <span class="nc">GlobalMDTransform</span><span class="p">(</span><span class="n">ModelDrivenTransform</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A transform that couples an alignment transform to a</span>
+<span class="sd">    statistical model together with a global similarity transform,</span>
+<span class="sd">    such that the weights of the transform are fully specified by</span>
+<span class="sd">    both the weights of statistical model and the weights of the</span>
+<span class="sd">    similarity transform. The model is assumed to</span>
+<span class="sd">    generate an instance which is then transformed by the similarity</span>
+<span class="sd">    transform; the result defines the target landmarks of the transform.</span>
+<span class="sd">    If no source is provided, the mean of the model is defined as the</span>
+<span class="sd">    source landmarks of the transform.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : :class:`menpo.model.base.StatisticalModel`</span>
+<span class="sd">        A linear statistical shape model.</span>
+<span class="sd">    transform_cls : :class:`menpo.transform.AlignableTransform`</span>
+<span class="sd">        A class of :class:`menpo.transform.base.AlignableTransform`</span>
+<span class="sd">        The align constructor will be called on this with the source</span>
+<span class="sd">        and target landmarks. The target is</span>
+<span class="sd">        set to the points generated from the model using the</span>
+<span class="sd">        provide weights - the source is either given or set to the</span>
+<span class="sd">        model&#39;s mean.</span>
+<span class="sd">    global_transform : :class:`menpo.transform.AlignableTransform`</span>
+<span class="sd">        A class of :class:`menpo.transform.base.AlignableTransform`</span>
+<span class="sd">        The global transform that should be applied to the model output.</span>
+<span class="sd">        Doesn&#39;t have to have been constructed from the .align() constructor.</span>
+<span class="sd">        Note that the GlobalMDTransform isn&#39;t guaranteed to hold on to the</span>
+<span class="sd">        exact object passed in here - so don&#39;t expect external changes to</span>
+<span class="sd">        the global_transform to be reflected in the behavior of this object.</span>
+<span class="sd">    source : :class:`menpo.shape.base.PointCloud`, optional</span>
+<span class="sd">        The source landmarks of the transform. If no ``source`` is provided the</span>
+<span class="sd">        mean of the model is used.</span>
+<span class="sd">    weights : (P,) ndarray, optional</span>
+<span class="sd">        The reconstruction weights that will be fed to the model in order to</span>
+<span class="sd">        generate an instance of the target landmarks.</span>
+<span class="sd">    composition: &#39;both&#39;, &#39;warp&#39; or &#39;model&#39;, optional</span>
+<span class="sd">        The composition approximation employed by this</span>
+<span class="sd">        ModelDrivenTransform.</span>
+
+<span class="sd">        Default: `both`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GlobalMDTransform.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.GlobalMDTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transform_cls</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span> <span class="o">=</span> <span class="n">GlobalPDM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform_cls</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GlobalMDTransform.compose_after_from_vector_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.GlobalMDTransform.compose_after_from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">compose_after_from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+
+<span class="sd">        Composes two ModelDrivenTransforms together based on the</span>
+<span class="sd">        first order approximation proposed by Papandreou and Maragos in [1].</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        delta : (N,) ndarray</span>
+<span class="sd">            Vectorized :class:`ModelDrivenTransform` to be applied **before**</span>
+<span class="sd">            self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : self</span>
+<span class="sd">            self, updated to the result of the composition</span>
+
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        .. [1] G. Papandreou and P. Maragos, &quot;Adaptive and Constrained</span>
+<span class="sd">               Algorithms for Inverse Compositional Active Appearance Model</span>
+<span class="sd">               Fitting&quot;, CVPR08</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">jacobian</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">n_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">n_points</span>
+
+        <span class="c"># compute:</span>
+        <span class="c"># -&gt; dW/dp when p=0</span>
+        <span class="c"># -&gt; dW/dp when p!=0</span>
+        <span class="c"># -&gt; dW/dx when p!=0 evaluated at the source landmarks</span>
+
+        <span class="c"># dW/dq when p=0 and when p!=0 are the same and given by the</span>
+        <span class="c"># Jacobian of the global transform evaluated at the mean of the</span>
+        <span class="c"># model</span>
+        <span class="n">dW_dq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_transform_jacobian</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c"># dW_dq:  n_points  x  n_global_params  x  n_dims</span>
+
+        <span class="c"># dW/db when p=0, is the Jacobian of the model</span>
+        <span class="n">dW_db_0</span> <span class="o">=</span> <span class="n">model_jacobian</span>
+        <span class="c"># dW_db_0:  n_points  x     n_weights     x  n_dims</span>
+
+        <span class="c"># dW/dp when p=0, is simply the concatenation of the previous</span>
+        <span class="c"># two terms</span>
+        <span class="n">dW_dp_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dW_dq</span><span class="p">,</span> <span class="n">dW_db_0</span><span class="p">))</span>
+        <span class="c"># dW_dp_0:  n_points  x     n_params      x  n_dims</span>
+
+        <span class="c"># by application of the chain rule dW_db when p!=0,</span>
+        <span class="c"># is the Jacobian of the global transform wrt the points times</span>
+        <span class="c"># the Jacobian of the model: dX(S)/db = dX/dS *  dS/db</span>
+        <span class="n">dW_dS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">dW_db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ilj, idj -&gt; idj&#39;</span><span class="p">,</span> <span class="n">dW_dS</span><span class="p">,</span> <span class="n">dW_db_0</span><span class="p">)</span>
+        <span class="c"># dW_dS:  n_points  x      n_dims       x  n_dims</span>
+        <span class="c"># dW_db:  n_points  x     n_weights     x  n_dims</span>
+
+        <span class="c"># dW/dp is simply the concatenation of dX_dq with dX_db</span>
+        <span class="n">dW_dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dW_dq</span><span class="p">,</span> <span class="n">dW_db</span><span class="p">))</span>
+        <span class="c"># dW_dp:    n_points  x     n_params     x  n_dims</span>
+
+        <span class="n">dW_dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c">#dW_dx = np.dot(dW_dx, self.global_transform.linear_component.T)</span>
+        <span class="c"># dW_dx:  n_points  x  n_dims  x  n_dims</span>
+
+        <span class="c">#TODO: Can we do this without splitting across the two dimensions?</span>
+        <span class="n">dW_dx_x</span> <span class="o">=</span> <span class="n">dW_dx</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">dW_dx_y</span> <span class="o">=</span> <span class="n">dW_dx</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">dW_dp_0_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dW_dp_0</span><span class="p">,</span> <span class="p">(</span><span class="n">n_points</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">))</span>
+        <span class="n">dW_dx_dW_dp_0</span> <span class="o">=</span> <span class="n">dW_dp_0_mat</span> <span class="o">*</span> <span class="n">dW_dx_x</span> <span class="o">+</span> <span class="n">dW_dp_0_mat</span> <span class="o">*</span> <span class="n">dW_dx_y</span>
+        <span class="n">dW_dx_dW_dp_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dW_dx_dW_dp_0</span><span class="p">,</span>
+                                   <span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="c"># dW_dx:          n_points  x  n_dims    x  n_dims</span>
+        <span class="c"># dW_dp_0:        n_points  x  n_params  x  n_dims</span>
+        <span class="c"># dW_dx_dW_dp_0:  n_points  x  n_params  x  n_dims</span>
+
+        <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ijk, ilk -&gt; jl&#39;</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">,</span> <span class="n">dW_dx_dW_dp_0</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ijk, ilk -&gt; jl&#39;</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">,</span> <span class="n">dW_dp</span><span class="p">)</span>
+
+        <span class="n">Jp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+        <span class="c"># Jp:  n_params  x  n_params</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Jp</span><span class="p">,</span> <span class="n">delta</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_global_transform_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GlobalMDTransform.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.GlobalMDTransform.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the ModelDrivenTransform wrt to</span>
+<span class="sd">        its weights (the weights). This is done by chaining the relative</span>
+<span class="sd">        weight of each point wrt the source landmarks, i.e. the Jacobian of</span>
+<span class="sd">        the warp wrt the source landmarks when the target is assumed to be</span>
+<span class="sd">        equal to the source (dW/dx), together with the Jacobian of the</span>
+<span class="sd">        linear model (and of the global transform if present) wrt its</span>
+<span class="sd">        weights (dX/dp).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        points: (N, D) ndarray</span>
+<span class="sd">            The points at which the Jacobian will be evaluated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dp : (N, P, D) ndarray</span>
+<span class="sd">            The Jacobian of the ModelDrivenTransform evaluated at the</span>
+<span class="sd">            previous points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># check if re-computation of dW/dx can be avoided</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+            <span class="c"># recompute dW/dx, i.e. the relative weight of each point wrt</span>
+            <span class="c"># the source landmarks</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dW_dX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">weight_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+            <span class="c"># cache points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span> <span class="o">=</span> <span class="n">points</span>
+
+        <span class="n">model_jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">jacobian</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">points</span>
+
+        <span class="c"># compute dX/dp</span>
+
+        <span class="c"># dX/dq is the Jacobian of the global transform evaluated at the</span>
+        <span class="c"># mean of the model.</span>
+        <span class="n">dX_dq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_transform_jacobian</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c"># dX_dq:  n_points  x  n_global_params  x  n_dims</span>
+
+        <span class="c"># by application of the chain rule dX_db is the Jacobian of the</span>
+        <span class="c"># model transformed by the linear component of the global transform</span>
+        <span class="n">dS_db</span> <span class="o">=</span> <span class="n">model_jacobian</span>
+        <span class="n">dX_dS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">dX_db</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ilj, idj -&gt; idj&#39;</span><span class="p">,</span> <span class="n">dX_dS</span><span class="p">,</span> <span class="n">dS_db</span><span class="p">)</span>
+        <span class="c"># dS_db:  n_points  x     n_weights     x  n_dims</span>
+        <span class="c"># dX_dS:  n_points  x     n_dims        x  n_dims</span>
+        <span class="c"># dX_db:  n_points  x     n_weights     x  n_dims</span>
+
+        <span class="c"># dX/dp is simply the concatenation of the previous two terms</span>
+        <span class="n">dX_dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">dX_dq</span><span class="p">,</span> <span class="n">dX_db</span><span class="p">))</span>
+
+        <span class="c"># dW_dX:    n_points   x    n_points    x  n_dims</span>
+        <span class="c"># dX_dp:  n_points  x     n_params      x  n_dims</span>
+        <span class="n">dW_dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ild, lpd -&gt; ipd&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dW_dX</span><span class="p">,</span> <span class="n">dX_dp</span><span class="p">)</span>
+        <span class="c"># dW_dp:    n_points   x     n_params      x  n_dims</span>
+
+        <span class="k">return</span> <span class="n">dW_dp</span>
+
+
+<span class="c"># noinspection PyMissingConstructor</span></div></div>
+<div class="viewcode-block" id="OrthoMDTransform"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.OrthoMDTransform">[docs]</a><span class="k">class</span> <span class="nc">OrthoMDTransform</span><span class="p">(</span><span class="n">GlobalMDTransform</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A transform that couples an alignment transform to a</span>
+<span class="sd">    statistical model together with a global similarity transform,</span>
+<span class="sd">    such that the weights of the transform are fully specified by</span>
+<span class="sd">    both the weights of statistical model and the weights of the</span>
+<span class="sd">    similarity transform. The model is assumed to</span>
+<span class="sd">    generate an instance which is then transformed by the similarity</span>
+<span class="sd">    transform; the result defines the target landmarks of the transform.</span>
+<span class="sd">    If no source is provided, the mean of the model is defined as the</span>
+<span class="sd">    source landmarks of the transform.</span>
+
+<span class="sd">    This transform (in contrast to the :class:`GlobalMDTransform`)</span>
+<span class="sd">    additionally orthonormalizes both the global and the model basis against</span>
+<span class="sd">    each other, ensuring that orthogonality and normalization is enforced</span>
+<span class="sd">    across the unified bases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : :class:`menpo.model.base.StatisticalModel`</span>
+<span class="sd">        A linear statistical shape model.</span>
+<span class="sd">    transform_cls : :class:`menpo.transform.AlignableTransform`</span>
+<span class="sd">        A class of :class:`menpo.transform.base.AlignableTransform`</span>
+<span class="sd">        The align constructor will be called on this with the source</span>
+<span class="sd">        and target landmarks. The target is</span>
+<span class="sd">        set to the points generated from the model using the</span>
+<span class="sd">        provide weights - the source is either given or set to the</span>
+<span class="sd">        model&#39;s mean.</span>
+<span class="sd">    global_transform : :class:`menpo.transform.AlignableTransform`</span>
+<span class="sd">        A class of :class:`menpo.transform.base.AlignableTransform`</span>
+<span class="sd">        The global transform that should be applied to the model output.</span>
+<span class="sd">        Doesn&#39;t have to have been constructed from the .align() constructor.</span>
+<span class="sd">        Note that the GlobalMDTransform isn&#39;t guaranteed to hold on to the</span>
+<span class="sd">        exact object passed in here - so don&#39;t expect external changes to</span>
+<span class="sd">        the global_transform to be reflected in the behavior of this object.</span>
+<span class="sd">    source : :class:`menpo.shape.base.PointCloud`, optional</span>
+<span class="sd">        The source landmarks of the transform. If no ``source`` is provided the</span>
+<span class="sd">        mean of the model is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="OrthoMDTransform.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.transform.modeldriven.html#menpo.transform.modeldriven.OrthoMDTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">transform_cls</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span> <span class="o">=</span> <span class="n">OrthoPDM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_points</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform_cls</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_global_transform_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdm</span><span class="o">.</span><span class="n">similarity_model</span><span class="o">.</span><span class="n">jacobian</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

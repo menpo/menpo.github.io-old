@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: model.pca &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.model.pca">
+<span id="module-model-pca"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">model.pca</span></tt><a class="headerlink" href="#module-menpo.model.pca" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.model.pca.PCAModel">
+<em class="property">class </em><tt class="descclassname">menpo.model.pca.</tt><tt class="descname">PCAModel</tt><big>(</big><em>samples</em>, <em>center=True</em>, <em>bias=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.model.base.html#menpo.model.base.MeanInstanceLinearModel" title="menpo.model.base.MeanInstanceLinearModel"><tt class="xref py py-class docutils literal"><span class="pre">menpo.model.base.MeanInstanceLinearModel</span></tt></a></p>
+<blockquote>
+<div><p>A <tt class="xref py py-class docutils literal"><span class="pre">MeanLinearInstanceModel</span></tt> where the components are Principal
+Components.</p>
+<p>Principal Component Analysis (PCA) by Eigenvalue Decomposition of the
+data&#8217;s scatter matrix.</p>
+<p>For details of the implementation of PCA, see <tt class="xref py py-func docutils literal"><span class="pre">menpo.decomposition</span>
+<span class="pre">.principal_component_decomposition()</span></tt>.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>samples: list of :class:`menpo.base.Vectorizable`</strong> :</p>
+<blockquote>
+<div><blockquote>
+<div><p>List of samples to build the model from.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>center <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">When True (True by default) PCA is performed after mean centering the
+data. If False the data is assumed to be centred, and the mean will
+be 0.</p>
+</dd>
+<dt>bias: bool, optional</dt>
+<dd><p class="first last">When True (False by default) a biased estimator of the covariance
+matrix is used, i.e.:</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>rac{1}{N} sum_i^N mathbf{x}_i mathbf{x}_i^T</strong> :</p>
+<blockquote>
+<div><p>instead of default:</p>
+</div></blockquote>
+<p class="last"><strong>rac{1}{N-1} sum_i^N mathbf{x}_i mathbf{x}_i^T</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>samples</em>, <em>center=True</em>, <em>bias=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.component_vector">
+<tt class="descname">component_vector</tt><big>(</big><em>index</em>, <em>with_mean=True</em>, <em>scale=1.0</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.component_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.component_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A particular component of the model, in vectorized form.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int</p>
+<blockquote>
+<div><p>The component that is to be returned</p>
+</div></blockquote>
+<p><strong>with_mean: boolean (optional)</strong> :</p>
+<blockquote>
+<div><p>If True, the component will be blended with the mean vector
+before being returned. If not, the component is returned on it&#8217;s
+own.</p>
+<p>Default: True</p>
+</div></blockquote>
+<p><strong>scale</strong> : float</p>
+<blockquote>
+<div><p>A scale factor that should be applied to the component. Only
+valid in the case where with_mean is True. The scale is applied
+in units of standard deviations (so a scale of 1.0
+with_mean visualizes the mean plus 1 std. dev of the component
+in question).</p>
+</div></blockquote>
+<p class="last"><strong>:type: (n_features,) ndarray</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.model.pca.PCAModel.components">
+<tt class="descname">components</tt><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.components" title="Permalink to this definition">¶</a></dt>
+<dd><p>The matrix containing the active components on this model.</p>
+<p>type: (n_active_components, n_features) ndarray</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.distance_to_subspace">
+<tt class="descname">distance_to_subspace</tt><big>(</big><em>instance</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.distance_to_subspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.distance_to_subspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a version of <tt class="docutils literal"><span class="pre">instance</span></tt> where all the basis of the model
+have been projected out and which has been scaled by the inverse of
+the <tt class="docutils literal"><span class="pre">noise_variance</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>instance</strong> : <a class="reference internal" href="menpo.base.html#menpo.base.Vectorizable" title="menpo.base.Vectorizable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.base.Vectorizable</span></tt></a></p>
+<blockquote>
+<div><p>A novel instance.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>scaled_projected_out</strong> : <tt class="docutils literal"><span class="pre">self.instance_class</span></tt></p>
+<blockquote class="last">
+<div><p>A copy of <tt class="docutils literal"><span class="pre">instance</span></tt>, with all basis of the model projected out
+and scaled by the inverse of the <tt class="docutils literal"><span class="pre">noise_variance</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.distance_to_subspace_vector">
+<tt class="descname">distance_to_subspace_vector</tt><big>(</big><em>vector_instance</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.distance_to_subspace_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.distance_to_subspace_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a version of <tt class="docutils literal"><span class="pre">instance</span></tt> where all the basis of the model
+have been projected out and which has been scaled by the inverse of
+the <tt class="docutils literal"><span class="pre">noise_variance</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector_instance</strong> : (n_features,) ndarray</p>
+<blockquote>
+<div><p>A novel vector.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>scaled_projected_out: (n_features,) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>A copy of <tt class="docutils literal"><span class="pre">vector_instance</span></tt> with all basis of the model projected
+out and scaled by the inverse of the <tt class="docutils literal"><span class="pre">noise_variance</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.instance_vectors">
+<tt class="descname">instance_vectors</tt><big>(</big><em>weights</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.instance_vectors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.instance_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates new vectorized instances of the model using the first
+components in a particular weighting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>weights</strong> : (n_vectors, n_weights) ndarray or list of lists</p>
+<blockquote>
+<div><p>The weightings for the first n_weights components that
+should be used per instance that is to be produced</p>
+<p><tt class="docutils literal"><span class="pre">weights[i,</span> <span class="pre">j]</span></tt> is the linear contribution of the j&#8217;th
+principal component to the i&#8217;th instance vector produced. Note
+that if n_weights &lt; n_components, only the first n_weight
+components are used in the reconstruction (i.e. unspecified
+weights are implicitly 0)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>vectors</strong> : (n_vectors, n_features) ndarray</p>
+<blockquote>
+<div><p>The instance vectors for the weighting provided.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>ValueError: If n_weights &gt; n_components</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.model.pca.PCAModel.jacobian">
+<tt class="descname">jacobian</tt><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.jacobian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Jacobian of the PCA model. In this case, simply the
+components of the model reshaped to have the standard Jacobian shape:</p>
+<blockquote>
+<div>n_points    x  n_params      x  n_dims
+n_features  x  n_components  x  n_dims</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>jacobian</strong> : (n_features, n_components, n_dims) ndarray</p>
+<blockquote class="last">
+<div><p>The Jacobian of the model in the standard Jacobian shape.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.model.pca.PCAModel.n_active_components">
+<tt class="descname">n_active_components</tt><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.n_active_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.n_active_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of components currently in use on this model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.orthonormalize_against_inplace">
+<tt class="descname">orthonormalize_against_inplace</tt><big>(</big><em>linear_model</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.orthonormalize_against_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.orthonormalize_against_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enforces that the union of this model&#8217;s components and another are
+both mutually orthonormal.</p>
+<p>Note that the model passed in is guaranteed to not have it&#8217;s number
+of available components changed. This model, however, may loose some
+dimensionality due to reaching a degenerate state.</p>
+<p>The removed components will always be trimmed from the end of
+components (i.e. the components which capture the least variance).
+If trimming is performed, <cite>n_components</cite> and
+<cite>n_available_components</cite> would be altered - see
+<a class="reference internal" href="#menpo.model.pca.PCAModel.trim_components" title="menpo.model.pca.PCAModel.trim_components"><tt class="xref py py-meth docutils literal"><span class="pre">trim_components()</span></tt></a> for details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>linear_model</strong> : <tt class="xref py py-class docutils literal"><span class="pre">LinearModel</span></tt></p>
+<blockquote class="last">
+<div><p>A second linear model to orthonormalize this against.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.project_whitened">
+<tt class="descname">project_whitened</tt><big>(</big><em>instance</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.project_whitened"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.project_whitened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a sheared (non-orthogonal) reconstruction of <tt class="docutils literal"><span class="pre">instance</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>instance</strong> : <a class="reference internal" href="menpo.base.html#menpo.base.Vectorizable" title="menpo.base.Vectorizable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.base.Vectorizable</span></tt></a></p>
+<blockquote>
+<div><p>A novel instance.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>sheared_reconstruction</strong> : <tt class="docutils literal"><span class="pre">self.instance_class</span></tt></p>
+<blockquote class="last">
+<div><p>A sheared (non-orthogonal) reconstruction of <tt class="docutils literal"><span class="pre">instance</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.project_whitened_vector">
+<tt class="descname">project_whitened_vector</tt><big>(</big><em>vector_instance</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.project_whitened_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.project_whitened_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a sheared (non-orthogonal) reconstruction of
+<tt class="docutils literal"><span class="pre">vector_instance</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector_instance</strong> : (n_features,) ndarray</p>
+<blockquote>
+<div><p>A novel vector.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>sheared_reconstruction</strong> : (n_features,) ndarray</p>
+<blockquote class="last">
+<div><p>A sheared (non-orthogonal) reconstruction of <tt class="docutils literal"><span class="pre">vector_instance</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.model.pca.PCAModel.trim_components">
+<tt class="descname">trim_components</tt><big>(</big><em>n_components=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/model/pca.html#PCAModel.trim_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.model.pca.PCAModel.trim_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permanently trims the components down to a certain amount.</p>
+<p>This will reduce <cite>n_available_components</cite> down to <cite>n_components</cite>
+(either provided or as currently set), freeing up memory in the
+process.</p>
+<p>Once the model is trimmed, the trimmed components cannot be recovered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_components: int, optional</strong> :</p>
+<blockquote class="last">
+<div><p>The number of components that are kept. If None,
+self.n_components is used.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">model.pca</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.model.pca.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

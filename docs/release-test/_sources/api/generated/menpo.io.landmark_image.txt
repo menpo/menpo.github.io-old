@@ -1,0 +1,22 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`io.landmark_image`
+================================
+.. automodule:: menpo.io.landmark_image
+
+.. currentmodule:: menpo.io.landmark_image
+
+2 Classes
+---------
+
+.. autoclass:: ImageASFImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ImagePTSImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

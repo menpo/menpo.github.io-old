@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.thinplatesplines`
+=========================================
+.. automodule:: menpo.transform.thinplatesplines
+
+.. currentmodule:: menpo.transform.thinplatesplines
+
+1 Class
+-------
+
+.. autoclass:: ThinPlateSplines
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

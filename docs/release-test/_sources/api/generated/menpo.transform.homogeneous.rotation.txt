@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.homogeneous.rotation`
+=============================================
+.. automodule:: menpo.transform.homogeneous.rotation
+
+.. currentmodule:: menpo.transform.homogeneous.rotation
+
+2 Classes
+---------
+
+.. autoclass:: Rotation
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: AlignmentRotation
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+1 Function
+----------
+
+.. autofunction:: menpo.transform.homogeneous.rotation.optimal_rotation_matrix
+

@@ -1,0 +1,14 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.mesh.exceptions`
+====================================
+.. automodule:: menpo.shape.mesh.exceptions
+
+.. currentmodule:: menpo.shape.mesh.exceptions
+
+1 Class
+-------
+
+.. autoclass:: TriFieldError
+  :members:
+  :show-inheritance:

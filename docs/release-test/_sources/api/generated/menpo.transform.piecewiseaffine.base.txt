@@ -1,0 +1,34 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.piecewiseaffine.base`
+=============================================
+.. automodule:: menpo.transform.piecewiseaffine.base
+
+.. currentmodule:: menpo.transform.piecewiseaffine.base
+
+4 Classes
+---------
+
+.. autoclass:: TriangleContainmentError
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: AbstractPWA
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: DiscreteAffinePWA
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: CachedPWA
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

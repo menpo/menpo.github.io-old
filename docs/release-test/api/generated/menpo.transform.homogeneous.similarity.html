@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: transform.homogeneous.similarity &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.transform.homogeneous.similarity">
+<span id="module-transform-homogeneous-similarity"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">transform.homogeneous.similarity</span></tt><a class="headerlink" href="#module-menpo.transform.homogeneous.similarity" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.similarity.Similarity">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.similarity.</tt><tt class="descname">Similarity</tt><big>(</big><em>h_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.affine.html#menpo.transform.homogeneous.affine.Affine" title="menpo.transform.homogeneous.affine.Affine"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.affine.Affine</span></tt></a></p>
+<p>Specialist version of an <tt class="xref py py-class docutils literal"><span class="pre">Affine</span></tt> that is guaranteed to be
+a Similarity transform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>h_matrix</strong> : (D + 1, D + 1) ndarray</p>
+<blockquote class="last">
+<div><p>The homogeneous matrix of the similarity transform.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.Similarity.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>h_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.Similarity.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity.as_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters of the transform as a 1D array. These parameters
+are parametrised as deltas from the identity warp. The parameters
+are output in the order <tt class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">tx,</span> <span class="pre">ty]</span></tt>, given that
+<tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">k</span> <span class="pre">cos(theta)</span> <span class="pre">-</span> <span class="pre">1</span></tt> and <tt class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">k</span> <span class="pre">sin(theta)</span></tt> where <tt class="docutils literal"><span class="pre">k</span></tt> is a
+uniform scale and <tt class="docutils literal"><span class="pre">theta</span></tt> is a clockwise rotation in radians.</p>
+<p><strong>2D</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">parameter</th>
+<th class="head">definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>a</td>
+<td><tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">k</span> <span class="pre">cos(theta)</span> <span class="pre">-</span> <span class="pre">1</span></tt></td>
+</tr>
+<tr class="row-odd"><td>b</td>
+<td><tt class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">k</span> <span class="pre">sin(theta)</span></tt></td>
+</tr>
+<tr class="row-even"><td>tx</td>
+<td>Translation in <tt class="docutils literal"><span class="pre">x</span></tt></td>
+</tr>
+<tr class="row-odd"><td>ty</td>
+<td>Translation in <tt class="docutils literal"><span class="pre">y</span></tt></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only 2D transforms are currently supported.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>params</strong> : (P,) ndarray</p>
+<blockquote>
+<div><p>The values that parameterise the transform.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError, NotImplementedError</strong> :</p>
+<blockquote class="last">
+<div><p>If the transform is not 2D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.Similarity.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>p</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the transform from the given parameters,
+expected to be in Fortran ordering.</p>
+<p>Supports rebuilding from 2D parameter sets.</p>
+<p>2D Similarity: 4 parameters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p</strong> : (P,) ndarray</p>
+<blockquote>
+<div><p>The array of parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError, NotImplementedError</strong> :</p>
+<blockquote class="last">
+<div><p>Only 2D transforms are supported.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.Similarity.jacobian">
+<tt class="descname">jacobian</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity.jacobian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity.jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Jacobian of the transform w.r.t the parameters.</p>
+<p>The Jacobian generated (for 2D) is of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre>x -y 1 0
+y  x 0 1
+</pre></div>
+</div>
+<p>This maintains a parameter order of:</p>
+<div class="highlight-python"><div class="highlight"><pre>W(x;p) = [1 + a  -b   ] [x] + tx
+         [b      1 + a] [y] + ty
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>The points to calculate the jacobian over</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW_dp</strong> : (N, P, D) ndarray</p>
+<blockquote>
+<div><p>A (<tt class="docutils literal"><span class="pre">n_points</span></tt>, <tt class="docutils literal"><span class="pre">n_params</span></tt>, <tt class="docutils literal"><span class="pre">n_dims</span></tt>) array representing
+the Jacobian of the transform.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p><tt class="docutils literal"><span class="pre">points.n_dims</span> <span class="pre">!=</span> <span class="pre">self.n_dims</span></tt> or transform is not 2D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.similarity.Similarity.n_parameters">
+<tt class="descname">n_parameters</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#Similarity.n_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.Similarity.n_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D Similarity: 4 parameters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">),</span> <span class="o">-</span><span class="n">b</span><span class="p">,</span>      <span class="n">tx</span><span class="p">]</span>
+<span class="p">[</span><span class="n">b</span><span class="p">,</span>       <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">),</span> <span class="n">ty</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>3D Similarity: Currently not supported</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>4</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError, NotImplementedError</strong> :</p>
+<blockquote class="last">
+<div><p>Only 2D transforms are supported.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.transform.homogeneous.similarity.AlignmentSimilarity">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.similarity.</tt><tt class="descname">AlignmentSimilarity</tt><big>(</big><em>source</em>, <em>target</em>, <em>rotation=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#AlignmentSimilarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.AlignmentSimilarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.HomogFamilyAlignment" title="menpo.transform.homogeneous.base.HomogFamilyAlignment"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.base.HomogFamilyAlignment</span></tt></a>, <a class="reference internal" href="#menpo.transform.homogeneous.similarity.Similarity" title="menpo.transform.homogeneous.similarity.Similarity"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.similarity.Similarity</span></tt></a></p>
+<p>Infers the similarity transform relating two vectors with the same
+dimensionality. This is simply the procrustes alignment of the
+source to the target.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source: :class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The source pointcloud instance used in the alignment</p>
+</div></blockquote>
+<p><strong>target: :class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The target pointcloud instance used in the alignment</p>
+</div></blockquote>
+<p><strong>rotation: boolean, optional</strong> :</p>
+<blockquote class="last">
+<div><p>If False, the rotation component of the similarity transform is not
+inferred.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.AlignmentSimilarity.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>source</em>, <em>target</em>, <em>rotation=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#AlignmentSimilarity.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.AlignmentSimilarity.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.similarity.AlignmentSimilarity.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>p</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/similarity.html#AlignmentSimilarity.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.similarity.AlignmentSimilarity.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the transform from the given parameters,
+expected to be in Fortran ordering.</p>
+<p>Supports rebuilding from 2D parameter sets.</p>
+<p>2D Similarity: 4 parameters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p</strong> : (P,) ndarray</p>
+<blockquote>
+<div><p>The array of parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError, NotImplementedError</strong> :</p>
+<blockquote class="last">
+<div><p>Only 2D transforms are supported.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">transform.homogeneous.similarity</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.transform.homogeneous.similarity.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

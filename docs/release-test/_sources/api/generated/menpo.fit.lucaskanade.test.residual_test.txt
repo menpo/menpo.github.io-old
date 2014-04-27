@@ -1,0 +1,55 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.lucaskanade.test.residual_test`
+=================================================
+.. automodule:: menpo.fit.lucaskanade.test.residual_test
+
+.. currentmodule:: menpo.fit.lucaskanade.test.residual_test
+
+15 Functions
+------------
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.compute_rms_point_error
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.setup_conditions
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.setup_error
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.compute_fixed_error
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.residual_wrapper
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_ls_ic_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_ls_fa_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_ecc_ic_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_ecc_fa_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gabor_ic_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gabor_fa_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gradientimages_ic_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gradientimages_fa_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gradientcorrelation_ic_map_coords
+
+
+.. autofunction:: menpo.fit.lucaskanade.test.residual_test.test_2d_gradientcorrelation_fa_map_coords
+

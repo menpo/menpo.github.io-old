@@ -1,0 +1,34 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.regression.base`
+==================================
+.. automodule:: menpo.fit.regression.base
+
+.. currentmodule:: menpo.fit.regression.base
+
+4 Classes
+---------
+
+.. autoclass:: Regressor
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: NonParametricRegressor
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: SemiParametricRegressor
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ParametricRegressor
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

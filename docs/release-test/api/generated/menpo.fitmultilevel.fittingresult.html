@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: fitmultilevel.fittingresult &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.fitmultilevel.fittingresult">
+<span id="module-fitmultilevel-fittingresult"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">fitmultilevel.fittingresult</span></tt><a class="headerlink" href="#module-menpo.fitmultilevel.fittingresult" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.fittingresult.</tt><tt class="descname">MultilevelFittingResult</tt><big>(</big><em>image</em>, <em>multiple_fitter</em>, <em>fittings</em>, <em>affine_correction</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult" title="menpo.fit.fittingresult.FittingResult"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.fittingresult.FittingResult</span></tt></a></p>
+<p>Object that holds the state of a MultipleFitter object (to which it is
+linked) after it has fitted a particular image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image: :class:`menpo.image.masked.MaskedImage`</strong> :</p>
+<blockquote>
+<div><p>The fitted image.</p>
+</div></blockquote>
+<p><strong>multiple_fitter: :class:`menpo.fitter.base.Fitter`</strong> :</p>
+<blockquote>
+<div><p>The fitter object used to fitter the image.</p>
+</div></blockquote>
+<p><strong>fittings: :class:`menpo.fitter.fittingresult.FittingResult` list</strong> :</p>
+<blockquote>
+<div><p>A list of basic fitting objects.</p>
+</div></blockquote>
+<p><strong>affine_correction: :class: `menpo.transforms.affine.Affine`</strong> :</p>
+<blockquote>
+<div><p>An affine transform that maps the result of the top resolution
+fitting level to the space scale of the original image.</p>
+</div></blockquote>
+<p><strong>gt_shape: class:`menpo.shape.PointCloud`, optional</strong> :</p>
+<blockquote>
+<div><p>The ground truth shape associated to the image.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>error_type: &#8216;me_norm&#8217;, &#8216;me&#8217; or &#8216;rmse&#8217;, optional.</strong> :</p>
+<blockquote class="last">
+<div><p>Specifies the way in which the error between the fitted and
+ground truth shapes is to be computed.</p>
+<p>Default: &#8216;me_norm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image</em>, <em>multiple_fitter</em>, <em>fittings</em>, <em>affine_correction</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.downscale">
+<tt class="descname">downscale</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.downscale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.downscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the downscale factor used by the multiple fitter.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.error_type">
+<tt class="descname">error_type</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.error_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.error_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of error.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.final_shape">
+<tt class="descname">final_shape</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.final_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.final_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final fitted shape.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.fitted">
+<tt class="descname">fitted</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.fitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the fitted state of each fitting object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.gt_shape">
+<tt class="descname">gt_shape</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.gt_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.gt_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the original ground truth shape associated to the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.initial_shape">
+<tt class="descname">initial_shape</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.initial_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.initial_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial shape from which the fitting started.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.n_iters">
+<tt class="descname">n_iters</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.n_iters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.n_iters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total number of iterations used to fitter the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.n_levels">
+<tt class="descname">n_levels</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.n_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.n_levels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of levels of the fitter object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.plot_error">
+<tt class="descname">plot_error</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.plot_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.plot_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the error evolution throughout the fitting.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.print_fitting_info">
+<tt class="descname">print_fitting_info</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.print_fitting_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.print_fitting_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints information related to the fitting.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.scaled_levels">
+<tt class="descname">scaled_levels</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.scaled_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.scaled_levels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the shape results returned by the basic fittings
+must be scaled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.MultilevelFittingResult.shapes">
+<tt class="descname">shapes</tt><big>(</big><em>as_points=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#MultilevelFittingResult.shapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult.shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the shapes obtained at each fitting
+iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>as_points: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the results is returned as a list of PointClouds or
+ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>shapes: :class:`menpo.shape.PointCoulds or ndarray list</strong> :</p>
+<blockquote class="last">
+<div><p>A list containing the shapes obtained at each fitting iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.fittingresult.</tt><tt class="descname">AAMMultilevelFittingResult</tt><big>(</big><em>image</em>, <em>multiple_fitter</em>, <em>fittings</em>, <em>affine_correction</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fitmultilevel.fittingresult.MultilevelFittingResult" title="menpo.fitmultilevel.fittingresult.MultilevelFittingResult"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultilevel.fittingresult.MultilevelFittingResult</span></tt></a></p>
+<p>Object let us recover the state of an AAM Fitter after the latter has
+fitted a particular image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image: :class:`pybug.image.masked.MaskedImage`</strong> :</p>
+<blockquote>
+<div><p>The fitted image.</p>
+</div></blockquote>
+<p><strong>aam_fitter: :class:`pybug.aam.fitter.AAMFitter`</strong> :</p>
+<blockquote>
+<div><p>The aam_fitter object used to fitter the image.</p>
+</div></blockquote>
+<p><strong>basic_fittings: :class:`pybug.aam.fitting.BasicFitting` list</strong> :</p>
+<blockquote>
+<div><p>A list of basic fitting objects.</p>
+</div></blockquote>
+<p><strong>_affine_correction: :class: `pybug.transforms.affine.Affine`</strong> :</p>
+<blockquote>
+<div><p>An affine transform that maps the result of the top resolution
+fitting level to the space scale of the original image.</p>
+</div></blockquote>
+<p><strong>gt_shape: class:`pybug.shape.PointCloud`, optional</strong> :</p>
+<blockquote>
+<div><p>The ground truth shape associated to the image.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>error_type: &#8216;me_norm&#8217;, &#8216;me&#8217; or &#8216;rmse&#8217;, optional.</strong> :</p>
+<blockquote class="last">
+<div><p>Specifies the way in which the error between the fitted and
+ground truth shapes is to be computed.</p>
+<p>Default: &#8216;me_norm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.appearance_reconstructions">
+<tt class="descname">appearance_reconstructions</tt><big>(</big><em>as_pixels=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.appearance_reconstructions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.appearance_reconstructions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the appearance reconstruction obtained at
+each fitting iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>as_pixels: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the result is returned as a list of Images or
+ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>appearance_reconstructions: :class:`pybug.image.masked.MaskedImage`</strong> :</p>
+<blockquote class="last">
+<div><blockquote>
+<div><p>or ndarray list</p>
+</div></blockquote>
+<p>A list containing the appearance reconstructions obtained at each
+fitting iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.costs">
+<tt class="descname">costs</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.costs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.costs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list containing the cost at each fitting iteration.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.final_cost">
+<tt class="descname">final_cost</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.final_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.final_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final fitting cost.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.initial_cost">
+<tt class="descname">initial_cost</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.initial_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.initial_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial fitting cost.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.plot_cost">
+<tt class="descname">plot_cost</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.plot_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.plot_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the cost evolution throughout the fitting.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.residual">
+<tt class="descname">residual</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type of residual used by the basic fitter associated to
+each basic fitting.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_appearance_reconstructions">
+<tt class="descname">view_appearance_reconstructions</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.view_appearance_reconstructions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_appearance_reconstructions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the appearance reconstructions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_error_images">
+<tt class="descname">view_error_images</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.view_error_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_error_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the error images.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_warped_images">
+<tt class="descname">view_warped_images</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>from_basic_fittings=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.view_warped_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.view_warped_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the warped images.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.warped_images">
+<tt class="descname">warped_images</tt><big>(</big><em>from_basic_fittings=False</em>, <em>as_pixels=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/fittingresult.html#AAMMultilevelFittingResult.warped_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.fittingresult.AAMMultilevelFittingResult.warped_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the warped images obtained at each fitting
+iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>from_basic_fittings: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True, the returned transform per iteration is used to warp
+the internal image representation used by each basic fitter.
+If False, the transforms are used to warp original image.</p>
+<p>Default: False</p>
+</div></blockquote>
+<p><strong>as_pixels: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the result is returned as a list of Images or
+ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>warped_images: :class:`pybug.image.masked.MaskedImage` or ndarray list</strong> :</p>
+<blockquote class="last">
+<div><p>A list containing the warped images obtained at each fitting
+iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">fitmultilevel.fittingresult</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.fitmultilevel.fittingresult.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

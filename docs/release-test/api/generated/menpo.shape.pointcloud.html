@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: shape.pointcloud &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.shape.pointcloud">
+<span id="module-shape-pointcloud"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">shape.pointcloud</span></tt><a class="headerlink" href="#module-menpo.shape.pointcloud" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.shape.pointcloud.PointCloud">
+<em class="property">class </em><tt class="descclassname">menpo.shape.pointcloud.</tt><tt class="descname">PointCloud</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.shape.base.html#menpo.shape.base.Shape" title="menpo.shape.base.Shape"><tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.base.Shape</span></tt></a></p>
+<p>An N-dimensional point cloud. This is internally represented as an ndarray
+of shape (<tt class="docutils literal"><span class="pre">n_points</span></tt>, <tt class="docutils literal"><span class="pre">n_dims</span></tt>). This class is important for dealing
+with complex functionality such as viewing and representing metadata such
+as landmarks.</p>
+<p>Currently only 2D and 3D pointclouds are viewable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D) ndarray</p>
+<blockquote class="last">
+<div><p>A (<tt class="docutils literal"><span class="pre">n_points</span></tt>, <tt class="docutils literal"><span class="pre">n_dims</span></tt>) ndarray representing the points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.as_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a flattened representation of the pointcloud.
+Note that the flattened representation is of the form
+<tt class="docutils literal"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1,</span> <span class="pre">.....,</span> <span class="pre">xn,</span> <span class="pre">yn]</span></tt> for 2D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (N,) ndarray</p>
+<blockquote class="last">
+<div><p>The flattened points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.bounds">
+<tt class="descname">bounds</tt><big>(</big><em>boundary=0</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum to maximum extent of the <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a>.
+An optional boundary argument can be provided to expand the bounds
+by a constant margin.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary: b float</strong> :</p>
+<blockquote>
+<div><p>A optional padding distance that is added to the bounds. Default
+is zero, meaning the max/min of tightest possible containing
+square/cube/hypercube is returned.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a> and boundary along
+each dimension</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a> and boundary along
+each dimension</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.pointcloud.PointCloud.centre">
+<tt class="descname">centre</tt><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.centre"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.centre" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mean of all the points in this PointCloud (in the centre of mass
+sense)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D,) ndarray
+The mean of this PointCloud&#8217;s points.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.pointcloud.PointCloud.centre_of_bounds">
+<tt class="descname">centre_of_bounds</tt><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.centre_of_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.centre_of_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>The centre of the absolute bounds of this PointCloud. Contrast with
+centre, which is the mean point position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D,) ndarray
+The centre of the bounds of this PointCloud.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.distance_to">
+<tt class="descname">distance_to</tt><big>(</big><em>pointcloud</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.distance_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.distance_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a distance matrix between this point cloud and another.
+By default the Euclidian distance is calculated - see
+<tt class="docutils literal"><span class="pre">scipy.spatial.distance.cdist</span></tt> for valid kwargs to change the metric
+and other properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+<blockquote>
+<div><p>The second pointcloud to compute distances between. This must be
+of the same dimension as this PointCloud.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>distance_matrix: (N, M) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The symmetric pairwise distance matrix between the two PointClouds
+s.t. distance_matrix[i, j] is the distance between the i&#8217;th
+point of this PointCloud and the j&#8217;th point of the input
+PointCloud.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.from_mask">
+<tt class="descname">from_mask</tt><big>(</big><em>mask</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.from_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.from_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 1D boolean array with the same number of elements as the number of
+points in the pointcloud. This is then broadcast across the dimensions
+of the pointcloud and returns a new pointcloud containing only those
+points that were <cite>True</cite> in the mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>1D array of booleans</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new pointcloud that has been masked.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>vector</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates this PointCloud in-place with a new vector of parameters</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.pointcloud.PointCloud.h_points">
+<tt class="descname">h_points</tt><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.h_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.h_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>homogeneous points of shape (n_dims + 1, n_points)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.pointcloud.PointCloud.n_dims">
+<tt class="descname">n_dims</tt><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.n_dims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.n_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of dimensions in the pointcloud.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.pointcloud.PointCloud.n_points">
+<tt class="descname">n_points</tt><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.n_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.n_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of points in the pointcloud.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.norm">
+<tt class="descname">norm</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the norm of this point cloud. This is a translation and
+rotation invariant measure of the point cloud&#8217;s intrinsic size - in
+other words, it is always taken around the point cloud&#8217;s centre.</p>
+<p>By default, the Frobenius norm is taken, but this can be changed by
+setting kwargs - see numpy.linalg.norm for valid options.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>norm: float</strong> :</p>
+<blockquote class="last">
+<div><p>The norm of this <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.range">
+<tt class="descname">range</tt><big>(</big><em>boundary=0</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>The range of the extent of the <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary: b float</strong> :</p>
+<blockquote>
+<div><p>A optional padding distance that is used to extend the bounds
+from which the range is computed. Default is zero, no extension
+is performed.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>range</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The range of the :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>PointCloud`s extent in each dimension.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.tojson">
+<tt class="descname">tojson</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.tojson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.tojson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this <cite>PointCloud</cite> to a dictionary JSON representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dict with a &#8216;points&#8217; key, the value of which is a list suitable</strong> :</p>
+<p class="last"><strong>for use in the by the `json` standard library package.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.pointcloud.PointCloud.update_from_mask">
+<tt class="descname">update_from_mask</tt><big>(</big><em>mask</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/pointcloud.html#PointCloud.update_from_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.pointcloud.PointCloud.update_from_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 1D boolean array with the same number of elements as the number of
+points in the pointcloud. This is then broadcast across the dimensions
+of the pointcloud. The same pointcloud is updated in place.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>1D array of booleans</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <a class="reference internal" href="#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+<blockquote class="last">
+<div><p>A pointer to self.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">shape.pointcloud</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.shape.pointcloud.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

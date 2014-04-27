@@ -1,0 +1,22 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.mesh`
+=========================
+.. automodule:: menpo.shape.mesh
+
+.. currentmodule:: menpo.shape.mesh
+
+2 Classes
+---------
+
+.. autoclass:: FastTriMesh
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: PolyMesh
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

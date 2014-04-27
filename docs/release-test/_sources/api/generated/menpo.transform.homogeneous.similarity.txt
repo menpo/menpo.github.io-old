@@ -1,0 +1,22 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.homogeneous.similarity`
+===============================================
+.. automodule:: menpo.transform.homogeneous.similarity
+
+.. currentmodule:: menpo.transform.homogeneous.similarity
+
+2 Classes
+---------
+
+.. autoclass:: Similarity
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: AlignmentSimilarity
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

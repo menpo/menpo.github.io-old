@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: fitmultilevel.functions &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.fitmultilevel.functions">
+<span id="module-fitmultilevel-functions"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">fitmultilevel.functions</span></tt><a class="headerlink" href="#module-menpo.fitmultilevel.functions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="functions">
+<h2>5 Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="menpo.fitmultilevel.functions.build_sampling_grid">
+<tt class="descclassname">menpo.fitmultilevel.functions.</tt><tt class="descname">build_sampling_grid</tt><big>(</big><em>grid_size</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/functions.html#build_sampling_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.functions.build_sampling_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="menpo.fitmultilevel.functions.extract_local_patches">
+<tt class="descclassname">menpo.fitmultilevel.functions.</tt><tt class="descname">extract_local_patches</tt><big>(</big><em>image</em>, <em>shape</em>, <em>sampling_grid</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/functions.html#extract_local_patches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.functions.extract_local_patches" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="menpo.fitmultilevel.functions.mean_pointcloud">
+<tt class="descclassname">menpo.fitmultilevel.functions.</tt><tt class="descname">mean_pointcloud</tt><big>(</big><em>pointclouds</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/functions.html#mean_pointcloud"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.functions.mean_pointcloud" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the mean of a list of point cloud objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pointclouds: list of :class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>List of point cloud objects from which we want to
+compute the mean.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>mean_pointcloud: class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote class="last">
+<div><p>The mean point cloud.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.fitmultilevel.functions.noisy_align">
+<tt class="descclassname">menpo.fitmultilevel.functions.</tt><tt class="descname">noisy_align</tt><big>(</big><em>source</em>, <em>target</em>, <em>noise_std=0.04</em>, <em>rotation=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/functions.html#noisy_align"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.functions.noisy_align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs and perturbs the optimal similarity transform between source
+to the target by adding white noise to its weights.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source: :class:`pybug.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The source pointcloud instance used in the alignment</p>
+</div></blockquote>
+<p><strong>target: :class:`pybug.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The target pointcloud instance used in the alignment</p>
+</div></blockquote>
+<p><strong>noise_std: float</strong> :</p>
+<blockquote>
+<div><p>The standard deviation of the white noise</p>
+<p>Default: 0.04</p>
+</div></blockquote>
+<p><strong>rotation: boolean</strong> :</p>
+<blockquote>
+<div><p>If False the second parameter of the Similarity,
+which captures captures inplane rotations, is set to 0.</p>
+<p>Default:False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>noisy_transform</strong> : :class: <cite>pybug.transform.Similarity</cite></p>
+<blockquote class="last">
+<div><p>The noisy Similarity Transform</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.fitmultilevel.functions.compute_error">
+<tt class="descclassname">menpo.fitmultilevel.functions.</tt><tt class="descname">compute_error</tt><big>(</big><em>target</em>, <em>ground_truth</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/functions.html#compute_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.functions.compute_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">fitmultilevel.functions</span></tt></a><ul>
+<li><a class="reference internal" href="#functions">5 Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.fitmultilevel.functions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

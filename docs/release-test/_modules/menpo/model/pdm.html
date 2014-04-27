@@ -1,0 +1,371 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.model.pdm &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.model.pdm</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.base</span> <span class="kn">import</span> <span class="n">Targetable</span><span class="p">,</span> <span class="n">Vectorizable</span>
+<span class="kn">from</span> <span class="nn">menpo.model</span> <span class="kn">import</span> <span class="n">Similarity2dInstanceModel</span>
+
+
+<span class="c"># TODO: document me</span>
+<div class="viewcode-block" id="PDM"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM">[docs]</a><span class="k">class</span> <span class="nc">PDM</span><span class="p">(</span><span class="n">Targetable</span><span class="p">,</span> <span class="n">Vectorizable</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PDM.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c"># set all weights to 0 (yielding the mean, first call to</span>
+        <span class="c"># from_vector_inplace() or set_target() will update this)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_active_components</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_target_from_state</span><span class="p">()</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PDM.n_dims"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.n_dims">[docs]</a>    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of dimensions that the transform supports.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">template_instance</span><span class="o">.</span><span class="n">n_dims</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PDM.n_weights"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.n_weights">[docs]</a>    <span class="k">def</span> <span class="nf">n_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of parameters in the linear model.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_active_components</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="PDM.weights"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.weights">[docs]</a>    <span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        In this simple PDM the weights is just the vector, but in subclasses</span>
+<span class="sd">        this behavior will change.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span>
+
+    <span class="k">def</span> <span class="nf">_target_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_target</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Called by the Targetable framework when set_target() is called.</span>
+<span class="sd">        This method **ONLY SETS THE NEW TARGET** it does no synchronisation</span>
+<span class="sd">        logic (for that, see _sync_state_from_target())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">new_target</span>
+
+    <span class="k">def</span> <span class="nf">_new_target_from_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the appropriate target for the parameters provided.</span>
+<span class="sd">        Subclasses can override this.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        new_target: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">            A new target for the weights provided</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># 1. Find the optimum parameters and set them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights_for_target</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+        <span class="c"># 2. Find the closest target the model can reproduce and trigger an</span>
+        <span class="c"># update of our transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_setter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_target_from_state</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_weights_for_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the appropriate model weights for target provided.</span>
+<span class="sd">        Subclasses can override this.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        target: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">            The target that the statistical model will try to reproduce</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        weights: (P,) ndarray</span>
+<span class="sd">            Weights of the statistical model that generate the closest</span>
+<span class="sd">            PointCloud to the requested target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PDM.as_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the current parameters of this transform - this is the</span>
+<span class="sd">        just the linear model&#39;s weights</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        params : (``n_parameters``,) ndarray</span>
+<span class="sd">            The vector of parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
+</div>
+<div class="viewcode-block" id="PDM.from_vector_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Updates the ModelDrivenTransform&#39;s state from it&#39;s</span>
+<span class="sd">        vectorized form.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="n">vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_target_from_state</span><span class="p">()</span>
+
+    <span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="PDM.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.PDM.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">jacobian</span>
+
+
+<span class="c"># TODO: document me</span></div></div>
+<div class="viewcode-block" id="GlobalPDM"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM">[docs]</a><span class="k">class</span> <span class="nc">GlobalPDM</span><span class="p">(</span><span class="n">PDM</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="GlobalPDM.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">global_transform_cls</span><span class="p">):</span>
+        <span class="c"># Start the global_transform as an identity (first call to</span>
+        <span class="c"># from_vector_inplace() or set_target() will update this)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span> <span class="o">=</span> <span class="n">global_transform_cls</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GlobalPDM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GlobalPDM.n_global_parameters"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM.n_global_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">n_global_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of parameters in the ``global_transform``</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">n_parameters</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="GlobalPDM.global_parameters"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM.global_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">global_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The parameters for the global transform.</span>
+
+<span class="sd">        :type: (``n_global_parameters``,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_new_target_from_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the appropriate target for the model weights provided,</span>
+<span class="sd">        accounting for the effect of the global transform</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        new_target: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">            A new target for the weights provided</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_weights_for_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the appropriate model weights for target provided, accounting</span>
+<span class="sd">        for the effect of the global transform. Note that this method</span>
+<span class="sd">        updates the global transform to be in the correct state.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        target: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">            The target that the statistical model will try to reproduce</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        weights: (P,) ndarray</span>
+<span class="sd">            Weights of the statistical model that generate the closest</span>
+<span class="sd">            PointCloud to the requested target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_global_transform</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">projected_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="c"># now we have the target in model space, project it to recover the</span>
+        <span class="c"># weights</span>
+        <span class="n">new_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">projected_target</span><span class="p">)</span>
+        <span class="c"># TODO investigate the impact of this, could be problematic</span>
+        <span class="c"># the model can&#39;t perfectly reproduce the target we asked for -</span>
+        <span class="c"># reset the global_transform.target to what it CAN produce</span>
+        <span class="c">#refined_target = self._target_for_weights(new_weights)</span>
+        <span class="c">#self.global_transform.target = refined_target</span>
+        <span class="k">return</span> <span class="n">new_weights</span>
+
+    <span class="k">def</span> <span class="nf">_update_global_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GlobalPDM.as_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the current parameters of this transform - this is the</span>
+<span class="sd">        just the linear model&#39;s weights</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        params : (``n_parameters``,) ndarray</span>
+<span class="sd">            The vector of parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">global_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">])</span>
+</div>
+    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="c"># First, update the global transform</span>
+        <span class="n">global_parameters</span> <span class="o">=</span> <span class="n">vector</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_global_parameters</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_global_weights</span><span class="p">(</span><span class="n">global_parameters</span><span class="p">)</span>
+        <span class="c"># Now extract the weights, and let super handle the update</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">vector</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_global_parameters</span><span class="p">:]</span>
+        <span class="n">PDM</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_global_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_weights</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Hook that allows for overriding behavior when the global weights are</span>
+<span class="sd">        set. Default implementation simply asks global_transform to</span>
+<span class="sd">        update itself from vector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="n">global_weights</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GlobalPDM.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.GlobalPDM.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+
+
+<span class="c"># TODO: document me</span></div></div>
+<div class="viewcode-block" id="OrthoPDM"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.OrthoPDM">[docs]</a><span class="k">class</span> <span class="nc">OrthoPDM</span><span class="p">(</span><span class="n">GlobalPDM</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="OrthoPDM.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.OrthoPDM.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">global_transform_cls</span><span class="p">):</span>
+        <span class="c"># 1. Construct similarity model from the mean of the model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span> <span class="o">=</span> <span class="n">Similarity2dInstanceModel</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="c"># 2. Orthonormalize model and similarity model</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">orthonormalize_against_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OrthoPDM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">global_transform_cls</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="OrthoPDM.global_parameters"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.OrthoPDM.global_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">global_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The parameters for the global transform.</span>
+
+<span class="sd">        :type: (``n_global_parameters``,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_weights</span>
+</div>
+    <span class="k">def</span> <span class="nf">_update_global_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_global_weights</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">similarity_weights</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_global_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_weights</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similarity_weights</span> <span class="o">=</span> <span class="n">global_weights</span>
+        <span class="n">new_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="n">global_weights</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_transform</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OrthoPDM.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.model.pdm.html#menpo.model.pdm.OrthoPDM.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">similarity_model</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

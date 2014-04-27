@@ -1,0 +1,14 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`exception`
+========================
+.. automodule:: menpo.exception
+
+.. currentmodule:: menpo.exception
+
+1 Class
+-------
+
+.. autoclass:: DimensionalityError
+  :members:
+  :show-inheritance:

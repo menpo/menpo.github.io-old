@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`misctools.circlefit`
+==================================
+.. automodule:: menpo.misctools.circlefit
+
+.. currentmodule:: menpo.misctools.circlefit
+
+1 Function
+----------
+
+.. autofunction:: menpo.misctools.circlefit.circle_fit
+

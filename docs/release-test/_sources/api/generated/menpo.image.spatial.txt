@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`image.spatial`
+============================
+.. automodule:: menpo.image.spatial
+
+.. currentmodule:: menpo.image.spatial
+
+3 Classes
+---------
+
+.. autoclass:: AbstractSpatialImage
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ShapeImage
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: DepthImage
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

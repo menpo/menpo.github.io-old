@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.base.alignment`
+=======================================
+.. automodule:: menpo.transform.base.alignment
+
+.. currentmodule:: menpo.transform.base.alignment
+
+1 Class
+-------
+
+.. autoclass:: Alignment
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

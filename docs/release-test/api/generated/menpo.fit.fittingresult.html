@@ -1,0 +1,680 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: fit.fittingresult &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.fit.fittingresult">
+<span id="module-fit-fittingresult"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">fit.fittingresult</span></tt><a class="headerlink" href="#module-menpo.fit.fittingresult" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>6 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.fit.fittingresult.FittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">FittingResult</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.visualize.base.html#menpo.visualize.base.Viewable" title="menpo.visualize.base.Viewable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.visualize.base.Viewable</span></tt></a></p>
+<p>Object that holds the state of a Fitter object before, during
+and after it has fitted a particular image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image: :class:`menpo.image.masked.MaskedImage`</strong> :</p>
+<blockquote>
+<div><p>The fitted image.</p>
+</div></blockquote>
+<p><strong>fitter: :class:`menpo.fitter.base.Fitter`</strong> :</p>
+<blockquote>
+<div><p>The Fitter object used to fitter the image.</p>
+</div></blockquote>
+<p><strong>error_type: &#8216;me_norm&#8217;, &#8216;me&#8217; or &#8216;rmse&#8217;, optional.</strong> :</p>
+<blockquote class="last">
+<div><p>Specifies the way in which the error between the fitted and
+ground truth shapes is to be computed.</p>
+<p>Default: &#8216;me_norm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.algorithm">
+<tt class="descname">algorithm</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the algorithm used by the Fitter.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.error_type">
+<tt class="descname">error_type</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.error_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.error_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of error.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.errors">
+<tt class="descname">errors</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.errors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.errors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list containing the error at each fitting iteration.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.final_error">
+<tt class="descname">final_error</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.final_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.final_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final fitting error.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.final_shape">
+<tt class="descname">final_shape</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.final_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.final_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final fitted shape.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.fitted">
+<tt class="descname">fitted</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.fitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the fitting procedure has been completed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.gt_shape">
+<tt class="descname">gt_shape</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.gt_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.gt_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the original ground truth shape associated to the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.initial_error">
+<tt class="descname">initial_error</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.initial_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.initial_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial fitting error.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.initial_shape">
+<tt class="descname">initial_shape</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.initial_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.initial_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial shape from which the fitting started.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResult.n_iters">
+<tt class="descname">n_iters</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.n_iters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.n_iters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of iterations used to fit the image.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.plot_error">
+<tt class="descname">plot_error</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.plot_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.plot_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the error evolution throughout the fitting.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.shapes">
+<tt class="descname">shapes</tt><big>(</big><em>as_points=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.shapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the shapes obtained at each fitting
+iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>as_points: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the results is returned as a list of PointClouds or
+ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>shapes: :class:`menpo.shape.PointCloud`s or ndarray list</strong> :</p>
+<blockquote class="last">
+<div><p>A list containing the shapes obtained at each fitting iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.view_final_fitting">
+<tt class="descname">view_final_fitting</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.view_final_fitting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.view_final_fitting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the final fitting result.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.view_ground_truth">
+<tt class="descname">view_ground_truth</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.view_ground_truth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.view_ground_truth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the ground truth annotation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResult.view_initialization">
+<tt class="descname">view_initialization</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResult.view_initialization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResult.view_initialization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the initialization from which the fitting started.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">NonParametricFittingResult</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>shape=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.fittingresult.FittingResult" title="menpo.fit.fittingresult.FittingResult"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.fittingresult.FittingResult</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>shape=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.final_cost">
+<tt class="descname">final_cost</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.final_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.final_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the cost function at the final iteration.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.fitted">
+<tt class="descname">fitted</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.fitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the fitting procedure has been completed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.gt_shape">
+<tt class="descname">gt_shape</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.gt_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.gt_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the original ground truth shape associated to the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.initial_cost">
+<tt class="descname">initial_cost</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.initial_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.initial_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the cost function at the first iteration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.NonParametricFittingResult.plot_cost">
+<tt class="descname">plot_cost</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#NonParametricFittingResult.plot_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.NonParametricFittingResult.plot_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the cost evolution throughout the fitting.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">SemiParametricFittingResult</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>parameters=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.fittingresult.NonParametricFittingResult" title="menpo.fit.fittingresult.NonParametricFittingResult"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.fittingresult.NonParametricFittingResult</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image</em>, <em>fitter</em>, <em>parameters=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.final_transform">
+<tt class="descname">final_transform</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.final_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.final_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the final transform.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.fitted">
+<tt class="descname">fitted</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.fitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the fitting procedure has been completed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.gt_shape">
+<tt class="descname">gt_shape</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.gt_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.gt_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the original ground truth shape associated to the image.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.initial_transform">
+<tt class="descname">initial_transform</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.initial_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.initial_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the initial transform from which the fitting started.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.residual">
+<tt class="descname">residual</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.residual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type of residual used by the basic fitter.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.SemiParametricFittingResult.transforms">
+<tt class="descname">transforms</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#SemiParametricFittingResult.transforms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.SemiParametricFittingResult.transforms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the transforms obtained at each fitting
+iteration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">ParametricFittingResult</tt><big>(</big><em>image</em>, <em>lk</em>, <em>parameters=None</em>, <em>weights=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.fittingresult.SemiParametricFittingResult" title="menpo.fit.fittingresult.SemiParametricFittingResult"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.fittingresult.SemiParametricFittingResult</span></tt></a></p>
+<p>Object that holds the state of a lucas-kanade object before, during
+and after it has fitted a particular image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image: :class:`menpo.image.masked.MaskedImage`</strong> :</p>
+<blockquote>
+<div><p>The fitted image.</p>
+</div></blockquote>
+<p><strong>lk: :class:`menpo.aam.fitter.BasicFitter`</strong> :</p>
+<blockquote>
+<div><p>The fitter object used to fitter the image.</p>
+</div></blockquote>
+<p><strong>weights: ndarray list</strong> :</p>
+<blockquote>
+<div><p>A list containing the weights of the lk object transform per
+fitting iteration.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>weights: ndarray list</strong> :</p>
+<blockquote>
+<div><p>A list containing the weights of the lk appearance model
+per fitting iteration. Note that, some lk objects do not explicitly
+recover the weights of the appearance model; in this cases
+weights is None.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>costs: ndarray list</strong> :</p>
+<blockquote>
+<div><p>A list containing the values of the cost function optimized by the
+lk object per fitting iteration.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>error_type: &#8216;me_norm&#8217;, &#8216;me&#8217; or &#8216;rmse&#8217;, optional.</strong> :</p>
+<blockquote class="last">
+<div><p>Specifies the way in which the error between the fitted and
+ground truth shapes is to be computed.</p>
+<p>Default: &#8216;me_norm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image</em>, <em>lk</em>, <em>parameters=None</em>, <em>weights=None</em>, <em>costs=None</em>, <em>gt_shape=None</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.appearance_reconstructions">
+<tt class="descname">appearance_reconstructions</tt><big>(</big><em>as_pixels=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.appearance_reconstructions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.appearance_reconstructions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the appearance reconstruction obtained at
+each fitting iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>as_pixels: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the result is returned as a list of Images or ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>appearance_reconstructions: :class:`menpo.image.masked.MaskedImage`</strong> :</p>
+<blockquote class="last">
+<div><blockquote>
+<div><p>or ndarray list</p>
+</div></blockquote>
+<p>A list containing the appearance reconstructions obtained at each
+fitting iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.fitted">
+<tt class="descname">fitted</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.fitted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.fitted" title="Permalink to this definition">¶</a></dt>
+<dd><p>True iff the fitting procedure has been completed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.view_appearance_reconstructions">
+<tt class="descname">view_appearance_reconstructions</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.view_appearance_reconstructions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.view_appearance_reconstructions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the appearance recontructions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.view_error_images">
+<tt class="descname">view_error_images</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.view_error_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.view_error_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the error images.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.view_warped_images">
+<tt class="descname">view_warped_images</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>channels=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.view_warped_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.view_warped_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the warped images.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.ParametricFittingResult.warped_images">
+<tt class="descname">warped_images</tt><big>(</big><em>as_pixels=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#ParametricFittingResult.warped_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.ParametricFittingResult.warped_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a list containing the warped images obtained at each fitting
+iteration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>as_pixels: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>Whether the result is returned as a list of Images or ndarrays.</p>
+<p>Default: False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>warped_images: :class:`menpo.image.masked.MaskedImage` or ndarray list</strong> :</p>
+<blockquote class="last">
+<div><p>A list containing the warped images obtained at each fitting
+iteration.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.fittingresult.FittingResultList">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">FittingResultList</tt><big>(</big><em>fittings</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">list</span></tt>, <a class="reference internal" href="menpo.visualize.base.html#menpo.visualize.base.Viewable" title="menpo.visualize.base.Viewable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.visualize.base.Viewable</span></tt></a></p>
+<p>Enhanced list of <tt class="xref py py-class docutils literal"><span class="pre">menpo.fitter.fitting.FittingResults</span></tt> objects. It
+implements a series of methods that facilitate the generation of global
+fitting results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fittings: :class:`menpo.fitter.fitting.FittingResults`</strong> :</p>
+<blockquote>
+<div><p>A list of FittingResult objects.</p>
+</div></blockquote>
+<p><strong>error_type: &#8216;me_norm&#8217;, &#8216;me&#8217; or &#8216;rmse&#8217;, optional.</strong> :</p>
+<blockquote class="last">
+<div><p>Specifies the way in which the error between the fitted and
+ground truth shapes is to be computed.</p>
+<p>Default: &#8216;me_norm&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResultList.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>fittings</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.algorithm">
+<tt class="descname">algorithm</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.algorithm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of the fitting algorithm used by the fitter object
+associated to the fitting objects.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.convergence">
+<tt class="descname">convergence</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.convergence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.convergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the percentage of fitting objects that converged. A fitting
+object is considered to have converged if the final fitting error is
+smaller than the initial one.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.error_type">
+<tt class="descname">error_type</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.error_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.error_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type of error.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.final_cumulative_error_dist">
+<tt class="descname">final_cumulative_error_dist</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.final_cumulative_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.final_cumulative_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the final cumulative error distribution among all fitting
+objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ced: ndarray</strong> :</p>
+<blockquote>
+<div><p>The final cumulative error distribution among all fitting objects
+within the interval [0, self._error_stop]</p>
+</div></blockquote>
+<p><strong>x_axis: ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The interval [0, self._error_stop]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.final_error">
+<tt class="descname">final_error</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.final_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.final_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a ndarray containing the final error of each fitting object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.final_error_dist">
+<tt class="descname">final_error_dist</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.final_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.final_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the final error distribution among all fitting objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ed: ndarray</strong> :</p>
+<blockquote>
+<div><p>The final error distribution among all fitting objects within
+the interval [0, self._error_stop]</p>
+</div></blockquote>
+<p><strong>x_axis: ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The interval [0, self._error_stop]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.initial_cumulative_error_dist">
+<tt class="descname">initial_cumulative_error_dist</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.initial_cumulative_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.initial_cumulative_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the initial cumulative error distribution among all fitting
+objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ced: ndarray</strong> :</p>
+<blockquote>
+<div><p>The initial cumulative error distribution among all fitting
+objects within the interval [0, self._error_stop]</p>
+</div></blockquote>
+<p><strong>x_axis: ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The interval [0, self._error_stop]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.initial_error">
+<tt class="descname">initial_error</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.initial_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.initial_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a ndarray containing the initial error of each fitting object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.initial_error_dist">
+<tt class="descname">initial_error_dist</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.initial_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.initial_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the initial error distribution among all fitting objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ed: ndarray</strong> :</p>
+<blockquote>
+<div><p>The initial error distribution among all fitting objects within
+the interval [0, self._error_stop]</p>
+</div></blockquote>
+<p><strong>x_axis: ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The interval [0, self._error_stop]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fit.fittingresult.FittingResultList.n_fittings">
+<tt class="descname">n_fittings</tt><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.n_fittings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.n_fittings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total number of fitting, i.e. the length of the list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResultList.plot_cumulative_error_dist">
+<tt class="descname">plot_cumulative_error_dist</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.plot_cumulative_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.plot_cumulative_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the final and initial cumulative error distributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResultList.plot_error_dist">
+<tt class="descname">plot_error_dist</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.plot_error_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.plot_error_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the final and initial error distributions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResultList.view_final_fitting">
+<tt class="descname">view_final_fitting</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.view_final_fitting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.view_final_fitting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the final fitting result obtained by each fitting object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.fittingresult.FittingResultList.view_initialization">
+<tt class="descname">view_initialization</tt><big>(</big><em>figure_id=None</em>, <em>new_figure=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#FittingResultList.view_initialization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.FittingResultList.view_initialization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the initialization used by each fitting object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.fittingresult.TrackingResultList">
+<em class="property">class </em><tt class="descclassname">menpo.fit.fittingresult.</tt><tt class="descname">TrackingResultList</tt><big>(</big><em>fittings</em>, <em>error_type='me_norm'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/fittingresult.html#TrackingResultList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.fittingresult.TrackingResultList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.fittingresult.FittingResultList" title="menpo.fit.fittingresult.FittingResultList"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.fittingresult.FittingResultList</span></tt></a></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">fit.fittingresult</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">6 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.fit.fittingresult.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

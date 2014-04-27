@@ -1,0 +1,886 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.io.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.io.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">menpo</span> <span class="kn">import</span> <span class="n">menpo_src_dir_path</span>
+<span class="kn">from</span> <span class="nn">menpo.exception</span> <span class="kn">import</span> <span class="n">DimensionalityError</span>
+
+
+<div class="viewcode-block" id="data_dir_path"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.data_dir_path">[docs]</a><span class="k">def</span> <span class="nf">data_dir_path</span><span class="p">():</span>
+    <span class="sd">r&quot;&quot;&quot;A path to the Menpo built in ./data folder on this machine.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    string</span>
+<span class="sd">        The path to the local Menpo ./data folder</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">menpo_src_dir_path</span><span class="p">(),</span> <span class="s">&#39;data&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="data_path_to"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.data_path_to">[docs]</a><span class="k">def</span> <span class="nf">data_path_to</span><span class="p">(</span><span class="n">asset_filename</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;The path to a builtin asset in the ./data folder on this machine.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    asset_filename : string</span>
+<span class="sd">        The filename (with extension) of a file builtin to Menpo. The full</span>
+<span class="sd">        set of allowed names is given by :func:`ls_builtin_assets()`</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    string</span>
+<span class="sd">        The path to a given asset in the ./data folder</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the asset_filename doesn&#39;t exist in the ./data folder.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">asset_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir_path</span><span class="p">(),</span> <span class="n">asset_filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">asset_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;{} is not a builtin asset: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">asset_filename</span><span class="p">,</span> <span class="n">ls_builtin_assets</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">asset_path</span>
+
+</div>
+<div class="viewcode-block" id="import_auto"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_auto">[docs]</a><span class="k">def</span> <span class="nf">import_auto</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">max_meshes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">max_images</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Smart mixed asset import generator.</span>
+
+<span class="sd">    Makes it&#39;s best effort to import and attach relevant related</span>
+<span class="sd">    information such as landmarks. It searches the directory for files that</span>
+<span class="sd">    begin with the same filename and end in a supported extension.</span>
+<span class="sd">    Furthermore, this method attempts to handle mixed assets (e.g. textured</span>
+<span class="sd">    meshes in the same folder as images) without &#39;double importing&#39; anything.</span>
+
+<span class="sd">    Note that this is a generator function. This allows for pre-processing</span>
+<span class="sd">    of data to take place as data is imported (e.g. cropping images to</span>
+<span class="sd">    landmarks as they are imported for memory efficiency).</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pattern : String</span>
+<span class="sd">        The glob path pattern to search for textures and meshes.</span>
+<span class="sd">    max_meshes: positive integer, optional</span>
+<span class="sd">        If not ``None``, only import the first max_mesh meshes found. Else,</span>
+<span class="sd">        import all.</span>
+
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    max_images: positive integer, optional</span>
+<span class="sd">        If not ``None``, only import the first max_images found. Else,</span>
+<span class="sd">        import all.</span>
+
+<span class="sd">        Default: ``None``</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    asset</span>
+<span class="sd">        Assets found to match the glob pattern provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Import all meshes that have file extension ``.obj``:</span>
+
+<span class="sd">        &gt;&gt;&gt; meshes = list(import_auto(&#39;*.obj&#39;))</span>
+
+<span class="sd">    (note the cast to a list as auto_import is a generator and we want to</span>
+<span class="sd">    exhaust it&#39;s values)</span>
+
+<span class="sd">    Look for all files that begin with the string ``test``:</span>
+
+<span class="sd">        &gt;&gt;&gt; test_images = list(import_auto(&#39;test.*&#39;))</span>
+
+<span class="sd">    Assuming that in the current directory that are two files, ``bunny.obj``</span>
+<span class="sd">    and ``bunny.pts``, which represent a mesh and it&#39;s landmarks, calling</span>
+
+<span class="sd">        &gt;&gt;&gt; bunny = list(import_auto(&#39;bunny.obj&#39;))</span>
+
+<span class="sd">    Will create a mesh object that **includes** the landmarks automatically.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">texture_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># MESHES</span>
+    <span class="c">#  find all meshes that we can import</span>
+    <span class="n">mesh_paths</span> <span class="o">=</span> <span class="n">_glob_matching_extension</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">mesh_types</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_meshes</span><span class="p">:</span>
+        <span class="n">mesh_paths</span> <span class="o">=</span> <span class="n">mesh_paths</span><span class="p">[:</span><span class="n">max_meshes</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">mesh_i</span> <span class="ow">in</span> <span class="n">_multi_import_generator</span><span class="p">(</span><span class="n">mesh_paths</span><span class="p">,</span> <span class="n">mesh_types</span><span class="p">,</span>
+                                                <span class="n">keep_importers</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="c"># need to keep track of texture images to not double import</span>
+        <span class="k">if</span> <span class="n">mesh_i</span><span class="o">.</span><span class="n">texture_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">texture_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh_i</span><span class="o">.</span><span class="n">texture_path</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">mesh</span>
+
+    <span class="c"># IMAGES</span>
+    <span class="c"># find all images that we can import</span>
+    <span class="n">image_files</span> <span class="o">=</span> <span class="n">_glob_matching_extension</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">all_image_types</span><span class="p">)</span>
+    <span class="n">image_files</span> <span class="o">=</span> <span class="n">_images_unrelated_to_meshes</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span>
+                                              <span class="n">texture_paths</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_images</span><span class="p">:</span>
+        <span class="n">image_files</span> <span class="o">=</span> <span class="n">image_files</span><span class="p">[:</span><span class="n">max_images</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">_multi_import_generator</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span> <span class="n">all_image_types</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">image</span>
+
+</div>
+<div class="viewcode-block" id="import_image"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_image">[docs]</a><span class="k">def</span> <span class="nf">import_image</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Single image (and associated landmarks) importer.</span>
+
+<span class="sd">    Iff an image file is found at `filepath`, returns a :class:`menpo.image</span>
+<span class="sd">    .MaskedImage` representing it. Landmark files sharing the same filename</span>
+<span class="sd">    will be imported and attached too. If the image defines a mask,</span>
+<span class="sd">    this mask will be imported.</span>
+
+<span class="sd">    This method is valid for both traditional images and spatial image types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : String</span>
+<span class="sd">        A relative or absolute filepath to an image file.</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for the</span>
+<span class="sd">        image. The function should take one argument (the image itself) and</span>
+<span class="sd">        return a dictionary of the form {&#39;group_name&#39;: &#39;landmark_filepath&#39;}</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`menpo.image.Image`</span>
+<span class="sd">        An instantiated image class built from the image file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_import</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">all_image_types</span><span class="p">,</span> <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                   <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="import_mesh"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_mesh">[docs]</a><span class="k">def</span> <span class="nf">import_mesh</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">texture</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Single mesh (and associated landmarks and texture) importer.</span>
+
+<span class="sd">    Iff an mesh file is found at `filepath`, returns a :class:`menpo.shape</span>
+<span class="sd">    .TriMesh` representing it. Landmark files sharing the same filename</span>
+<span class="sd">    will be imported and attached too. If texture coordinates and a suitable</span>
+<span class="sd">    texture are found the object returned will be a :class:`menpo.shape</span>
+<span class="sd">    .TexturedTriMesh`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : String</span>
+<span class="sd">        A relative or absolute filepath to an image file.</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for the</span>
+<span class="sd">        mesh. The function should take one argument (the mesh itself) and</span>
+<span class="sd">        provide a string or list of strings detailing the landmarks to be</span>
+<span class="sd">        imported.</span>
+
+<span class="sd">    texture: Boolean, optional</span>
+<span class="sd">        If False, don&#39;t search for textures.</span>
+
+<span class="sd">        Default: True</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`menpo.shape.TriMesh`</span>
+<span class="sd">        An instantiated trimesh (or textured trimesh) file object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;texture&#39;</span><span class="p">:</span> <span class="n">texture</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">_import</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">mesh_types</span><span class="p">,</span> <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                   <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">,</span> <span class="n">importer_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="import_landmark_file"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_landmark_file">[docs]</a><span class="k">def</span> <span class="nf">import_landmark_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Single landmark group importer.</span>
+
+<span class="sd">    Iff an landmark file is found at `filepath`, returns a :class:`menpo</span>
+<span class="sd">    .landmarks.LandmarkGroup` representing it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : String</span>
+<span class="sd">        A relative or absolute filepath to an landmark file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`menpo.shape.LandmarkGroup`</span>
+<span class="sd">        The LandmarkGroup that the file format represents.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_import</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">all_landmark_types</span><span class="p">,</span> <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="import_images"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_images">[docs]</a><span class="k">def</span> <span class="nf">import_images</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">max_images</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Multiple image import generator.</span>
+
+<span class="sd">    Makes it&#39;s best effort to import and attach relevant related</span>
+<span class="sd">    information such as landmarks. It searches the directory for files that</span>
+<span class="sd">    begin with the same filename and end in a supported extension.</span>
+
+<span class="sd">    Note that this is a generator function. This allows for pre-processing</span>
+<span class="sd">    of data to take place as data is imported (e.g. cropping images to</span>
+<span class="sd">    landmarks as they are imported for memory efficiency).</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pattern : String</span>
+<span class="sd">        The glob path pattern to search for images.</span>
+<span class="sd">    max_images: positive integer, optional</span>
+<span class="sd">        If not ``None``, only import the first max_images found. Else,</span>
+<span class="sd">        import all.</span>
+
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for each</span>
+<span class="sd">        image. The function should take one argument (an image itself) and</span>
+<span class="sd">        return a dictionary of the form {&#39;group_name&#39;: &#39;landmark_filepath&#39;}</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.image.MaskedImage`</span>
+<span class="sd">        Images found to match the glob pattern provided.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Import crops of the top 100 square pixels from a huge collection of images</span>
+
+<span class="sd">        &gt;&gt;&gt; images = []</span>
+<span class="sd">        &gt;&gt;&gt; for im in import_images(&#39;./massive_image_db/*&#39;):</span>
+<span class="sd">        &gt;&gt;&gt;    im.crop((0, 0), (100, 100))  # crop to a sensible size as we go</span>
+<span class="sd">        &gt;&gt;&gt;    images.append(im)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">_import_glob_generator</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">all_image_types</span><span class="p">,</span>
+                                        <span class="n">max_assets</span><span class="o">=</span><span class="n">max_images</span><span class="p">,</span>
+                                        <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                        <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">asset</span>
+
+</div>
+<div class="viewcode-block" id="import_meshes"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_meshes">[docs]</a><span class="k">def</span> <span class="nf">import_meshes</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">max_meshes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">textures</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Multiple mesh import generator.</span>
+
+<span class="sd">    Makes it&#39;s best effort to import and attach relevant related</span>
+<span class="sd">    information such as landmarks. It searches the directory for files that</span>
+<span class="sd">    begin with the same filename and end in a supported extension.</span>
+
+<span class="sd">    If texture coordinates and a suitable texture are found the object</span>
+<span class="sd">    returned will be a :class:`menpo.shape.TexturedTriMesh`.</span>
+
+<span class="sd">    Note that this is a generator function. This allows for pre-processing</span>
+<span class="sd">    of data to take place as data is imported (e.g. cleaning meshes</span>
+<span class="sd">    as they are imported for memory efficiency).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pattern : String</span>
+<span class="sd">        The glob path pattern to search for textures and meshes.</span>
+<span class="sd">    max_meshes: positive integer, optional</span>
+<span class="sd">        If not ``None``, only import the first max_mesh meshes found. Else,</span>
+<span class="sd">        import all.</span>
+
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for each</span>
+<span class="sd">        mesh. The function should take one argument (a mesh itself) and</span>
+<span class="sd">        return a dictionary of the form {&#39;group_name&#39;: &#39;landmark_filepath&#39;}</span>
+<span class="sd">    texture: Boolean, optional</span>
+<span class="sd">        If False, don&#39;t search for textures.</span>
+
+<span class="sd">        Default: True</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.shape.TriMesh` or :class:`menpo.shape.TexturedTriMesh`</span>
+<span class="sd">        Meshes found to match the glob pattern provided.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;texture&#39;</span><span class="p">:</span> <span class="n">textures</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">_import_glob_generator</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">mesh_types</span><span class="p">,</span>
+                                        <span class="n">max_assets</span><span class="o">=</span><span class="n">max_meshes</span><span class="p">,</span>
+                                        <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                        <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">,</span>
+                                        <span class="n">importer_kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">asset</span>
+
+</div>
+<div class="viewcode-block" id="import_landmark_files"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_landmark_files">[docs]</a><span class="k">def</span> <span class="nf">import_landmark_files</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">max_landmarks</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Multiple landmark file import generator.</span>
+
+<span class="sd">    Note that this is a generator function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pattern : String</span>
+<span class="sd">        The glob path pattern to search for images.</span>
+<span class="sd">    max_landmark_files: positive integer, optional</span>
+<span class="sd">        If not ``None``, only import the first max_landmark_files found. Else,</span>
+<span class="sd">        import all.</span>
+
+<span class="sd">        Default: ``None``</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.LandmarkGroup`</span>
+<span class="sd">        Landmark found to match the glob pattern provided.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">_import_glob_generator</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">all_landmark_types</span><span class="p">,</span>
+                                        <span class="n">max_assets</span><span class="o">=</span><span class="n">max_landmarks</span><span class="p">,</span>
+                                        <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">asset</span>
+
+</div>
+<div class="viewcode-block" id="import_builtin_asset"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.import_builtin_asset">[docs]</a><span class="k">def</span> <span class="nf">import_builtin_asset</span><span class="p">(</span><span class="n">asset_name</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Single builtin asset (mesh or image) importer.</span>
+
+<span class="sd">    Imports the relevant builtin asset from the ./data directory that</span>
+<span class="sd">    ships with Menpo.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    asset_name : String</span>
+<span class="sd">        The filename of a builtin asset (see :func:`ls_ls_builtin_assets()`</span>
+<span class="sd">        for allowed values)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    asset</span>
+<span class="sd">        An instantiated asset (mesh, trimesh, or image)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">asset_path</span> <span class="o">=</span> <span class="n">data_path_to</span><span class="p">(</span><span class="n">asset_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_import</span><span class="p">(</span><span class="n">asset_path</span><span class="p">,</span> <span class="n">all_mesh_and_image_types</span><span class="p">,</span> <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ls_builtin_assets"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.ls_builtin_assets">[docs]</a><span class="k">def</span> <span class="nf">ls_builtin_assets</span><span class="p">():</span>
+    <span class="sd">r&quot;&quot;&quot;List all the builtin asset examples provided in Menpo.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of strings</span>
+<span class="sd">        Filenames of all assets in the data directory shipped with Menpo</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_dir_path</span><span class="p">())</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_import_glob_generator</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">extension_map</span><span class="p">,</span> <span class="n">max_assets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                           <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                           <span class="n">importer_kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">filepaths</span> <span class="o">=</span> <span class="n">_glob_matching_extension</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">extension_map</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_assets</span><span class="p">:</span>
+        <span class="n">filepaths</span> <span class="o">=</span> <span class="n">filepaths</span><span class="p">[:</span><span class="n">max_assets</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">_multi_import_generator</span><span class="p">(</span><span class="n">filepaths</span><span class="p">,</span> <span class="n">extension_map</span><span class="p">,</span>
+                                         <span class="n">has_landmarks</span><span class="o">=</span><span class="n">has_landmarks</span><span class="p">,</span>
+                                         <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">,</span>
+                                         <span class="n">importer_kwargs</span><span class="o">=</span><span class="n">importer_kwargs</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">asset</span>
+
+
+<span class="k">def</span> <span class="nf">_import</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">,</span> <span class="n">keep_importer</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">importer_kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Creates an importer for the filepath passed in, and then calls build on</span>
+<span class="sd">    it, returning a list of assets or a single asset, depending on the</span>
+<span class="sd">    file type.</span>
+
+<span class="sd">    The type of assets returned are specified by the ``extensions_map``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        The filepath to import</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        non-instantiated classes. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+<span class="sd">    keep_importer : bool, optional</span>
+<span class="sd">        If ``True``, return the :class:`menpo.io.base.Importer` for each mesh</span>
+<span class="sd">        as well as the meshes.</span>
+<span class="sd">    has_landmarks : bool, optional</span>
+<span class="sd">        If `True`, an attempt will be made to find relevant landmarks.</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for each</span>
+<span class="sd">        asset. The function should take one argument (the asset itself) and</span>
+<span class="sd">        return a dictionary of the form {&#39;group_name&#39;: &#39;landmark_filepath&#39;}</span>
+<span class="sd">    asset: object, optional</span>
+<span class="sd">        If not None, the asset will be passed to the importer&#39;s build method</span>
+<span class="sd">        as the asset kwarg</span>
+<span class="sd">    importer_kwargs: dict, optional:</span>
+<span class="sd">        kwargs that will be supplied to the importer if not None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    assets : list of assets or tuple of (assets, [:class:`menpo.io.base</span>
+<span class="sd">    .Importer`])</span>
+<span class="sd">        The asset or list of assets found in the filepath. If</span>
+<span class="sd">        `keep_importers` is `True` then the importer is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">_norm_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;{} is not a file&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+    <span class="c"># below could raise ValueError as well...</span>
+    <span class="n">importer</span> <span class="o">=</span> <span class="n">map_filepath_to_importer</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">,</span>
+                                        <span class="n">importer_kwargs</span><span class="o">=</span><span class="n">importer_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">asset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">built_objects</span> <span class="o">=</span> <span class="n">importer</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">asset</span><span class="o">=</span><span class="n">asset</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">built_objects</span> <span class="o">=</span> <span class="n">importer</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="c"># landmarks are iterable so check for list precisely</span>
+    <span class="n">ioinfo</span> <span class="o">=</span> <span class="n">importer</span><span class="o">.</span><span class="n">build_ioinfo</span><span class="p">()</span>
+    <span class="c"># enforce a list to make processing consistent</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">built_objects</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">built_objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">built_objects</span><span class="p">]</span>
+
+    <span class="c"># attach ioinfo</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">built_objects</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">ioinfo</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">ioinfo</span><span class="p">)</span>
+
+    <span class="c"># handle landmarks</span>
+    <span class="k">if</span> <span class="n">has_landmarks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">landmark_resolver</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># user isn&#39;t customising how landmarks are found.</span>
+            <span class="n">lm_pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ioinfo</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="n">ioinfo</span><span class="o">.</span><span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.*&#39;</span><span class="p">)</span>
+            <span class="c"># find all the landmarks we can</span>
+            <span class="n">lms_paths</span> <span class="o">=</span> <span class="n">_glob_matching_extension</span><span class="p">(</span><span class="n">lm_pattern</span><span class="p">,</span> <span class="n">all_landmark_types</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">lm_path</span> <span class="ow">in</span> <span class="n">lms_paths</span><span class="p">:</span>
+                <span class="c"># manually trigger _import (so we can set the asset!)</span>
+                <span class="n">lms</span> <span class="o">=</span> <span class="n">_import</span><span class="p">(</span><span class="n">lm_path</span><span class="p">,</span> <span class="n">all_landmark_types</span><span class="p">,</span> <span class="n">keep_importer</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                              <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="n">asset</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">built_objects</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">x</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">lms</span><span class="o">.</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">lms</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">DimensionalityError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">built_objects</span><span class="p">:</span>
+                <span class="n">lm_paths</span> <span class="o">=</span> <span class="n">landmark_resolver</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c"># use the users fcn to find</span>
+                <span class="c"># paths</span>
+                <span class="k">if</span> <span class="n">lm_paths</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">lm_path</span> <span class="ow">in</span> <span class="n">lm_paths</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="n">lms</span> <span class="o">=</span> <span class="n">import_landmark_file</span><span class="p">(</span><span class="n">lm_path</span><span class="p">)</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lms</span>
+
+    <span class="c"># undo list-if-cation (if we added it!)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">built_objects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">built_objects</span> <span class="o">=</span> <span class="n">built_objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">keep_importer</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">built_objects</span><span class="p">,</span> <span class="n">importer</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">built_objects</span>
+
+
+<span class="k">def</span> <span class="nf">_multi_import_generator</span><span class="p">(</span><span class="n">filepaths</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">,</span> <span class="n">keep_importers</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                            <span class="n">has_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">landmark_resolver</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                            <span class="n">importer_kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Generator yielding assets from the filepaths provided.</span>
+
+<span class="sd">    Note that if a single file yields multiple assets, each is yielded in</span>
+<span class="sd">    turn (this function will never yield an iterable of assets in one go).</span>
+<span class="sd">    Assets are yielded in alphabetical order from the filepaths provided.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepaths : list of strings</span>
+<span class="sd">        The filepaths to import. Assets are imported in alphabetical order</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        non-instantiated classes. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+<span class="sd">    keep_importers : bool, optional</span>
+<span class="sd">        If ``True``, return the :class:`menpo.io.base.Importer` for each mesh</span>
+<span class="sd">        as well as the meshes.</span>
+<span class="sd">    has_landmarks : bool, optional</span>
+<span class="sd">        If `True`, an attempt will be made to find relevant landmarks.</span>
+<span class="sd">    landmark_resolver: function, optional</span>
+<span class="sd">        If not None, this function will be used to find landmarks for each</span>
+<span class="sd">        asset. The function should take one argument (the asset itself) and</span>
+<span class="sd">        return a dictionary of the form {&#39;group_name&#39;: &#39;landmark_filepath&#39;}</span>
+<span class="sd">    importer_kwargs: dict, optional</span>
+<span class="sd">        kwargs to be supplied to the importer if not None</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    asset :</span>
+<span class="sd">        An asset found at one of the filepaths.</span>
+<span class="sd">    importer: :class:`menpo.io.base.Importer`</span>
+<span class="sd">        Only if ``keep_importers`` is ``True``. The importer used for the</span>
+<span class="sd">        yielded asset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">importer</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filepaths</span><span class="p">):</span>
+        <span class="n">imported</span> <span class="o">=</span> <span class="n">_import</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">,</span> <span class="n">keep_importer</span><span class="o">=</span><span class="n">keep_importers</span><span class="p">,</span>
+                           <span class="n">has_landmarks</span><span class="o">=</span><span class="n">has_landmarks</span><span class="p">,</span>
+                           <span class="n">landmark_resolver</span><span class="o">=</span><span class="n">landmark_resolver</span><span class="p">,</span>
+                           <span class="n">importer_kwargs</span><span class="o">=</span><span class="n">importer_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keep_importers</span><span class="p">:</span>
+            <span class="n">assets</span><span class="p">,</span> <span class="n">importer</span> <span class="o">=</span> <span class="n">imported</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">assets</span> <span class="o">=</span> <span class="n">imported</span>
+        <span class="c"># could be that there are many assets returned from one file.</span>
+        <span class="c"># landmarks are iterable so check for list precisely</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">assets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c"># there are multiple assets, and one importer.</span>
+            <span class="c"># -&gt; yield each asset in turn with the shared importer (if</span>
+            <span class="c"># requested)</span>
+            <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">keep_importers</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">asset</span><span class="p">,</span> <span class="n">importer</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">asset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># assets is a single item. Rather than checking (again! for</span>
+            <span class="c"># importers, just yield the imported tuple</span>
+            <span class="k">yield</span> <span class="n">imported</span>
+
+
+<span class="k">def</span> <span class="nf">_glob_matching_extension</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Filters the results from the glob pattern passed in to only those files</span>
+<span class="sd">    that have an importer given in ``extensions_map``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pattern : string</span>
+<span class="sd">        A UNIX style glob pattern to match against.</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        non-instantiated classes. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filepaths : list of string</span>
+<span class="sd">        The list of filepaths that have valid extensions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">_norm_path</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="n">exts</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">ext</span> <span class="ow">in</span> <span class="n">extensions_map</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">exts</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">does_match</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">matches</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">does_match</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="map_filepath_to_importer"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.map_filepath_to_importer">[docs]</a><span class="k">def</span> <span class="nf">map_filepath_to_importer</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">,</span> <span class="n">importer_kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Given a filepath, return the appropriate importer as mapped by the</span>
+<span class="sd">    extension map.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        The filepath to get importers for</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        a subclass of :class:`Importer`. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+<span class="sd">    importer_kwargs: dictionary, optional</span>
+<span class="sd">        kwargs that will be supplied to the importer if not None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    importer: :class:`menpo.io.base.Importer` instance</span>
+<span class="sd">        Importer as found in the ``extensions_map`` instantiated for the</span>
+<span class="sd">        filepath provided.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">importer_type</span> <span class="o">=</span> <span class="n">extensions_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">importer_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;{} does not have a suitable importer.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">importer_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">importer_type</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">importer_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">importer_type</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="find_extensions_from_basename"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.find_extensions_from_basename">[docs]</a><span class="k">def</span> <span class="nf">find_extensions_from_basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Given a filepath, find all the files that share the same name.</span>
+
+<span class="sd">    Can be used to find all potential matching images and landmark files for a</span>
+<span class="sd">    given mesh for instance.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        An absolute filepath</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    files : list of strings</span>
+<span class="sd">        A list of absolute filepaths to files that share the same basename</span>
+<span class="sd">        as filepath. These files are found using ``glob``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;*&#39;</span>
+    <span class="n">basepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span> <span class="n">basename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">glob</span><span class="p">(</span><span class="n">basepath</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="filter_extensions"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.filter_extensions">[docs]</a><span class="k">def</span> <span class="nf">filter_extensions</span><span class="p">(</span><span class="n">filepaths</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Given a set of filepaths, filter the files who&#39;s extensions are in the</span>
+<span class="sd">    given map. This is used to find images and landmarks from a given basename.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepaths : list of strings</span>
+<span class="sd">        A list of absolute filepaths</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        non-instantiated classes. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    basenames : list of strings</span>
+<span class="sd">        A list of basenames</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">extensions</span> <span class="o">=</span> <span class="n">extensions_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filepaths</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">extensions</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="find_alternative_files"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.find_alternative_files">[docs]</a><span class="k">def</span> <span class="nf">find_alternative_files</span><span class="p">(</span><span class="n">file_type</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Given a filepath, search for files with the same basename that match</span>
+<span class="sd">    a given extension type, eg images. If more than one file is found, an error</span>
+<span class="sd">    is printed and the first such basename is returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_type : string</span>
+<span class="sd">        The type of file being found. Used for the error outputs.</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        An absolute filepath</span>
+<span class="sd">    extensions_map : dictionary (String, :class:`menpo.io.base.Importer`)</span>
+<span class="sd">        A map from extensions to importers. The importers are expected to be</span>
+<span class="sd">        non-instantiated classes. The extensions are expected to</span>
+<span class="sd">        contain the leading period eg. ``.obj``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    base_name : string</span>
+<span class="sd">        The basename of the file that was found eg ``mesh.bmp``. Only **one**</span>
+<span class="sd">        file is ever returned. If more than one is found, the first is taken.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If no alternative file is found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">all_paths</span> <span class="o">=</span> <span class="n">find_extensions_from_basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">base_names</span> <span class="o">=</span> <span class="n">filter_extensions</span><span class="p">(</span><span class="n">all_paths</span><span class="p">,</span> <span class="n">extensions_map</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Warning: More than one {0} was found: &quot;</span> \
+                  <span class="s">&quot;{1}. Taking the first by default&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                  <span class="n">file_type</span><span class="p">,</span> <span class="n">base_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s">&quot;Failed to find a {0} for {1} from types {2}. &quot;</span>
+                          <span class="s">&quot;Reason: {3}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_type</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span>
+                                               <span class="n">extensions_map</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_images_unrelated_to_meshes</span><span class="p">(</span><span class="n">image_paths</span><span class="p">,</span> <span class="n">mesh_texture_paths</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Find the set of images that do not correspond to textures for the given</span>
+<span class="sd">    meshes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_paths : list of strings</span>
+<span class="sd">        List of absolute filepaths to images</span>
+<span class="sd">    mesh_texture_paths : list of strings</span>
+<span class="sd">        List of absolute filepaths to mesh textures</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    images : list of strings</span>
+<span class="sd">        List of absolute filepaths to images that are unrelated to meshes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">image_paths</span><span class="p">]</span>
+    <span class="n">mesh_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">mesh_texture_paths</span><span class="p">]</span>
+    <span class="n">images_unrelated_to_mesh</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">image_filenames</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">mesh_filenames</span><span class="p">)</span>
+    <span class="n">image_name_to_path</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image_filenames</span><span class="p">,</span> <span class="n">image_paths</span><span class="p">):</span>
+        <span class="n">image_name_to_path</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">image_name_to_path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">images_unrelated_to_mesh</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Importer"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.Importer">[docs]</a><span class="k">class</span> <span class="nc">Importer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract representation of an Importer. Construction of an importer simply</span>
+<span class="sd">    sets the filepaths etc up. To actually import the object and build a valid</span>
+<span class="sd">    representation, the ``build`` method must be called. This allows a set</span>
+<span class="sd">    of importers to be instantiated but the heavy duty importing to happen</span>
+<span class="sd">    separately.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        An absolute filepath</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="Importer.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.Importer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="Importer.build"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.Importer.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Performs the heavy lifting for the importer class. This actually reads</span>
+<span class="sd">        the file in from disk and does any necessary parsing of the data in to</span>
+<span class="sd">        an appropriate format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object : object or list</span>
+<span class="sd">            An instantiated class of the expected type. For example, for an</span>
+<span class="sd">            ``.obj`` importer, this would be a</span>
+<span class="sd">            :class:`menpo.shape.mesh.base.Trimesh`. If multiple objects need</span>
+<span class="sd">            to be returned from one importer, a list must be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">build_ioinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">IOInfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_norm_path</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Uses all the tricks in the book to expand a path out to an absolute one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">filepath</span><span class="p">))))</span>
+
+<span class="c"># Avoid circular imports</span>
+<span class="kn">from</span> <span class="nn">menpo.io.extensions</span> <span class="kn">import</span> <span class="p">(</span><span class="n">mesh_types</span><span class="p">,</span> <span class="n">all_image_types</span><span class="p">,</span>
+                                 <span class="n">all_mesh_and_image_types</span><span class="p">,</span>
+                                 <span class="n">all_landmark_types</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IOInfo"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.IOInfo">[docs]</a><span class="k">class</span> <span class="nc">IOInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Simple state object for recording IO information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="IOInfo.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.base.html#menpo.io.base.IOInfo.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;filename: {}</span><span class="se">\n</span><span class="s">extension: {}</span><span class="se">\n</span><span class="s">dir: {}</span><span class="se">\n</span><span class="s">filepath: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

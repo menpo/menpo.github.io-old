@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.transform.thinplatesplines &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.transform.thinplatesplines</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
+<span class="kn">from</span> <span class="nn">menpo.basis.rbf</span> <span class="kn">import</span> <span class="n">R2LogR2</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">Alignment</span><span class="p">,</span> <span class="n">Invertible</span>
+
+
+<span class="c"># Note we inherit from Alignment first to get it&#39;s n_dims behavior</span>
+<div class="viewcode-block" id="ThinPlateSplines"><a class="viewcode-back" href="../../../api/generated/menpo.transform.thinplatesplines.html#menpo.transform.thinplatesplines.ThinPlateSplines">[docs]</a><span class="k">class</span> <span class="nc">ThinPlateSplines</span><span class="p">(</span><span class="n">Alignment</span><span class="p">,</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">Invertible</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    The thin plate splines (TPS) alignment between 2D source and target</span>
+<span class="sd">    landmarks.</span>
+
+<span class="sd">    `kernel` can be used to specify an alternative kernel function. If</span>
+<span class="sd">    `None` is supplied, the :class:`menpo.basis.rbf.R2LogR2` kernel will be</span>
+<span class="sd">    used.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : (N, 2) ndarray</span>
+<span class="sd">        The source points to apply the tps from</span>
+<span class="sd">    target : (N, 2) ndarray</span>
+<span class="sd">        The target points to apply the tps to</span>
+<span class="sd">    kernel : :class:`menpo.basis.rbf.BasisFunction`, optional</span>
+<span class="sd">        The kernel to apply.</span>
+
+<span class="sd">        Default: :class:`menpo.basis.rbf.R2LogR2`</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        TPS is only with on 2-dimensional data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ThinPlateSplines.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.transform.thinplatesplines.html#menpo.transform.thinplatesplines.ThinPlateSplines.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">Alignment</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;TPS can only be used on 2D data.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kernel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">kernel</span> <span class="o">=</span> <span class="n">R2LogR2</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="n">top_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">bot_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">o</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">top_l</span><span class="p">,</span> <span class="n">bot_l</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_coefficients</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># now the target is updated, we only have to rebuild the</span>
+        <span class="c"># coefficients.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_coefficients</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs a TPS transform on the given points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (N, D) ndarray</span>
+<span class="sd">            The points to transform.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        f : (N, D) ndarray</span>
+<span class="sd">            The transformed points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;TPS can only be applied to 2D data.&#39;</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">][:,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">][:,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="c"># calculate the affine coefficients of the warp</span>
+        <span class="c"># (C = Constant component, then X, Y respectively)</span>
+        <span class="n">c_affine_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">c_affine_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">c_affine_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c"># the affine warp component</span>
+        <span class="n">f_affine</span> <span class="o">=</span> <span class="n">c_affine_c</span> <span class="o">+</span> <span class="n">c_affine_x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c_affine_y</span> <span class="o">*</span> <span class="n">y</span>
+        <span class="c"># calculate a distance matrix (for L2 Norm) between every source</span>
+        <span class="c"># and the target</span>
+        <span class="n">kernel_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c"># grab the affine free components of the warp</span>
+        <span class="n">c_affine_free</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="c"># build the affine free warp component</span>
+        <span class="n">f_affine_free</span> <span class="o">=</span> <span class="n">kernel_dist</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c_affine_free</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f_affine</span> <span class="o">+</span> <span class="n">f_affine_free</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_true_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ThinPlateSplines.jacobian_points"><a class="viewcode-back" href="../../../api/generated/menpo.transform.thinplatesplines.html#menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_points">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the TPS warp wrt to the coordinate system.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (N, D)</span>
+<span class="sd">            Points at which the Jacobian will be evaluated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dx : (N, D, D) ndarray</span>
+<span class="sd">            The Jacobian of the transform wrt the coordinate system in</span>
+<span class="sd">            which the transform is applied. Axis 0: points, Axis 1: direction</span>
+<span class="sd">            of derivative (x or y) Axis 2: Component in which we are</span>
+<span class="sd">            evaluating derivative (x or y)</span>
+
+<span class="sd">            e.g. [7, 0, 1] = derivative wrt x on the y coordinate of the</span>
+<span class="sd">            8th point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dk_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span>   <span class="c"># i</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span>  <span class="c"># k</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>   <span class="c"># l</span>
+        <span class="n">dk_dx</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="n">affine_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                      <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="n">dk_dx</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">affine_derivative</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;ij, ikl -&gt; klj&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">dk_dx</span><span class="p">)</span>
+
+    <span class="c"># TODO: revise me</span></div>
+<div class="viewcode-block" id="ThinPlateSplines.jacobian_source"><a class="viewcode-back" href="../../../api/generated/menpo.transform.thinplatesplines.html#menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_source">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the TPS warp wrt to the source landmark</span>
+<span class="sd">        position.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (N, D)</span>
+<span class="sd">            Points at which the Jacobian will be evaluated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dp : (N, P, D) ndarray</span>
+<span class="sd">            The Jacobian of the transform wrt to the source landmarks evaluated</span>
+<span class="sd">            at the previous points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+        <span class="n">points_pc</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">n_lms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_points</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="n">points_pc</span><span class="o">.</span><span class="n">n_points</span>
+
+        <span class="n">kernel_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">kernel_dist</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">n_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">points</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">inv_L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="n">dL_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_lms</span><span class="p">,))</span>
+        <span class="n">dL_dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_lms</span><span class="p">,))</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">dW_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_pts</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c"># Fix log(0)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_lms</span><span class="p">):</span>
+            <span class="n">dK_dxyi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)))</span>
+            <span class="n">dK_dxyi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">dK_dxyi</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">aux</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="n">dP_dxi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">dP_dyi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">dP_dxi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">dP_dyi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="n">dL_dx</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dK_dxyi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">dL_dx</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dxi</span>
+            <span class="n">dL_dx</span><span class="p">[</span><span class="n">n_lms</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dxi</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="n">dL_dy</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dK_dxyi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">dL_dy</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dyi</span>
+            <span class="n">dL_dy</span><span class="p">[</span><span class="n">n_lms</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dyi</span><span class="o">.</span><span class="n">T</span>
+            <span class="c"># new bit</span>
+            <span class="n">aux3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_pts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">aux3</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">jacobian_points</span><span class="p">(</span><span class="n">points</span><span class="p">)[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">omega_x</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv_L</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dL_dx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_L</span><span class="p">))</span>
+            <span class="n">dW_dx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_x</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+                              <span class="n">aux3</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+            <span class="n">omega_y</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv_L</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dL_dy</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_L</span><span class="p">))</span>
+            <span class="n">dW_dx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_y</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span>
+                              <span class="n">aux3</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coefficients</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">dW_dx</span>
+
+    <span class="c"># TODO: revise this function and try to speed it up!!!</span></div>
+<div class="viewcode-block" id="ThinPlateSplines.weight_points"><a class="viewcode-back" href="../../../api/generated/menpo.transform.thinplatesplines.html#menpo.transform.thinplatesplines.ThinPlateSplines.weight_points">[docs]</a>    <span class="k">def</span> <span class="nf">weight_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the TPS warp wrt to the source landmarks</span>
+<span class="sd">        assuming that he target is equal to the source. This is a special</span>
+<span class="sd">        case of the Jacobian wrt to the source landmarks that is used in AAMs</span>
+<span class="sd">        to weight the relative importance of each pixel in the reference</span>
+<span class="sd">        frame wrt to each one of the source landmarks.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (N, D)</span>
+<span class="sd">            Points at which the Jacobian will be evaluated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dp : (N, P, D) ndarray</span>
+<span class="sd">            The Jacobian of the transform wrt to the source landmarks evaluated</span>
+<span class="sd">            at the previous points and assuming that the target is equal to</span>
+<span class="sd">            the source.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+        <span class="n">points_pc</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">n_lms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_points</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="n">points_pc</span><span class="o">.</span><span class="n">n_points</span>
+
+        <span class="c"># TPS kernel (nonlinear + affine)</span>
+        <span class="n">kernel_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">kernel_dist</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">n_pts</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">points</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">inv_L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="n">dL_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_lms</span><span class="p">,))</span>
+        <span class="n">dL_dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_lms</span><span class="p">,))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">squareform</span><span class="p">(</span><span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+        <span class="n">r</span><span class="p">[</span><span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">aux</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span>
+        <span class="n">dW_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_pts</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">pseudo_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])])</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_lms</span><span class="p">):</span>
+            <span class="n">dK_dxyi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)))</span>
+            <span class="n">dK_dxyi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">dK_dxyi</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">aux</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="n">dP_dxi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">dP_dyi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">dP_dxi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">dP_dyi</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="n">dL_dx</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dK_dxyi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">dL_dx</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dxi</span>
+            <span class="n">dL_dx</span><span class="p">[</span><span class="n">n_lms</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dxi</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="n">dL_dy</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dK_dxyi</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">dL_dy</span><span class="p">[:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">n_lms</span><span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dyi</span>
+            <span class="n">dL_dy</span><span class="p">[</span><span class="n">n_lms</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_lms</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dP_dyi</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="n">omega_x</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv_L</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dL_dx</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_L</span><span class="p">))</span>
+            <span class="n">dW_dx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_x</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pseudo_target</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">omega_y</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv_L</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dL_dy</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inv_L</span><span class="p">))</span>
+            <span class="n">dW_dx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">omega_y</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pseudo_target</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">dW_dx</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

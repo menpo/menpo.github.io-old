@@ -1,0 +1,24 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`base`
+===================
+.. automodule:: menpo.base
+
+.. currentmodule:: menpo.base
+
+2 Classes
+---------
+
+.. autoclass:: Vectorizable
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Targetable
+  :members:
+  :show-inheritance:
+
+1 Function
+----------
+
+.. autofunction:: menpo.base.menpo_src_dir_path
+

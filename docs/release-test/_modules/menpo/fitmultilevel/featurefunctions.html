@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fitmultilevel.featurefunctions &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fitmultilevel.featurefunctions</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="compute_features"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.featurefunctions.html#menpo.fitmultilevel.featurefunctions.compute_features">[docs]</a><span class="k">def</span> <span class="nf">compute_features</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">feature_type</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes a particular feature representation of the given images.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image: :class:`menpo.image.MaskedNDImage`</span>
+<span class="sd">        The original image from which the features will be computed.</span>
+<span class="sd">    feature_type: string or closure</span>
+<span class="sd">        If None, no feature representation will be computed from the</span>
+<span class="sd">        original image.</span>
+<span class="sd">        If string or closure, the feature representation will be computed</span>
+<span class="sd">        in the following way:</span>
+<span class="sd">            If string, the feature representation will be extracted by</span>
+<span class="sd">            executing:</span>
+
+<span class="sd">                feature_image = eval(&#39;img.features.&#39; + feature_type + &#39;()&#39;)</span>
+
+<span class="sd">            For this to work properly feature_type needs to be one of</span>
+<span class="sd">            Menpo&#39;s standard image feature methods. Note that, in this case,</span>
+<span class="sd">            the feature computation will be carried out using its default</span>
+<span class="sd">            options.</span>
+
+<span class="sd">            Non-default feature options and new experimental feature can be</span>
+<span class="sd">            used by defining a closure. In this case, the closure must define a</span>
+<span class="sd">            function that receives as an input an image and returns a</span>
+<span class="sd">            particular feature representation of that image. For example:</span>
+
+<span class="sd">                def igo_double_from_std_normalized_intensities(image)</span>
+<span class="sd">                    image = deepcopy(image)</span>
+<span class="sd">                    image.normalize_std_inplace()</span>
+<span class="sd">                    return image.feature_type.igo(double_angles=True)</span>
+
+<span class="sd">            See `menpo.image.feature.py` for details more details on</span>
+<span class="sd">            Menpo&#39;s standard image features and feature options.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    feature_image: :class:`menpo.image.MaskedNDImage`</span>
+<span class="sd">        The resulting feature image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">feature_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">feature_type</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;image.features.&#39;</span> <span class="o">+</span> <span class="n">feature_type</span> <span class="o">+</span> <span class="s">&#39;()&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">feature_type</span><span class="p">,</span> <span class="s">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">feature_type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;feature_type can only be: (1) None, &quot;</span>
+                             <span class="s">&quot;(2) a string defining one of Menpo&#39;s standard &quot;</span>
+                             <span class="s">&quot;image feature_type (&#39;hog&#39;, &#39;igo&#39;, etc) &quot;</span>
+                             <span class="s">&quot;or (3) a closure defining a non-standard &quot;</span>
+                             <span class="s">&quot;feature computation&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image</span>
+
+</div>
+<div class="viewcode-block" id="sparse_hog"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.featurefunctions.html#menpo.fitmultilevel.featurefunctions.sparse_hog">[docs]</a><span class="k">def</span> <span class="nf">sparse_hog</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">hog</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;sparse&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

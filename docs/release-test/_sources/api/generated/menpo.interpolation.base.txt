@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`interpolation.base`
+=================================
+.. automodule:: menpo.interpolation.base
+
+.. currentmodule:: menpo.interpolation.base
+
+2 Functions
+-----------
+
+.. autofunction:: menpo.interpolation.base.c_interpolation
+
+
+.. autofunction:: menpo.interpolation.base.scipy_interpolation
+

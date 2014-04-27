@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`model.pca`
+========================
+.. automodule:: menpo.model.pca
+
+.. currentmodule:: menpo.model.pca
+
+1 Class
+-------
+
+.. autoclass:: PCAModel
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

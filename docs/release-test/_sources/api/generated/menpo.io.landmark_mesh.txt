@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`io.landmark_mesh`
+===============================
+.. automodule:: menpo.io.landmark_mesh
+
+.. currentmodule:: menpo.io.landmark_mesh
+
+1 Class
+-------
+
+.. autoclass:: MeshPTSImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

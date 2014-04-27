@@ -1,0 +1,43 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.aam.builder`
+========================================
+.. automodule:: menpo.fitmultilevel.aam.builder
+
+.. currentmodule:: menpo.fitmultilevel.aam.builder
+
+4 Classes
+---------
+
+.. autoclass:: AAMBuilder
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: PatchBasedAAMBuilder
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: AAM
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: PatchBasedAAM
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+2 Functions
+-----------
+
+.. autofunction:: menpo.fitmultilevel.aam.builder.build_reference_frame
+
+
+.. autofunction:: menpo.fitmultilevel.aam.builder.build_patch_reference_frame
+

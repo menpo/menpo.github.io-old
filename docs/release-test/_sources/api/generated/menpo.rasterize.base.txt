@@ -1,0 +1,14 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`rasterize.base`
+=============================
+.. automodule:: menpo.rasterize.base
+
+.. currentmodule:: menpo.rasterize.base
+
+1 Class
+-------
+
+.. autoclass:: Rasterizable
+  :members:
+  :show-inheritance:

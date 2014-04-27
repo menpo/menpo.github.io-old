@@ -1,0 +1,25 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.functions`
+======================================
+.. automodule:: menpo.fitmultilevel.functions
+
+.. currentmodule:: menpo.fitmultilevel.functions
+
+5 Functions
+-----------
+
+.. autofunction:: menpo.fitmultilevel.functions.build_sampling_grid
+
+
+.. autofunction:: menpo.fitmultilevel.functions.extract_local_patches
+
+
+.. autofunction:: menpo.fitmultilevel.functions.mean_pointcloud
+
+
+.. autofunction:: menpo.fitmultilevel.functions.noisy_align
+
+
+.. autofunction:: menpo.fitmultilevel.functions.compute_error
+

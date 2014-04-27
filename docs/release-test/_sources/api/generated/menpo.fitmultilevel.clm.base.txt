@@ -1,0 +1,22 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.clm.base`
+=====================================
+.. automodule:: menpo.fitmultilevel.clm.base
+
+.. currentmodule:: menpo.fitmultilevel.clm.base
+
+2 Classes
+---------
+
+.. autoclass:: CLMFitter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: GradientDescentCLMFitter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

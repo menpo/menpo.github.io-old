@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.model.instancebacked &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.model.instancebacked</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;jab08&#39;</span>
+
+
+<div class="viewcode-block" id="InstanceBackedModel"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel">[docs]</a><span class="k">class</span> <span class="nc">InstanceBackedModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for models constructed from a set of Vectorizable objects.</span>
+<span class="sd">    Allows for models where visualizing the meaning of a set of components</span>
+<span class="sd">    is trivial. Requires that the following attributes to be present:</span>
+
+<span class="sd">    n_components</span>
+<span class="sd">    components</span>
+
+<span class="sd">    and the following methods implemented:</span>
+
+<span class="sd">    component_vector(index)</span>
+<span class="sd">    instance_vectors(weightings)</span>
+<span class="sd">    project_vector(vector)</span>
+<span class="sd">    reconstruct_vectors(vectors, n_components)</span>
+<span class="sd">    project_out_vector(vector)</span>
+
+<span class="sd">    The constructor takes an instance of Vectorizable. This is used for all</span>
+<span class="sd">    conversions to and from numpy vectors and instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InstanceBackedModel.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_instance</span> <span class="o">=</span> <span class="n">template_instance</span>
+</div>
+<div class="viewcode-block" id="InstanceBackedModel.component"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.component">[docs]</a>    <span class="k">def</span> <span class="nf">component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a particular component of the linear model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The component that is to be returned</span>
+
+<span class="sd">        :type: ``type(self.template_instance)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component_vector</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="InstanceBackedModel.instance"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.instance">[docs]</a>    <span class="k">def</span> <span class="nf">instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new instance of the model using the first ``len(weights)``</span>
+<span class="sd">        components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weights : (n_weights,) ndarray or list</span>
+<span class="sd">            ``weights[i]`` is the linear contribution of the i&#39;th component</span>
+<span class="sd">            to the instance vector.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError: If n_weights &gt; n_components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        instance : ``type(self.template_instance)``</span>
+<span class="sd">            An instance of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instance_vector</span><span class="p">(</span><span class="n">weights</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="InstanceBackedModel.project"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects the ``instance`` onto the model, retrieving the optimal</span>
+<span class="sd">        linear weightings.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        novel_instance : :class:`menpo.base.Vectorizable`</span>
+<span class="sd">            A novel instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        projected : (n_components,)</span>
+<span class="sd">            A vector of optimal linear weightings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_vector</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="InstanceBackedModel.reconstruct"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.reconstruct">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects a ``instance`` onto the linear space and rebuilds from the</span>
+<span class="sd">        weights found.</span>
+
+<span class="sd">        Syntactic sugar for:</span>
+
+<span class="sd">            &gt;&gt;&gt; instance(project(instance))</span>
+
+<span class="sd">        but faster, as it avoids the conversion that takes place each time.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : :class:`menpo.base.Vectorizable`</span>
+<span class="sd">            A novel instance of Vectorizable</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reconstructed : ``self.instance_class``</span>
+<span class="sd">            The reconstructed object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reconstruction_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_vector</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">reconstruction_vector</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InstanceBackedModel.project_out"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.project_out">[docs]</a>    <span class="k">def</span> <span class="nf">project_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a version of ``instance`` where all the basis of the model</span>
+<span class="sd">        have been projected out.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        instance : :class:`menpo.base.Vectorizable`</span>
+<span class="sd">            A novel instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        projected_out : ``self.instance_class``</span>
+<span class="sd">            A copy of ``instance``, with all basis of the model projected out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vector_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_out_vector</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">as_vector</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vector_instance</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="InstanceBackedModel.jacobian"><a class="viewcode-back" href="../../../api/generated/menpo.model.instancebacked.html#menpo.model.instancebacked.InstanceBackedModel.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the Jacobian of the linear model. In this case, simply the</span>
+<span class="sd">        components of the model reshaped to have the standard Jacobian shape:</span>
+
+<span class="sd">            n_points    x  n_params      x  n_dims</span>
+<span class="sd">            n_features  x  n_components  x  n_dims</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        jacobian : (n_features, n_components, n_dims) ndarray</span>
+<span class="sd">            The Jacobian of the model in the standard Jacobian shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">template_instance</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jacobian</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

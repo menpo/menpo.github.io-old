@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`image.boolean`
+============================
+.. automodule:: menpo.image.boolean
+
+.. currentmodule:: menpo.image.boolean
+
+1 Class
+-------
+
+.. autoclass:: BooleanImage
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

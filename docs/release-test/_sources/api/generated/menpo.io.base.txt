@@ -1,0 +1,70 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`io.base`
+======================
+.. automodule:: menpo.io.base
+
+.. currentmodule:: menpo.io.base
+
+2 Classes
+---------
+
+.. autoclass:: Importer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: IOInfo
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+15 Functions
+------------
+
+.. autofunction:: menpo.io.base.data_dir_path
+
+
+.. autofunction:: menpo.io.base.data_path_to
+
+
+.. autofunction:: menpo.io.base.import_auto
+
+
+.. autofunction:: menpo.io.base.import_image
+
+
+.. autofunction:: menpo.io.base.import_mesh
+
+
+.. autofunction:: menpo.io.base.import_landmark_file
+
+
+.. autofunction:: menpo.io.base.import_images
+
+
+.. autofunction:: menpo.io.base.import_meshes
+
+
+.. autofunction:: menpo.io.base.import_landmark_files
+
+
+.. autofunction:: menpo.io.base.import_builtin_asset
+
+
+.. autofunction:: menpo.io.base.ls_builtin_assets
+
+
+.. autofunction:: menpo.io.base.map_filepath_to_importer
+
+
+.. autofunction:: menpo.io.base.find_extensions_from_basename
+
+
+.. autofunction:: menpo.io.base.filter_extensions
+
+
+.. autofunction:: menpo.io.base.find_alternative_files
+

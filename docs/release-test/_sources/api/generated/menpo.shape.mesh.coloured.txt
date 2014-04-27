@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.mesh.coloured`
+==================================
+.. automodule:: menpo.shape.mesh.coloured
+
+.. currentmodule:: menpo.shape.mesh.coloured
+
+1 Class
+-------
+
+.. autoclass:: ColouredTriMesh
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

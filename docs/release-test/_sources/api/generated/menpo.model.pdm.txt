@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`model.pdm`
+========================
+.. automodule:: menpo.model.pdm
+
+.. currentmodule:: menpo.model.pdm
+
+3 Classes
+---------
+
+.. autoclass:: PDM
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: GlobalPDM
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: OrthoPDM
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

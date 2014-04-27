@@ -1,0 +1,40 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.regression.trainer`
+=====================================
+.. automodule:: menpo.fit.regression.trainer
+
+.. currentmodule:: menpo.fit.regression.trainer
+
+5 Classes
+---------
+
+.. autoclass:: RegressorTrainer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: NonParametricRegressorTrainer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: SemiParametricRegressorTrainer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ParametricRegressorTrainer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: SemiParametricClassifierBasedRegressorTrainer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

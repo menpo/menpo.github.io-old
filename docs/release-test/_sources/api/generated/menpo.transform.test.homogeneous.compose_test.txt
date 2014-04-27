@@ -1,0 +1,40 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.test.homogeneous.compose_test`
+======================================================
+.. automodule:: menpo.transform.test.homogeneous.compose_test
+
+.. currentmodule:: menpo.transform.test.homogeneous.compose_test
+
+10 Functions
+------------
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.homog_compose_before_nonuniformscale_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.homog_compose_after_uniformscale_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.rotation_compose_before_homog_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.translation_compose_after_homog_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.homog_compose_before_alignment_nonuniformscale_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.homog_compose_after_alignment_rotation_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.scale_compose_after_inplace_homog_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.homog_compose_after_inplace_scale_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.uniformscale_compose_after_translation_test
+
+
+.. autofunction:: menpo.transform.test.homogeneous.compose_test.translation_compose_after_uniformscale_test
+

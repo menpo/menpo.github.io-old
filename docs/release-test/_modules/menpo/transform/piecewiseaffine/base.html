@@ -1,0 +1,619 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.transform.piecewiseaffine.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.transform.piecewiseaffine.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">Affine</span>
+<span class="kn">from</span> <span class="nn">menpo.transform.base</span> <span class="kn">import</span> <span class="n">Alignment</span><span class="p">,</span> <span class="n">Invertible</span><span class="p">,</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">.fastpwa</span> <span class="kn">import</span> <span class="n">CLookupPWA</span>
+<span class="c"># TODO View is broken for PWA (TriangleContainmentError)</span>
+
+
+<div class="viewcode-block" id="TriangleContainmentError"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.TriangleContainmentError">[docs]</a><span class="k">class</span> <span class="nc">TriangleContainmentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Exception that is thrown when an attempt is made to map a point with a</span>
+<span class="sd">    PWATransform that does not lie in a source triangle.</span>
+
+<span class="sd">    points_outside_source_domain : (d,) ndarray</span>
+<span class="sd">        A boolean value for the d points that were attempted to be applied.</span>
+<span class="sd">        If True, the point was outside of the domain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TriangleContainmentError.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.TriangleContainmentError.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points_outside_source_domain</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TriangleContainmentError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_outside_source_domain</span> <span class="o">=</span> <span class="n">points_outside_source_domain</span>
+
+
+<span class="c"># Note we inherit from Alignment first to get it&#39;s n_dims behavior</span></div></div>
+<div class="viewcode-block" id="AbstractPWA"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA">[docs]</a><span class="k">class</span> <span class="nc">AbstractPWA</span><span class="p">(</span><span class="n">Alignment</span><span class="p">,</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">Invertible</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A piecewise affine transformation. This is composed of a number of</span>
+<span class="sd">    triangles defined be a set of source and target vertices. These vertices</span>
+<span class="sd">    are related by a common triangle list. No limitations on the nature of</span>
+<span class="sd">    the triangle list are imposed. Points can then be mapped via</span>
+<span class="sd">    barycentric coordinates from the source to the target space.</span>
+<span class="sd">    Trying to map points that are not contained by any source triangle</span>
+<span class="sd">    throws a TriangleContainmentError, which contains diagnostic information.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : :class:`menpo.shape.PointCloud` or :class:`menpo.shape.TriMesh`</span>
+<span class="sd">        The source points. If a TriMesh is provided, the triangulation on</span>
+<span class="sd">        the TriMesh is used. If a :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        is provided, a Delaunay triangulation of the source is performed</span>
+<span class="sd">        automatically.</span>
+<span class="sd">    target : :class:`PointCloud`</span>
+<span class="sd">        The target points. Note that the trilist is entirely decided by</span>
+<span class="sd">        the source.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Source and target must both be 2D.</span>
+
+<span class="sd">    TriangleContainmentError</span>
+<span class="sd">        All points to apply must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AbstractPWA.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">TriMesh</span>  <span class="c"># to avoid circular import</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">TriMesh</span><span class="p">):</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">Alignment</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;source and target must be 2 &quot;</span>
+                             <span class="s">&quot;dimensional&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractPWA.n_tris"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.n_tris">[docs]</a>    <span class="k">def</span> <span class="nf">n_tris</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of triangles in the triangle list.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">n_tris</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="AbstractPWA.trilist"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.trilist">[docs]</a>    <span class="k">def</span> <span class="nf">trilist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The triangle list.</span>
+
+<span class="sd">        :type: (``n_tris``, 3) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">trilist</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="AbstractPWA.index_alpha_beta"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.index_alpha_beta">[docs]</a>    <span class="k">def</span> <span class="nf">index_alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds for each input point the index of it&#39;s bounding triangle</span>
+<span class="sd">        and the alpha and beta value for that point in the triangle. Note</span>
+<span class="sd">        this means that the following statements will always be true:</span>
+<span class="sd">            alpha + beta &lt;= 1</span>
+<span class="sd">            alpha &gt;= 0</span>
+<span class="sd">            beta &gt;= 0</span>
+<span class="sd">        for each triangle result.</span>
+<span class="sd">        Trying to map a point that does not exist in a</span>
+<span class="sd">        triangle throws a TriangleContainmentError.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        points : (K, 2) ndarray</span>
+<span class="sd">            Points to test.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tri_index : (L,) ndarray</span>
+<span class="sd">            triangle index for each of the ``points``, assigning each</span>
+<span class="sd">            point to it&#39;s containing triangle.</span>
+<span class="sd">        alpha : (L,) ndarray</span>
+<span class="sd">            Alpha for containing triangle of each point.</span>
+<span class="sd">        beta : (L,) ndarray</span>
+<span class="sd">            Beta for containing triangle of each point.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TriangleContainmentError</span>
+<span class="sd">        All ``points`` must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_true_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span><span class="p">,</span> <span class="n">TriMesh</span>  <span class="c"># to avoid circular import</span>
+        <span class="n">new_source</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">trilist</span><span class="p">)</span>
+        <span class="n">new_target</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">new_source</span><span class="p">,</span> <span class="n">new_target</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractPWA.jacobian_points"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.jacobian_points">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Jacobian of the PWA warp with respect to the the points</span>
+<span class="sd">        to which the warp is applied to. Expected to return a</span>
+<span class="sd">        ``(n_points, n_dims, n_dims)`` shaped array, so the result is tiled</span>
+<span class="sd">        as necessary.</span>
+
+<span class="sd">        The derivative of a piecewise affine warp with respect to the points</span>
+<span class="sd">        is simply the identity matrix for every point in the warp.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW/dx: (N, D, D) ndarray</span>
+<span class="sd">            The Jacobian of the transform with respect to the points to which</span>
+<span class="sd">            the transform is applied to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="AbstractPWA.weight_points"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.AbstractPWA.weight_points">[docs]</a>    <span class="k">def</span> <span class="nf">weight_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the jacobian of the warp at each point given in relation to the</span>
+<span class="sd">        source points.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (K, 2) ndarray</span>
+<span class="sd">            The points to calculate the Jacobian for.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        jacobian : (K, ``n_points``, 2) ndarray</span>
+<span class="sd">            The Jacobian for each of the ``K`` given points over each point in</span>
+<span class="sd">            the source points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tri_index</span><span class="p">,</span> <span class="n">alpha_i</span><span class="p">,</span> <span class="n">beta_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_alpha_beta</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="c"># for the jacobian we only need</span>
+        <span class="c"># gamma = 1 - alpha - beta</span>
+        <span class="c"># for each vertex (i, j, &amp; k)</span>
+        <span class="c"># gamma is the &#39;far edge&#39; weighting wrt the vertex in question.</span>
+        <span class="c"># given gamma implicitly for the first vertex in our trilist,</span>
+        <span class="c"># we can permute around to get the others. (e.g. rotate CW around</span>
+        <span class="c"># the triangle to get the j&#39;th vertex-as-prime variant,</span>
+        <span class="c"># and once again to the kth).</span>
+        <span class="c">#</span>
+        <span class="c"># alpha_j = 1 - alpha_i - beta_i</span>
+        <span class="c"># gamma_j = alpha_i</span>
+        <span class="c"># gamma_k = beta_i</span>
+        <span class="c">#</span>
+        <span class="c"># TODO this ordering is empirically correct but I don&#39;t know why..</span>
+        <span class="c">#</span>
+        <span class="c"># we stack all the gamma&#39;s together</span>
+        <span class="c"># so gamma_ijk.shape = (n_sample_points, 3)</span>
+        <span class="n">gamma_ijk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha_i</span> <span class="o">-</span> <span class="n">beta_i</span><span class="p">)[:,</span> <span class="bp">None</span><span class="p">],</span>
+                               <span class="n">alpha_i</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">],</span>
+                               <span class="n">beta_i</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">]))</span>
+        <span class="c"># the jacobian wrt source is of shape</span>
+        <span class="c"># (n_sample_points, n_source_points, 2)</span>
+        <span class="n">jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="c"># per sample point, find the source points for the ijk vertices of</span>
+        <span class="c"># the containing triangle - only these points will get a non 0</span>
+        <span class="c"># jacobian value</span>
+        <span class="n">ijk_per_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">[</span><span class="n">tri_index</span><span class="p">]</span>
+        <span class="c"># to index into the jacobian, we just need a linear iterator for the</span>
+        <span class="c"># first axis - literally [0, 1, ... , n_sample_points]. The</span>
+        <span class="c"># reshape is needed to make it broadcastable with the other indexing</span>
+        <span class="c"># term, ijk_per_point.</span>
+        <span class="n">linear_iterator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c"># in one line, we are done.</span>
+        <span class="n">jac</span><span class="p">[</span><span class="n">linear_iterator</span><span class="p">,</span> <span class="n">ijk_per_point</span><span class="p">]</span> <span class="o">=</span> <span class="n">gamma_ijk</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">jac</span>
+
+</div></div>
+<div class="viewcode-block" id="DiscreteAffinePWA"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.DiscreteAffinePWA">[docs]</a><span class="k">class</span> <span class="nc">DiscreteAffinePWA</span><span class="p">(</span><span class="n">AbstractPWA</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A piecewise affine transformation.</span>
+
+<span class="sd">    Builds ``Affine`` objects for each triangle. apply involves</span>
+<span class="sd">    finding the containing triangle for each input point, and then applying</span>
+<span class="sd">    the appropriate Affine Transform.</span>
+
+<span class="sd">    For small numbers of Triangles (order 10) this is a useful explicit</span>
+<span class="sd">    approach that can be useful for debugging. For larger numbers of</span>
+<span class="sd">    triangles it&#39;s use is strongly discouraged.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : :class:`menpo.shape.PointCloud` or :class:`menpo.shape.TriMesh`</span>
+<span class="sd">        The source points. If a TriMesh is provided, the triangulation on</span>
+<span class="sd">        the TriMesh is used. If a :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        is provided, a Delaunay triangulation of the source is performed</span>
+<span class="sd">        automatically.</span>
+<span class="sd">    target : :class:`PointCloud`</span>
+<span class="sd">        The target points. Note that the trilist is entirely decided by</span>
+<span class="sd">        the source.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Source and target must both be 2D.</span>
+
+<span class="sd">    TriangleContainmentError</span>
+<span class="sd">        All points to apply_inplace must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DiscreteAffinePWA.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.DiscreteAffinePWA.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">AbstractPWA</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_produce_affine_transforms_per_tri</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_produce_affine_transforms_per_tri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Compute the affine transformation between each triangle in the source</span>
+<span class="sd">        and target. This is calculated analytically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># we permute the axes of the indexed point set to have shape</span>
+        <span class="c"># [3, n_dims, n_tris] for ease of indexing in.</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">],</span>
+                         <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">],</span>
+                         <span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="c"># sik</span>
+        <span class="c"># ^^^</span>
+        <span class="c"># ||\- the k&#39;th point</span>
+        <span class="c"># ||</span>
+        <span class="c"># |vector between end (j or k) and i</span>
+        <span class="c"># source [target]</span>
+        <span class="c"># if i is absent, it is the position of the ijk point.</span>
+        <span class="c"># (not a _vector_ between points)</span>
+        <span class="c"># get vectors ij ik for source and target</span>
+        <span class="n">sij</span><span class="p">,</span> <span class="n">sik</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tij</span><span class="p">,</span> <span class="n">tik</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c"># source vertex positions</span>
+        <span class="n">si</span><span class="p">,</span> <span class="n">sj</span><span class="p">,</span> <span class="n">sk</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ti</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">sij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sik</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">sij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sik</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">c_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">sik</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">tij</span> <span class="o">-</span> <span class="n">sij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">tik</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span>
+        <span class="n">c_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">sij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">tik</span> <span class="o">-</span> <span class="n">sik</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">tij</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span>
+        <span class="n">c_t</span> <span class="o">=</span> <span class="n">ti</span> <span class="o">+</span> <span class="p">(</span><span class="n">tij</span> <span class="o">*</span> <span class="p">(</span><span class="n">si</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sik</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">si</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sik</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span>
+                    <span class="n">tik</span> <span class="o">*</span> <span class="p">(</span><span class="n">si</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">si</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sij</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="n">d</span>
+        <span class="n">ht</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_tris</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ht</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_x</span>
+        <span class="n">ht</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_y</span>
+        <span class="n">ht</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_t</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_tris</span><span class="p">):</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Affine</span><span class="p">(</span><span class="n">ht</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]))</span>
+
+        <span class="c"># store our state out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sik</span> <span class="o">=</span> <span class="n">sij</span><span class="p">,</span> <span class="n">sik</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tik</span> <span class="o">=</span> <span class="n">tij</span><span class="p">,</span> <span class="n">tik</span>
+
+<div class="viewcode-block" id="DiscreteAffinePWA.index_alpha_beta"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.DiscreteAffinePWA.index_alpha_beta">[docs]</a>    <span class="k">def</span> <span class="nf">index_alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds for each input point the index of it&#39;s bounding triangle</span>
+<span class="sd">        and the alpha and beta value for that point in the triangle. Note</span>
+<span class="sd">        this means that the following statements will always be true:</span>
+<span class="sd">            alpha + beta &lt;= 1</span>
+<span class="sd">            alpha &gt;= 0</span>
+<span class="sd">            beta &gt;= 0</span>
+<span class="sd">        for each triangle result.</span>
+<span class="sd">        Trying to map a point that does not exist in a</span>
+<span class="sd">        triangle throws a TriangleContainmentError.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        points : (K, 2) ndarray</span>
+<span class="sd">            Points to test.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tri_index : (L,) ndarray</span>
+<span class="sd">            triangle index for each of the ``points``, assigning each</span>
+<span class="sd">            point to it&#39;s containing triangle.</span>
+<span class="sd">        alpha : (L,) ndarray</span>
+<span class="sd">            Alpha for containing triangle of each point.</span>
+<span class="sd">        beta : (L,) ndarray</span>
+<span class="sd">            Beta for containing triangle of each point.</span>
+
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TriangleContainmentError</span>
+<span class="sd">        All ``points`` must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_beta</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">each_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_containment_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[</span><span class="n">each_point</span><span class="p">,</span> <span class="n">index</span><span class="p">],</span> <span class="n">beta</span><span class="p">[</span><span class="n">each_point</span><span class="p">,</span> <span class="n">index</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="DiscreteAffinePWA.alpha_beta"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.DiscreteAffinePWA.alpha_beta">[docs]</a>    <span class="k">def</span> <span class="nf">alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the alpha and beta values (barycentric coordinates) for each</span>
+<span class="sd">        triangle for all points provided. Note that this does not raise a</span>
+<span class="sd">        TriangleContainmentError.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (K, 2) ndarray</span>
+<span class="sd">            Points to calculate the barycentric coordinates for.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        alpha : (K, ``n_tris``)</span>
+<span class="sd">            The alpha for each point and triangle. Alpha can be interpreted</span>
+<span class="sd">            as the contribution of the ij vector to the position of the</span>
+<span class="sd">            point in question.</span>
+<span class="sd">        beta : (K, ``n_tris``)</span>
+<span class="sd">            The beta for each point and triangle. Beta can be interpreted as</span>
+<span class="sd">             the contribution of the ik vector to the position of the point</span>
+<span class="sd">             in question.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ip</span><span class="p">,</span> <span class="n">ij</span><span class="p">,</span> <span class="n">ik</span> <span class="o">=</span> <span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">sij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sik</span>
+        <span class="n">dot_jj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;dt, dt -&gt; t&#39;</span><span class="p">,</span> <span class="n">ij</span><span class="p">,</span> <span class="n">ij</span><span class="p">)</span>
+        <span class="n">dot_kk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;dt, dt -&gt; t&#39;</span><span class="p">,</span> <span class="n">ik</span><span class="p">,</span> <span class="n">ik</span><span class="p">)</span>
+        <span class="n">dot_jk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;dt, dt -&gt; t&#39;</span><span class="p">,</span> <span class="n">ij</span><span class="p">,</span> <span class="n">ik</span><span class="p">)</span>
+        <span class="n">dot_pj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;vdt, dt -&gt; vt&#39;</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">ij</span><span class="p">)</span>
+        <span class="n">dot_pk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s">&#39;vdt, dt -&gt; vt&#39;</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">ik</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">dot_jj</span> <span class="o">*</span> <span class="n">dot_kk</span> <span class="o">-</span> <span class="n">dot_jk</span> <span class="o">*</span> <span class="n">dot_jk</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">dot_kk</span> <span class="o">*</span> <span class="n">dot_pj</span> <span class="o">-</span> <span class="n">dot_jk</span> <span class="o">*</span> <span class="n">dot_pk</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">dot_jj</span> <span class="o">*</span> <span class="n">dot_pk</span> <span class="o">-</span> <span class="n">dot_jk</span> <span class="o">*</span> <span class="n">dot_pj</span><span class="p">)</span> <span class="o">*</span> <span class="n">d</span>
+        <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_containment_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Check ``alpha`` and ``beta`` are within a triangle (``alpha &gt;= 0``,</span>
+<span class="sd">        ``beta &gt;= 0``, ``alpha + beta &lt;= 1``). Returns the indices of the</span>
+<span class="sd">        triangles that are ``alpha`` and ``beta`` are in. If any of the</span>
+<span class="sd">        points are not contained in a triangle,</span>
+<span class="sd">        raises a TriangleContainmentError.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        alpha: (K, ``n_tris``) ndarray</span>
+<span class="sd">            Alpha for each point and triangle being tested.</span>
+<span class="sd">        beta: (K, ``n_tris``) ndarray</span>
+<span class="sd">            Beta for each point and triangle being tested.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tri_index : (L,) ndarray</span>
+<span class="sd">            triangle index for each ``points``, assigning each</span>
+<span class="sd">            point in a triangle to the triangle index.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TriangleContainmentError</span>
+<span class="sd">        All ``points`` must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># (K, n_tris), boolean for whether a given triangle contains a given</span>
+        <span class="c">#  point</span>
+        <span class="n">point_containment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">alpha</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">beta</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">),</span>
+                                           <span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c"># is each point in a triangle?</span>
+        <span class="n">point_in_a_triangle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">point_containment</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">point_in_a_triangle</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">TriangleContainmentError</span><span class="p">(</span><span class="o">~</span><span class="n">point_in_a_triangle</span><span class="p">)</span>
+        <span class="n">point_index</span><span class="p">,</span> <span class="n">tri_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">point_containment</span><span class="p">)</span>
+        <span class="c"># don&#39;t want duplicates! ensure that here:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">index</span><span class="p">[</span><span class="n">point_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">tri_index</span>
+        <span class="k">return</span> <span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        DiscreteAffinePWATransform is particularly inefficient to sync</span>
+<span class="sd">        from target - we just have to manually go through and rebuild all</span>
+<span class="sd">        the affine transforms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_produce_affine_transforms_per_tri</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies this transform to a new set of vectors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (K, 2) ndarray</span>
+<span class="sd">            Points to apply this transform to.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : (K, 2) ndarray</span>
+<span class="sd">            The transformed array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tri_index</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_alpha_beta</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="c"># build a list of points in each triangle for each triangle</span>
+        <span class="n">x_per_tri</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">tri_index</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_tris</span><span class="p">)]</span>
+        <span class="c"># zip the transforms and the list to apply to make the transformed x</span>
+        <span class="n">x_per_tri_tran</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_per_tri</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">)]</span>
+        <span class="n">x_transformed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="c"># loop through each triangle, indexing into the x_transformed array</span>
+        <span class="c"># for points in that triangle and replacing the value of x with x_t</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_per_tri_tran</span><span class="p">):</span>
+            <span class="n">x_transformed</span><span class="p">[</span><span class="n">tri_index</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_t</span>
+        <span class="k">return</span> <span class="n">x_transformed</span>
+
+</div>
+<div class="viewcode-block" id="CachedPWA"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.CachedPWA">[docs]</a><span class="k">class</span> <span class="nc">CachedPWA</span><span class="p">(</span><span class="n">AbstractPWA</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A piecewise affine transformation.</span>
+
+<span class="sd">    The apply method in this case involves dotting the triangle vectors with</span>
+<span class="sd">    the values of alpha and beta found. The calculation of alpha and beta is</span>
+<span class="sd">     done in C, and a hash map is used to cache lookup values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : :class:`menpo.shape.PointCloud` or :class:`menpo.shape.TriMesh`</span>
+<span class="sd">        The source points. If a TriMesh is provided, the triangulation on</span>
+<span class="sd">        the TriMesh is used. If a :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        is provided, a Delaunay triangulation of the source is performed</span>
+<span class="sd">        automatically.</span>
+<span class="sd">    target : :class:`PointCloud`</span>
+<span class="sd">        The target points. Note that the trilist is entirely decided by</span>
+<span class="sd">        the source.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Source and target must both be 2D.</span>
+
+<span class="sd">    TriangleContainmentError</span>
+<span class="sd">        All points to apply must be contained in a source triangle. Check</span>
+<span class="sd">        ``error.points_outside_source_domain`` to handle this case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CachedPWA.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.piecewiseaffine.base.html#menpo.transform.piecewiseaffine.base.CachedPWA.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CachedPWA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="c"># make sure the source and target satisfy the c requirements</span>
+        <span class="n">source_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                              <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">])</span>
+        <span class="n">trilist_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
+                               <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">])</span>
+        <span class="c"># build the cython wrapped C object and store it locally</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fastpwa</span> <span class="o">=</span> <span class="n">CLookupPWA</span><span class="p">(</span><span class="n">source_c</span><span class="p">,</span> <span class="n">trilist_c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ti</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tik</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_target_vectors</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_rebuild_target_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Rebuild the vectors that are used in the apply method. This needs to</span>
+<span class="sd">        be called whenever the target is changed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">]</span>
+        <span class="c"># get vectors ij ik for the target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tik</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="c"># target i&#39;th vertex positions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ti</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">index_alpha_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="n">points_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;C&#39;</span><span class="p">])</span>
+        <span class="n">index</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fastpwa</span><span class="o">.</span><span class="n">index_alpha_beta</span><span class="p">(</span><span class="n">points_c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">TriangleContainmentError</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">index</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        CachedPWATransform is particularly efficient to sync</span>
+<span class="sd">        from target - we don&#39;t have to do much at all, just rebuild the target</span>
+<span class="sd">        vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_target_vectors</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies this transform to a new set of vectors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (K, 2) ndarray</span>
+<span class="sd">            Points to apply this transform to.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : (K, 2) ndarray</span>
+<span class="sd">            The transformed array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tri_index</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_alpha_beta</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ti</span><span class="p">[</span><span class="n">tri_index</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">alpha</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tij</span><span class="p">[</span><span class="n">tri_index</span><span class="p">]</span> <span class="o">+</span>
+                <span class="n">beta</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tik</span><span class="p">[</span><span class="n">tri_index</span><span class="p">])</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

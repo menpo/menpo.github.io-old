@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`basis.rbf`
+========================
+.. automodule:: menpo.basis.rbf
+
+.. currentmodule:: menpo.basis.rbf
+
+3 Classes
+---------
+
+.. autoclass:: BasisFunction
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: R2LogR2
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: R2LogR
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

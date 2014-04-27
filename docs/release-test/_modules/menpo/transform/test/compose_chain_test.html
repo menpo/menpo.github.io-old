@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.transform.test.compose_chain_test &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.transform.test.compose_chain_test</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_allclose</span>
+<span class="kn">from</span> <span class="nn">nose.tools</span> <span class="kn">import</span> <span class="n">raises</span>
+
+<span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span><span class="p">,</span> <span class="n">TriMesh</span>
+
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">TransformChain</span><span class="p">,</span> <span class="n">Homogeneous</span><span class="p">,</span> <span class="n">Translation</span><span class="p">,</span> <span class="n">Scale</span>
+<span class="kn">from</span> <span class="nn">menpo.transform.thinplatesplines</span> <span class="kn">import</span> <span class="n">ThinPlateSplines</span>
+<span class="kn">from</span> <span class="nn">menpo.transform.piecewiseaffine</span> <span class="kn">import</span> <span class="n">PiecewiseAffine</span>
+
+
+<div class="viewcode-block" id="chain_tps_before_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_tps_before_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_tps_before_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps_one</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps_two</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">tps_one</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">tps_two</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">tps_two</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tps_one</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">chain_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">manual_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_tps_after_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_tps_after_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_tps_after_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps_one</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps_two</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">tps_one</span><span class="o">.</span><span class="n">compose_after</span><span class="p">(</span><span class="n">tps_two</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">tps_one</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tps_two</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">chain_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">manual_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_pwa_before_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_pwa_before_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_pwa_before_tps_test</span><span class="p">():</span>
+    <span class="n">a_tm</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">pwa</span> <span class="o">=</span> <span class="n">PiecewiseAffine</span><span class="p">(</span><span class="n">a_tm</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a_tm</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">pwa</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_pwa_after_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_pwa_after_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_pwa_after_tps_test</span><span class="p">():</span>
+    <span class="n">a_tm</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">pwa</span> <span class="o">=</span> <span class="n">PiecewiseAffine</span><span class="p">(</span><span class="n">a_tm</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a_tm</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">pwa</span><span class="o">.</span><span class="n">compose_after</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_tps_before_pwa_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_tps_before_pwa_test">[docs]</a><span class="k">def</span> <span class="nf">chain_tps_before_pwa_test</span><span class="p">():</span>
+    <span class="n">a_tm</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">pwa</span> <span class="o">=</span> <span class="n">PiecewiseAffine</span><span class="p">(</span><span class="n">a_tm</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a_tm</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">tps</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">pwa</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_tps_after_pwa_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_tps_after_pwa_test">[docs]</a><span class="k">def</span> <span class="nf">chain_tps_after_pwa_test</span><span class="p">():</span>
+    <span class="n">a_tm</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">pwa</span> <span class="o">=</span> <span class="n">PiecewiseAffine</span><span class="p">(</span><span class="n">a_tm</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a_tm</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">tps</span><span class="o">.</span><span class="n">compose_after</span><span class="p">(</span><span class="n">pwa</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="compose_tps_after_translation_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.compose_tps_after_translation_test">[docs]</a><span class="k">def</span> <span class="nf">compose_tps_after_translation_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">tps</span><span class="o">.</span><span class="n">compose_after</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">TransformChain</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="manual_no_op_chain_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.manual_no_op_chain_test">[docs]</a><span class="k">def</span> <span class="nf">manual_no_op_chain_test</span><span class="p">():</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="p">])</span>
+    <span class="n">points_applied</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">points_applied</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">points</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_compose_before_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_compose_before_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_compose_before_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">])</span>
+    <span class="n">chain_mod</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">tps</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain_mod</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">manual_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">chain_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_compose_after_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_compose_after_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_compose_after_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">])</span>
+    <span class="n">chain_mod</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">compose_after</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tps</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain_mod</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">manual_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">chain_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_compose_before_inplace_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_compose_before_inplace_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_compose_before_inplace_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">])</span>
+    <span class="n">chain</span><span class="o">.</span><span class="n">compose_before_inplace</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">tps</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">manual_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">chain_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_compose_after_inplace_tps_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_compose_after_inplace_tps_test">[docs]</a><span class="k">def</span> <span class="nf">chain_compose_after_inplace_tps_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">tps</span> <span class="o">=</span> <span class="n">ThinPlateSplines</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">chain</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">])</span>
+    <span class="n">chain</span><span class="o">.</span><span class="n">compose_after_inplace</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">manual_res</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tps</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">manual_res</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="n">chain_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="chain_compose_after_inplace_chain_test"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.test.compose_chain_test.html#menpo.transform.test.compose_chain_test.chain_compose_after_inplace_chain_test">[docs]</a><span class="k">def</span> <span class="nf">chain_compose_after_inplace_chain_test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">chain_1</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">])</span>
+    <span class="n">chain_2</span> <span class="o">=</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="p">])</span>
+    <span class="n">chain_1</span><span class="o">.</span><span class="n">compose_before_inplace</span><span class="p">(</span><span class="n">chain_2</span><span class="p">)</span>
+
+    <span class="n">points</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+    <span class="n">chain_res</span> <span class="o">=</span> <span class="n">chain_1</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">chain_res</span><span class="o">.</span><span class="n">points</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

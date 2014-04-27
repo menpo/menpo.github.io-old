@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.lucaskanade.image.base`
+=========================================
+.. automodule:: menpo.fit.lucaskanade.image.base
+
+.. currentmodule:: menpo.fit.lucaskanade.image.base
+
+4 Classes
+---------
+
+.. autoclass:: ImageLucasKanade
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ImageForwardAdditive
+  :members:
+  :show-inheritance:
+
+.. autoclass:: ImageForwardCompositional
+  :members:
+  :show-inheritance:
+
+.. autoclass:: ImageInverseCompositional
+  :members:
+  :show-inheritance:

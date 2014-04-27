@@ -1,0 +1,26 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.homogeneous.affine`
+===========================================
+.. automodule:: menpo.transform.homogeneous.affine
+
+.. currentmodule:: menpo.transform.homogeneous.affine
+
+3 Classes
+---------
+
+.. autoclass:: Affine
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: AlignmentAffine
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: DiscreteAffine
+  :members:
+  :show-inheritance:

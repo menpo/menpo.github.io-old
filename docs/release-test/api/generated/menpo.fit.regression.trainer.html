@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: fit.regression.trainer &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.fit.regression.trainer">
+<span id="module-fit-regression-trainer"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">fit.regression.trainer</span></tt><a class="headerlink" href="#module-menpo.fit.regression.trainer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>5 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.fit.regression.trainer.RegressorTrainer">
+<em class="property">class </em><tt class="descclassname">menpo.fit.regression.trainer.</tt><tt class="descname">RegressorTrainer</tt><big>(</big><em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=None</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#RegressorTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.RegressorTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.RegressorTrainer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=None</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#RegressorTrainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.RegressorTrainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.RegressorTrainer.train">
+<tt class="descname">train</tt><big>(</big><em>images</em>, <em>shapes</em>, <em>perturbed_shapes=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#RegressorTrainer.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.RegressorTrainer.train" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.regression.trainer.NonParametricRegressorTrainer">
+<em class="property">class </em><tt class="descclassname">menpo.fit.regression.trainer.</tt><tt class="descname">NonParametricRegressorTrainer</tt><big>(</big><em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#NonParametricRegressorTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.NonParametricRegressorTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.regression.trainer.RegressorTrainer" title="menpo.fit.regression.trainer.RegressorTrainer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.regression.trainer.RegressorTrainer</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.NonParametricRegressorTrainer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#NonParametricRegressorTrainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.NonParametricRegressorTrainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.regression.trainer.SemiParametricRegressorTrainer">
+<em class="property">class </em><tt class="descclassname">menpo.fit.regression.trainer.</tt><tt class="descname">SemiParametricRegressorTrainer</tt><big>(</big><em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>update='compositional'</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#SemiParametricRegressorTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.SemiParametricRegressorTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.regression.trainer.NonParametricRegressorTrainer" title="menpo.fit.regression.trainer.NonParametricRegressorTrainer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.regression.trainer.NonParametricRegressorTrainer</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.SemiParametricRegressorTrainer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>update='compositional'</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#SemiParametricRegressorTrainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.SemiParametricRegressorTrainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.regression.trainer.ParametricRegressorTrainer">
+<em class="property">class </em><tt class="descclassname">menpo.fit.regression.trainer.</tt><tt class="descname">ParametricRegressorTrainer</tt><big>(</big><em>appearance_model</em>, <em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function weights at 0x1045371b8&gt;</em>, <em>update='compositional'</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#ParametricRegressorTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.ParametricRegressorTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.regression.trainer.RegressorTrainer" title="menpo.fit.regression.trainer.RegressorTrainer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.regression.trainer.RegressorTrainer</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.ParametricRegressorTrainer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>appearance_model</em>, <em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>regression_features=&lt;function weights at 0x1045371b8&gt;</em>, <em>update='compositional'</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#ParametricRegressorTrainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.ParametricRegressorTrainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fit.regression.trainer.SemiParametricClassifierBasedRegressorTrainer">
+<em class="property">class </em><tt class="descclassname">menpo.fit.regression.trainer.</tt><tt class="descname">SemiParametricClassifierBasedRegressorTrainer</tt><big>(</big><em>classifiers</em>, <em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#SemiParametricClassifierBasedRegressorTrainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.SemiParametricClassifierBasedRegressorTrainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fit.regression.trainer.NonParametricRegressorTrainer" title="menpo.fit.regression.trainer.NonParametricRegressorTrainer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fit.regression.trainer.NonParametricRegressorTrainer</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.fit.regression.trainer.SemiParametricClassifierBasedRegressorTrainer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>classifiers</em>, <em>transform</em>, <em>reference_shape</em>, <em>regression_type=&lt;function mlr at 0x104f327d0&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>noise_std=0.04</em>, <em>rotation=False</em>, <em>n_perturbations=10</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fit/regression/trainer.html#SemiParametricClassifierBasedRegressorTrainer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fit.regression.trainer.SemiParametricClassifierBasedRegressorTrainer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">fit.regression.trainer</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">5 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.fit.regression.trainer.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

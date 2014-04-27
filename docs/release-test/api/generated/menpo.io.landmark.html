@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: io.landmark &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.io.landmark">
+<span id="module-io-landmark"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">io.landmark</span></tt><a class="headerlink" href="#module-menpo.io.landmark" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>8 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.io.landmark.LandmarkImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">LandmarkImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LandmarkImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LandmarkImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.io.base.html#menpo.io.base.Importer" title="menpo.io.base.Importer"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.base.Importer</span></tt></a></p>
+<p>Abstract base class for importing landmarks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : string</p>
+<blockquote class="last">
+<div><p>Absolute filepath of the landmarks.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.LandmarkImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LandmarkImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LandmarkImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.io.landmark.LandmarkImporter.build">
+<tt class="descname">build</tt><big>(</big><em>asset=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LandmarkImporter.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LandmarkImporter.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides the <a class="reference internal" href="menpo.io.base.html#menpo.io.base.Importer.build" title="menpo.io.base.Importer.build"><tt class="xref py py-meth docutils literal"><span class="pre">build</span></tt></a> method.</p>
+<p>Parse the landmark format and return the label and landmark dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>asset</strong> : object, optional</p>
+<blockquote>
+<div><p>The asset that the landmarks are being built for. Can be used to
+adjust landmarks as necessary (e.g. rescaling image landmarks
+from 0-1 to image.shape)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>landmark_group</strong> : string</p>
+<blockquote class="last">
+<div><p>The landmark group parsed from the file.
+Every point will be labelled.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.ASFImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">ASFImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#ASFImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.ASFImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Abstract base class for an importer for the ASF file format.
+Currently <strong>does not support the connectivity specified in the format</strong>.</p>
+<p>Implementations of this class should override the <tt class="xref py py-meth docutils literal"><span class="pre">_build_points()</span></tt>
+which determines the ordering of axes. For example, for images, the
+<tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> axes are flipped such that the first axis is <tt class="docutils literal"><span class="pre">y</span></tt> (height
+in the image domain).</p>
+<p>Landmark set label: ASF</p>
+<p>Landmark labels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">label</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>all</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : string</p>
+<blockquote class="last">
+<div><p>Absolute filepath to landmark file.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[R4]</a></td><td><a class="reference external" href="http://www2.imm.dtu.dk/~aam/datasets/datasets.html">http://www2.imm.dtu.dk/~aam/datasets/datasets.html</a></td></tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.ASFImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#ASFImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.ASFImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.PTSImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">PTSImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#PTSImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.PTSImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the PTS file format. Assumes version 1 of the format.</p>
+<p>Implementations of this class should override the <tt class="xref py py-meth docutils literal"><span class="pre">_build_points()</span></tt>
+which determines the ordering of axes. For example, for images, the
+<tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> axes are flipped such that the first axis is <tt class="docutils literal"><span class="pre">y</span></tt> (height
+in the image domain).</p>
+<p>Note that PTS has a very loose format definition. Here we make the
+assumption (as is common) that PTS landmarks are 1-based. That is,
+landmarks on a 480x480 image are in the range [1-480]. As Menpo is
+consistently 0-based, we <em>subtract 1</em> off each landmark value
+automatically.</p>
+<p>If you want to use PTS landmarks that are 0-based, you will have to
+manually add one back on to landmarks post importing.</p>
+<p>Landmark set label: PTS</p>
+<p>Landmark labels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">label</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>all</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.PTSImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#PTSImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.PTSImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.LM3Importer">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">LM3Importer</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LM3Importer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LM3Importer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the LM3 file format from the bosphorus dataset. This is a 3D
+landmark type and so it is assumed it only applies to meshes.</p>
+<p>Landmark set label: LM3</p>
+<p>Landmark labels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">label</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>outer_left_eyebrow
+middle_left_eyebrow
+inner_left_eyebrow
+inner_right_eyebrow
+middle_right_eyebrow
+outer_right_eyebrow
+outer_left_eye_corner
+inner_left_eye_corner
+inner_right_eye_corner
+outer_right_eye_corner
+nose_saddle_left
+nose_saddle_right
+left_nose_peak
+nose_tip
+right_nose_peak
+left_mouth_corner
+upper_lip_outer_middle
+right_mouth_corner
+upper_lip_inner_middle
+lower_lip_inner_middle
+lower_lip_outer_middle
+chin_middle</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.LM3Importer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LM3Importer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LM3Importer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.LM2Importer">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">LM2Importer</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LM2Importer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LM2Importer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the LM2 file format from the bosphorus dataset. This is a 2D
+landmark type and so it is assumed it only applies to images.</p>
+<p>Landmark set label: LM2</p>
+<p>Landmark labels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">label</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>outer_left_eyebrow
+middle_left_eyebrow
+inner_left_eyebrow
+inner_right_eyebrow
+middle_right_eyebrow
+outer_right_eyebrow
+outer_left_eye_corner
+inner_left_eye_corner
+inner_right_eye_corner
+outer_right_eye_corner
+nose_saddle_left
+nose_saddle_right
+left_nose_peak
+nose_tip
+right_nose_peak
+left_mouth_corner
+upper_lip_outer_middle
+right_mouth_corner
+upper_lip_inner_middle
+lower_lip_inner_middle
+lower_lip_outer_middle
+chin_middle</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.LM2Importer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LM2Importer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LM2Importer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.LANImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">LANImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LANImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LANImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the LAN file format for the GOSH dataset. This is a 3D
+landmark type and so it is assumed it only applies to meshes.</p>
+<p>Landmark set label: LAN</p>
+<p>Note that the exact meaning of each landmark in this set varies,
+so all we can do is import all landmarks found under the label &#8216;LAN&#8217;</p>
+<dl class="method">
+<dt id="menpo.io.landmark.LANImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#LANImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.LANImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.BNDImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">BNDImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#BNDImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.BNDImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the BND file format for the BU-3DFE dataset. This is a 3D
+landmark type and so it is assumed it only applies to meshes.</p>
+<p>Landmark set label: BND</p>
+<p>Landmark labels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">label</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>left_eye
+right_eye
+left_eyebrow
+right_eyebrow
+nose
+mouth
+chin</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.io.landmark.BNDImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#BNDImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.BNDImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.io.landmark.JSONImporter">
+<em class="property">class </em><tt class="descclassname">menpo.io.landmark.</tt><tt class="descname">JSONImporter</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#JSONImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.JSONImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.io.landmark.LandmarkImporter" title="menpo.io.landmark.LandmarkImporter"><tt class="xref py py-class docutils literal"><span class="pre">menpo.io.landmark.LandmarkImporter</span></tt></a></p>
+<p>Importer for the Menpo JSON format. This is an nD
+landmark type for both images and meshes that encodes semantic labels in
+the format</p>
+<p>Landmark set label: JSON</p>
+<p>Landmark labels: decided by file</p>
+<dl class="method">
+<dt id="menpo.io.landmark.JSONImporter.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>filepath</em><big>)</big><a class="reference internal" href="../../_modules/menpo/io/landmark.html#JSONImporter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.io.landmark.JSONImporter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">io.landmark</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">8 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.io.landmark.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

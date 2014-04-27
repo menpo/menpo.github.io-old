@@ -1,0 +1,18 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.base.invertable`
+========================================
+.. automodule:: menpo.transform.base.invertable
+
+.. currentmodule:: menpo.transform.base.invertable
+
+2 Classes
+---------
+
+.. autoclass:: Invertible
+  :members:
+  :show-inheritance:
+
+.. autoclass:: VInvertible
+  :members:
+  :show-inheritance:

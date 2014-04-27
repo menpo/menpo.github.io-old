@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.mesh.base`
+==============================
+.. automodule:: menpo.shape.mesh.base
+
+.. currentmodule:: menpo.shape.mesh.base
+
+1 Class
+-------
+
+.. autoclass:: TriMesh
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

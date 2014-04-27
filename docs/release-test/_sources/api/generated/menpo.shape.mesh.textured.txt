@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.mesh.textured`
+==================================
+.. automodule:: menpo.shape.mesh.textured
+
+.. currentmodule:: menpo.shape.mesh.textured
+
+1 Class
+-------
+
+.. autoclass:: TexturedTriMesh
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

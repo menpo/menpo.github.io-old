@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`decorator`
+========================
+.. automodule:: menpo.decorator
+
+.. currentmodule:: menpo.decorator
+
+1 Function
+----------
+
+.. autofunction:: menpo.decorator.const
+

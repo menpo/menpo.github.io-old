@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.lucaskanade.base`
+===================================
+.. automodule:: menpo.fit.lucaskanade.base
+
+.. currentmodule:: menpo.fit.lucaskanade.base
+
+1 Class
+-------
+
+.. autoclass:: LucasKanade
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

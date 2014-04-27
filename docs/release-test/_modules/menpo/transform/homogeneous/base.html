@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.transform.homogeneous.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.transform.homogeneous.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.base</span> <span class="kn">import</span> <span class="n">Vectorizable</span>
+<span class="kn">from</span> <span class="nn">menpo.transform.base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Alignment</span><span class="p">,</span> <span class="n">ComposableTransform</span><span class="p">,</span>
+                                  <span class="n">VComposable</span><span class="p">,</span> <span class="n">VInvertible</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="HomogFamilyAlignment"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.HomogFamilyAlignment">[docs]</a><span class="k">class</span> <span class="nc">HomogFamilyAlignment</span><span class="p">(</span><span class="n">Alignment</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Simple subclass of Alignment that adds the ability to create a copy of an</span>
+<span class="sd">    alignment class without the alignment behavior.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">copy_without_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="Homogeneous"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.Homogeneous">[docs]</a><span class="k">class</span> <span class="nc">Homogeneous</span><span class="p">(</span><span class="n">ComposableTransform</span><span class="p">,</span> <span class="n">Vectorizable</span><span class="p">,</span> <span class="n">VComposable</span><span class="p">,</span> <span class="n">VInvertible</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A simple n-dimensional homogeneous transformation.</span>
+
+<span class="sd">    Adds a unit homogeneous coordinate to points, performs the dot</span>
+<span class="sd">    product, re-normalizes by division by the homogeneous coordinate,</span>
+<span class="sd">    and returns the result.</span>
+
+<span class="sd">    Can be composed with another Homogeneous, so long as the dimensionality</span>
+<span class="sd">    matches.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h_matrix : (n_dims + 1, n_dims + 1) ndarray</span>
+<span class="sd">        The homogeneous matrix to be applied.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Homogeneous.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.Homogeneous.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_matrix</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h_matrix</span> <span class="o">=</span> <span class="n">h_matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Homogeneous</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dims</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h_matrix</span>
+
+    <span class="k">def</span> <span class="nf">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c"># TODO add verification logic for homogeneous here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h_matrix</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_dims_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># doesn&#39;t have to be a square homogeneous matrix...</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># convert to homogeneous</span>
+        <span class="n">h_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">])])</span>
+        <span class="c"># apply the transform</span>
+        <span class="n">h_y</span> <span class="o">=</span> <span class="n">h_x</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="c"># normalize and return</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">h_y</span> <span class="o">/</span> <span class="n">h_y</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">][:,</span> <span class="bp">None</span><span class="p">])[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_h_matrix</span><span class="p">(</span><span class="n">vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Homogeneous.composes_inplace_with"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.Homogeneous.composes_inplace_with">[docs]</a>    <span class="k">def</span> <span class="nf">composes_inplace_with</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Homogeneous can swallow composition with any other Homogeneous,</span>
+<span class="sd">        subclasses will have to override and be more specific.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Homogeneous</span>
+</div>
+    <span class="k">def</span> <span class="nf">compose_after_from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compose_after_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Homogeneous.composes_with"><a class="viewcode-back" href="../../../../api/generated/menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.Homogeneous.composes_with">[docs]</a>    <span class="k">def</span> <span class="nf">composes_with</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Any Homogeneous can compose with any other Homogeneous.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Homogeneous</span>
+
+    <span class="c"># noinspection PyProtectedMember</span></div>
+    <span class="k">def</span> <span class="nf">_compose_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Chains an Homogeneous family transform with another transform of the</span>
+<span class="sd">        same family, producing a new transform that is the composition of</span>
+<span class="sd">        the two.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The type of the returned transform is always the first common</span>
+<span class="sd">            ancestor between self and transform.</span>
+
+<span class="sd">            Any Alignment will be lost.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : :class:`Homogeneous`</span>
+<span class="sd">            Transform to be applied **after** self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : :class:`Homogeneous`</span>
+<span class="sd">            The resulting homogeneous transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># note that this overload of the basic _compose_before is just to</span>
+        <span class="c"># deal with the complexities of maintaining the correct class of</span>
+        <span class="c"># transform upon composition</span>
+        <span class="kn">from</span> <span class="nn">.affine</span> <span class="kn">import</span> <span class="n">Affine</span>
+        <span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">Similarity</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="c"># He is a subclass of me - I can swallow him.</span>
+            <span class="c"># What if I&#39;m an Alignment though? Rules of composition state we</span>
+            <span class="c"># have to produce a non-Alignment result. Nasty, but we check</span>
+            <span class="c"># here to save a lot of repetition.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HomogFamilyAlignment</span><span class="p">):</span>
+                <span class="n">new_self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_without_alignment</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_self</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_before_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
+            <span class="c"># I am a subclass of him - he can swallow me</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_compose_after</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">):</span>
+            <span class="c"># we&#39;re both in the Similarity family</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Similarity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_before_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Affine</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Affine</span><span class="p">):</span>
+            <span class="c"># we&#39;re both in the Affine family</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_before_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># at least one of us is Homogeneous</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Homogeneous</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_before_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_self</span>
+
+    <span class="c"># noinspection PyProtectedMember</span>
+    <span class="k">def</span> <span class="nf">_compose_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Chains an Homogeneous family transform with another transform of the</span>
+<span class="sd">        same family, producing a new transform that is the composition of</span>
+<span class="sd">        the two.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The type of the returned transform is always the first common</span>
+<span class="sd">            ancestor between self and transform.</span>
+
+<span class="sd">            Any Alignment will be lost.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : :class:`Homogeneous`</span>
+<span class="sd">            Transform to be applied **before** self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : :class:`Homogeneous`</span>
+<span class="sd">            The resulting homogeneous transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># note that this overload of the basic _compose_after is just to</span>
+        <span class="c"># deal with the complexities of maintaining the correct class of</span>
+        <span class="c"># transform upon composition</span>
+        <span class="kn">from</span> <span class="nn">.affine</span> <span class="kn">import</span> <span class="n">Affine</span>
+        <span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">Similarity</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="c"># He is a subclass of me - I can swallow him.</span>
+            <span class="c"># What if I&#39;m an Alignment though? Rules of composition state we</span>
+            <span class="c"># have to produce a non-Alignment result. Nasty, but we check</span>
+            <span class="c"># here to save a lot of repetition.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">HomogFamilyAlignment</span><span class="p">):</span>
+                <span class="n">new_self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_without_alignment</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_self</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_after_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
+            <span class="c"># I am a subclass of him - he can swallow me</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_compose_before</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">):</span>
+            <span class="c"># we&#39;re both in the Similarity family</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Similarity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_after_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Affine</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Affine</span><span class="p">):</span>
+            <span class="c"># we&#39;re both in the Affine family</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_after_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># at least one of us is Homogeneous</span>
+            <span class="n">new_self</span> <span class="o">=</span> <span class="n">Homogeneous</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+            <span class="n">new_self</span><span class="o">.</span><span class="n">_compose_after_inplace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_self</span>
+
+    <span class="k">def</span> <span class="nf">_compose_before_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="c"># Force the Homogeneous variant. compose machinery will guarantee</span>
+        <span class="c"># this is only invoked in the right circumstances (e.g. the types</span>
+        <span class="c"># will match so we don&#39;t need to block the setting of the matrix)</span>
+        <span class="n">Homogeneous</span><span class="o">.</span><span class="n">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_compose_after_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="c"># Force the Homogeneous variant. compose machinery will guarantee</span>
+        <span class="c"># this is only invoked in the right circumstances (e.g. the types</span>
+        <span class="c"># will match so we don&#39;t need to block the setting of the matrix)</span>
+        <span class="n">Homogeneous</span><span class="o">.</span><span class="n">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">,</span>
+                                              <span class="n">transform</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">has_true_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Homogeneous</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

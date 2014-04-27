@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`decomposition.base`
+=================================
+.. automodule:: menpo.decomposition.base
+
+.. currentmodule:: menpo.decomposition.base
+
+2 Functions
+-----------
+
+.. autofunction:: menpo.decomposition.base.eigenvalue_decomposition
+
+
+.. autofunction:: menpo.decomposition.base.principal_component_decomposition
+

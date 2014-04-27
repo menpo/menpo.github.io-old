@@ -1,0 +1,465 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.io.mesh.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.io.mesh.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">commands</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">path</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">cyassimp</span> <span class="kn">import</span> <span class="n">AIImporter</span>
+<span class="kn">from</span> <span class="nn">vrml.vrml97.parser</span> <span class="kn">import</span> <span class="n">buildParser</span> <span class="k">as</span> <span class="n">buildVRML97Parser</span>
+<span class="kn">import</span> <span class="nn">vrml.vrml97.basenodes</span> <span class="kn">as</span> <span class="nn">basenodes</span>
+<span class="kn">from</span> <span class="nn">vrml.node</span> <span class="kn">import</span> <span class="n">NullNode</span>
+<span class="kn">from</span> <span class="nn">menpo.io.base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Importer</span><span class="p">,</span> <span class="n">find_alternative_files</span><span class="p">,</span>
+                           <span class="n">map_filepath_to_importer</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">menpo.io.exceptions</span> <span class="kn">import</span> <span class="n">MeshImportError</span>
+<span class="kn">from</span> <span class="nn">menpo.shape.mesh</span> <span class="kn">import</span> <span class="n">ColouredTriMesh</span><span class="p">,</span> <span class="n">TexturedTriMesh</span><span class="p">,</span> <span class="n">TriMesh</span>
+
+<span class="c"># This formalises the return type of a mesh importer (before building)</span>
+<span class="c"># However, at the moment there is a disconnect between this and the</span>
+<span class="c"># Assimp type, and at some point they should become the same object</span>
+<span class="n">MeshInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;MeshInfo&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;points&#39;</span><span class="p">,</span> <span class="s">&#39;trilist&#39;</span><span class="p">,</span> <span class="s">&#39;tcoords&#39;</span><span class="p">,</span>
+                                   <span class="s">&#39;colour_per_vertex&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="process_with_meshlabserver"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.process_with_meshlabserver">[docs]</a><span class="k">def</span> <span class="nf">process_with_meshlabserver</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">script_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                               <span class="n">output_filetype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">export_flags</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                               <span class="n">meshlab_command</span><span class="o">=</span><span class="s">&#39;meshlabserver&#39;</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Interface to `meshlabserver` to perform prepossessing on meshes before</span>
+<span class="sd">    import. Returns a path to the result of the meshlabserver call, ready for</span>
+<span class="sd">    import as usual. **Requires Meshlab to be installed**.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path : string</span>
+<span class="sd">        Absolute filepath to the mesh</span>
+<span class="sd">    script_path : atring, optional</span>
+<span class="sd">        If specified this script will be run on the input mesh.</span>
+
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    output_dir : string, optional</span>
+<span class="sd">        The output directory for the processed mesh.</span>
+
+<span class="sd">        Default: The users tmp directory.</span>
+<span class="sd">    output_filetype : string, optional</span>
+<span class="sd">        The output filetype desired from meshlabserver. Takes the form of an</span>
+<span class="sd">        extension, eg ``obj``.</span>
+
+<span class="sd">        Default: The same as the input mesh</span>
+<span class="sd">    export_flags : string, optional</span>
+<span class="sd">        Flags passed to the ``-om`` parameter. Allows for choosing</span>
+<span class="sd">        what aspects of the model will be exported (normals,</span>
+<span class="sd">        texture coords etc)</span>
+<span class="sd">    meshlab_command : string, optional</span>
+<span class="sd">        The meshlabserver executable to run.</span>
+
+<span class="sd">        Default: &#39;meshlabserver&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output_path : string</span>
+<span class="sd">        The absolute filepath to the processed mesh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">output_filetype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">file_root</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">output_filename</span> <span class="o">=</span> <span class="n">file_root</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="n">output_filetype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_filename</span> <span class="o">=</span> <span class="n">filename</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="p">(</span><span class="n">meshlab_command</span> <span class="o">+</span> <span class="s">&#39; -i &#39;</span> <span class="o">+</span> <span class="n">file_path</span> <span class="o">+</span> <span class="s">&#39; -o &#39;</span> <span class="o">+</span>
+               <span class="n">output_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">script_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">+=</span> <span class="s">&#39; -s &#39;</span> <span class="o">+</span> <span class="n">script_path</span>
+    <span class="k">if</span> <span class="n">export_flags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">+=</span> <span class="s">&#39; -om &#39;</span> <span class="o">+</span> <span class="n">export_flags</span>
+    <span class="n">commands</span><span class="o">.</span><span class="n">getoutput</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_path</span>
+
+</div>
+<div class="viewcode-block" id="MeshImporter"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.MeshImporter">[docs]</a><span class="k">class</span> <span class="nc">MeshImporter</span><span class="p">(</span><span class="n">Importer</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for importing meshes. Searches in the directory</span>
+<span class="sd">    specified by filepath for landmarks and textures with the same basename as</span>
+<span class="sd">    the mesh. If found, they are automatically attached. If a texture is found</span>
+<span class="sd">    then a :class:`menpo.shape.mesh.textured.TexturedTriMesh` is built, else a</span>
+<span class="sd">    :class:`menpo.shape.mesh.base.Trimesh` is built. Note that this behavior</span>
+<span class="sd">    can be overridden if desired.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        Absolute filepath of the mesh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="MeshImporter.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.MeshImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">texture</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MeshImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">import_textures</span> <span class="o">=</span> <span class="n">texture</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attempted_texture_search</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texture_importer</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_texture_importer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Search for a texture in the same directory as the</span>
+<span class="sd">        mesh. If it exists, create an importer for it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture_path</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">texture_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texture_importer</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># This import is here to avoid circular dependencies</span>
+            <span class="kn">from</span> <span class="nn">menpo.io.extensions</span> <span class="kn">import</span> <span class="n">image_types</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texture_importer</span> <span class="o">=</span> <span class="n">map_filepath_to_importer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">texture_path</span><span class="p">,</span>
+                                                             <span class="n">image_types</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_search_for_texture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Tries to find a texture with the same name as the mesh.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        relative_texture_path : string</span>
+<span class="sd">            The relative path to the texture or ``None`` if one can&#39;t be found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Stop searching every single time we access the property</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attempted_texture_search</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># This import is here to avoid circular dependencies</span>
+        <span class="kn">from</span> <span class="nn">menpo.io.extensions</span> <span class="kn">import</span> <span class="n">image_types</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">find_alternative_files</span><span class="p">(</span><span class="s">&#39;texture&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span>
+                                          <span class="n">image_types</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="MeshImporter.texture_path"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.MeshImporter.texture_path">[docs]</a>    <span class="k">def</span> <span class="nf">texture_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the absolute path to the texture. Returns None if one can&#39;t be</span>
+<span class="sd">        found. Makes it&#39;s best effort to find an appropriate texture by</span>
+<span class="sd">        searching for textures with the same name as the mesh. Will only</span>
+<span class="sd">        search for the path the first time ``texture_path`` is invoked.</span>
+
+<span class="sd">        Sets the ``self.relative_texture_path`` attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        texture_path : string</span>
+<span class="sd">            Absolute filepath to the texture</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Try find a texture path if we can</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attempted_texture_search</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_for_texture</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Abstract method that handles actually building a mesh. This involves</span>
+<span class="sd">        reading the mesh from disk and doing any necessary parsing.</span>
+
+<span class="sd">        Should set the ``self.meshes`` attribute. Each mesh in ``self.meshes``</span>
+<span class="sd">        is expected to be an object with attributes:</span>
+
+<span class="sd">        ======== ==========================</span>
+<span class="sd">        name     type</span>
+<span class="sd">        ======== ==========================</span>
+<span class="sd">        points   double ndarray</span>
+<span class="sd">        trilist  int ndarray</span>
+<span class="sd">        tcoords  double ndarray (optional)</span>
+<span class="sd">        ======== ==========================</span>
+
+<span class="sd">        May also set the ``self.relative_texture_path`` if it is specified by</span>
+<span class="sd">        the format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="MeshImporter.build"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.MeshImporter.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Overrides the :meth:`build &lt;menpo.io.base.Importer.build&gt;` method.</span>
+
+<span class="sd">        Parse the format as defined by :meth:`_parse_format` and then search</span>
+<span class="sd">        for valid textures and landmarks that may have been defined by the</span>
+<span class="sd">        format.</span>
+
+<span class="sd">        Build the appropriate type of mesh defined by parsing the format. May</span>
+<span class="sd">        or may not be textured.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        meshes : list of :class:`menpo.shape.mesh.textured.TexturedTriMesh` or :class:`menpo.shape.mesh.base.Trimesh`</span>
+<span class="sd">            If more than one mesh, returns a list of meshes. If only one</span>
+<span class="sd">            mesh, returns the single mesh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_format</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">import_textures</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_texture_importer</span><span class="p">()</span>
+
+        <span class="n">meshes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mesh</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture_importer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">new_mesh</span> <span class="o">=</span> <span class="n">TexturedTriMesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+                                           <span class="n">mesh</span><span class="o">.</span><span class="n">trilist</span><span class="p">,</span>
+                                           <span class="n">mesh</span><span class="o">.</span><span class="n">tcoords</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">texture_importer</span><span class="o">.</span><span class="n">build</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="n">mesh</span><span class="o">.</span><span class="n">colour_per_vertex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">new_mesh</span> <span class="o">=</span> <span class="n">ColouredTriMesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">trilist</span><span class="p">,</span>
+                                           <span class="n">mesh</span><span class="o">.</span><span class="n">colour_per_vertex</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_mesh</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">trilist</span><span class="p">)</span>
+
+            <span class="n">meshes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_mesh</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">meshes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">meshes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">meshes</span>
+
+</div></div>
+<div class="viewcode-block" id="AssimpImporter"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.AssimpImporter">[docs]</a><span class="k">class</span> <span class="nc">AssimpImporter</span><span class="p">(</span><span class="n">MeshImporter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses assimp to import meshes. The assimp importing is wrapped via cython,</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        Absolute filepath of the mesh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AssimpImporter.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.AssimpImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">texture</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">MeshImporter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">texture</span><span class="o">=</span><span class="n">texture</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ai_importer</span> <span class="o">=</span> <span class="n">AIImporter</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Use assimp to build the mesh and get the relative texture path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ai_importer</span><span class="o">.</span><span class="n">build_scene</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_importer</span><span class="o">.</span><span class="n">meshes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_importer</span><span class="o">.</span><span class="n">assimp_texture_path</span>
+
+</div>
+<div class="viewcode-block" id="WRLImporter"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.WRLImporter">[docs]</a><span class="k">class</span> <span class="nc">WRLImporter</span><span class="p">(</span><span class="n">MeshImporter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Allows importing VRML meshes.</span>
+<span class="sd">    Uses a fork of PyVRML97 to do (hopefully) more robust parsing of VRML</span>
+<span class="sd">    files. It should be noted that, unfortunately, this is a lot slower than</span>
+<span class="sd">    the C++-based assimp importer.</span>
+
+<span class="sd">    VRML allows non-triangular polygons, whilst our importer pipeline doesn&#39;t.</span>
+<span class="sd">    Therefore, any non-triangular polygons are dropped. VRML also allows</span>
+<span class="sd">    separate texture coordinate indices, which we do not support. To have</span>
+<span class="sd">    a better formed mesh, try exporting the WRL as OBJ from Meshlab.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        Absolute filepath of the mesh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WRLImporter.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.io.mesh.base.html#menpo.io.mesh.base.WRLImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="c"># Setup class before super class call</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WRLImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Use pyVRML to parse the file and build a mesh object. A single mesh per</span>
+<span class="sd">        file is assumed.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MeshImportError</span>
+<span class="sd">            If no transform or shape is found in the scenegraph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">buildVRML97Parser</span><span class="p">()</span>
+        <span class="n">vrml_tuple</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c"># I assume these tuples are always built in this order</span>
+        <span class="n">scenegraph</span> <span class="o">=</span> <span class="n">vrml_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">shape_container</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Let&#39;s check if</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">scenegraph</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">basenodes</span><span class="o">.</span><span class="n">Transform</span><span class="p">,</span> <span class="n">basenodes</span><span class="o">.</span><span class="n">Group</span><span class="p">]:</span>
+                <span class="c"># Only fetch the first container (unknown what do do with more</span>
+                <span class="c"># than one container at this time)</span>
+                <span class="n">shape_container</span> <span class="o">=</span> <span class="n">child</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">shape_container</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MeshImportError</span><span class="p">(</span><span class="s">&#39;Unable to find shape container in &#39;</span>
+                                  <span class="s">&#39;scenegraph&#39;</span><span class="p">)</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">shape_container</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">is</span> <span class="n">basenodes</span><span class="o">.</span><span class="n">Shape</span><span class="p">:</span>
+                <span class="c"># Only fetch the first shape (unknown what do do with more</span>
+                <span class="c"># than one shape at this time)</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="n">child</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MeshImportError</span><span class="p">(</span><span class="s">&#39;Unable to find shape in container&#39;</span><span class="p">)</span>
+
+        <span class="n">mesh_points</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coord</span><span class="o">.</span><span class="n">point</span>
+        <span class="n">mesh_trilist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_non_triangular_polygons</span><span class="p">(</span>
+                    <span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">coordIndex</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">texCoord</span><span class="p">)</span> <span class="ow">is</span> <span class="n">NullNode</span><span class="p">:</span>  <span class="c"># Colour per-vertex</span>
+            <span class="n">mesh_colour_per_vertex</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">color</span>
+            <span class="n">mesh_tcoords</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># Texture coordinates</span>
+            <span class="n">mesh_colour_per_vertex</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">mesh_tcoords</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">texCoord</span><span class="o">.</span><span class="n">point</span>
+
+            <span class="c"># See if we have a separate texture index, if not just create an</span>
+            <span class="c"># empty array</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tex_trilist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_non_triangular_polygons</span><span class="p">(</span>
+                    <span class="n">shape</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">texCoordIndex</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">tex_trilist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c"># Fix texture coordinates - we can only have one index so we choose</span>
+            <span class="c"># to use the triangle index</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tex_trilist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mesh_trilist</span><span class="p">):</span>
+                <span class="n">new_tcoords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">mesh_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="n">new_tcoords</span><span class="p">[</span><span class="n">mesh_trilist</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh_tcoords</span><span class="p">[</span><span class="n">tex_trilist</span><span class="p">]</span>
+                <span class="n">mesh_tcoords</span> <span class="o">=</span> <span class="n">new_tcoords</span>
+
+            <span class="c"># Get the texture path - it&#39;s fine not to have one defined</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">appearance</span><span class="o">.</span><span class="n">texture</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">relative_texture_path</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Assumes a single mesh per file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span> <span class="o">=</span> <span class="n">MeshInfo</span><span class="p">(</span><span class="n">mesh_points</span><span class="p">,</span> <span class="n">mesh_trilist</span><span class="p">,</span> <span class="n">mesh_tcoords</span><span class="p">,</span>
+                             <span class="n">mesh_colour_per_vertex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_filter_non_triangular_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coord_list</span><span class="p">):</span>
+        <span class="c"># VRML allows arbitrary polygon coordinates, whilst we only support</span>
+        <span class="c"># triangles. They are delimited by -1, so we split on them and filter</span>
+        <span class="c"># out non-triangle polygons</span>
+        <span class="n">index_list</span> <span class="o">=</span> <span class="n">coord_list</span>
+        <span class="n">index_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">index_list</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c"># The first polygon is missing the -1 at the beginning</span>
+        <span class="c"># Have to cast to int32 because that&#39;s the default, but on 64bit</span>
+        <span class="c"># machines a single number defaults to int64</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span>
+        <span class="c"># Filter out those coordinates that are not triangles</span>
+        <span class="n">index_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="c"># Convert to 2D array</span>
+        <span class="n">index_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index_list</span><span class="p">)</span>
+        <span class="c"># Slice of -1 delimiters</span>
+        <span class="k">return</span> <span class="n">index_list</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

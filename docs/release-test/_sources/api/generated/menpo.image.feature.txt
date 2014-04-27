@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`image.feature`
+============================
+.. automodule:: menpo.image.feature
+
+.. currentmodule:: menpo.image.feature
+
+1 Class
+-------
+
+.. autoclass:: FeatureExtraction
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

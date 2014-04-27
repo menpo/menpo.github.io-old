@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fit.regression.parametricfeatures &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fit.regression.parametricfeatures</h1><div class="highlight"><pre>
+<span class="c"># TODO: document me</span>
+<div class="viewcode-block" id="weights"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.weights">[docs]</a><span class="k">def</span> <span class="nf">weights</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">warped_image</span><span class="p">)</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="whiten_weights"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.whiten_weights">[docs]</a><span class="k">def</span> <span class="nf">whiten_weights</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">project_whiten</span><span class="p">(</span><span class="n">warped_image</span><span class="p">)</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="quadratic_weights"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.quadratic_weights">[docs]</a><span class="k">def</span> <span class="nf">quadratic_weights</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">warped_image</span><span class="p">)</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="appearance"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.appearance">[docs]</a><span class="k">def</span> <span class="nf">appearance</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">reconstruct</span><span class="p">(</span><span class="n">warped_image</span><span class="p">)</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="difference"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.difference">[docs]</a><span class="k">def</span> <span class="nf">difference</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">warped_image</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span> <span class="o">-</span>
+            <span class="n">appearance</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">))</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="project_out"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.project_out">[docs]</a><span class="k">def</span> <span class="nf">project_out</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">warped_image</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span> <span class="o">-</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">distance_to_subspace_vector</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="probabilistic"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.regression.parametricfeatures.html#menpo.fit.regression.parametricfeatures.probabilistic">[docs]</a><span class="k">def</span> <span class="nf">probabilistic</span><span class="p">(</span><span class="n">appearance_model</span><span class="p">,</span> <span class="n">warped_image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">warped_image</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span> <span class="o">-</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+    <span class="n">po</span> <span class="o">=</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">distance_to_subspace_vector</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">po</span> <span class="o">+</span> <span class="n">appearance_model</span><span class="o">.</span><span class="n">project_whitened_vector</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

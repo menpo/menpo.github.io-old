@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fit.lucaskanade.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fit.lucaskanade.base</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.fit.base</span> <span class="kn">import</span> <span class="n">Fitter</span>
+<span class="kn">from</span> <span class="nn">menpo.fit.fittingresult</span> <span class="kn">import</span> <span class="n">ParametricFittingResult</span>
+
+
+<div class="viewcode-block" id="LucasKanade"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.lucaskanade.base.html#menpo.fit.lucaskanade.base.LucasKanade">[docs]</a><span class="k">class</span> <span class="nc">LucasKanade</span><span class="p">(</span><span class="n">Fitter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    An abstract base class for implementations of Lucas-Kanade [1]_</span>
+<span class="sd">    type algorithms.</span>
+
+<span class="sd">    This is to abstract away optimisation specific functionality such as the</span>
+<span class="sd">    calculation of the Hessian (which could be derived using a number of</span>
+<span class="sd">    techniques, including Gauss-Newton and Levenberg-Marquardt).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image : :class:`pybug.image.base.Image`</span>
+<span class="sd">        The image to perform the alignment upon.</span>
+
+<span class="sd">        .. note:: Only the image is expected within the base class because</span>
+<span class="sd">            different algorithms expect different kinds of template</span>
+<span class="sd">            (image/model)</span>
+<span class="sd">    residual : :class:`pybug.lucaskanade.residual.Residual`</span>
+<span class="sd">        The kind of residual to be calculated. This is used to quantify the</span>
+<span class="sd">        error between the input image and the reference object.</span>
+<span class="sd">    transform : :class:`pybug.transform.base.AlignableTransform`</span>
+<span class="sd">        The transformation type used to warp the image in to the appropriate</span>
+<span class="sd">        reference frame. This is used by the warping function to calculate</span>
+<span class="sd">        sub-pixel coordinates of the input image in the reference frame.</span>
+<span class="sd">    warp : function</span>
+<span class="sd">        A function that takes 3 arguments,</span>
+<span class="sd">        ``warp(`` :class:`image &lt;pybug.image.base.Image&gt;`,</span>
+<span class="sd">        :class:`template &lt;pybug.image.base.Image&gt;`,</span>
+<span class="sd">        :class:`transform &lt;pybug.transform.base.AlignableTransform&gt;` ``)``</span>
+<span class="sd">        This function is intended to perform sub-pixel interpolation of the</span>
+<span class="sd">        pixel locations calculated by transforming the given image into the</span>
+<span class="sd">        reference frame of the template. Appropriate functions are given in</span>
+<span class="sd">        :doc:`pybug.interpolation`.</span>
+<span class="sd">    optimisation : (&#39;GN&#39;,) | (&#39;LM&#39;, float), optional</span>
+<span class="sd">        The optimisation technique used to calculate the Hessian approximation.</span>
+<span class="sd">        Note that for &#39;LM&#39; the float is used to set the update step.</span>
+
+<span class="sd">        Default: &#39;GN&#39;</span>
+<span class="sd">    update_step : float, optional</span>
+<span class="sd">        The update step used when performing a Levenberg-Marquardt</span>
+<span class="sd">        optimisation.</span>
+
+<span class="sd">        Default: 0.001</span>
+<span class="sd">    eps : float, optional</span>
+<span class="sd">        The convergence value. When calculating the level of convergence, if</span>
+<span class="sd">        the norm of the delta parameter updates is less than ``eps``, the</span>
+<span class="sd">        algorithm is considered to have converged.</span>
+
+<span class="sd">        Default: 1**-10</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The type of optimisation technique chosen will determine properties such</span>
+<span class="sd">    as the convergence rate of the algorithm. The supported optimisation</span>
+<span class="sd">    techniques are detailed below:</span>
+
+<span class="sd">    ===== ==================== ===============================================</span>
+<span class="sd">    type  full name            hessian approximation</span>
+<span class="sd">    ===== ==================== ===============================================</span>
+<span class="sd">    &#39;GN&#39;  Gauss-Newton         :math:`\mathbf{J^T J}`</span>
+<span class="sd">    &#39;LM&#39;  Levenberg-Marquardt  :math:`\mathbf{J^T J + \lambda\, diag(J^T J)}`</span>
+<span class="sd">    ===== ==================== ===============================================</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    transform</span>
+<span class="sd">    weights</span>
+<span class="sd">    n_iters</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lucas, Bruce D., and Takeo Kanade.</span>
+<span class="sd">       &quot;An iterative image registration technique with an application to</span>
+<span class="sd">       stereo vision.&quot; IJCAI. Vol. 81. 1981.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LucasKanade.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.fit.lucaskanade.base.html#menpo.fit.lucaskanade.base.LucasKanade.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residual</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span>
+                 <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="n">optimisation</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;GN&#39;</span><span class="p">,),</span> <span class="n">eps</span><span class="o">=</span><span class="mi">10</span><span class="o">**-</span><span class="mi">10</span><span class="p">):</span>
+        <span class="c"># set basic state for all Lucas Kanade algorithms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residual</span> <span class="o">=</span> <span class="n">residual</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">interpolator</span>
+        <span class="c"># select the optimisation approach and warp function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_delta_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_optimisation</span><span class="p">(</span><span class="n">optimisation</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_select_optimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimisation</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;GD&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_step</span> <span class="o">=</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__e_lm</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_descent</span>
+        <span class="k">if</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;GN&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauss_newton_update</span>
+        <span class="k">elif</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;GN_lp&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lp</span> <span class="o">=</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauss_newton_lp_update</span>
+        <span class="k">elif</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;LM&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_step</span> <span class="o">=</span> <span class="n">optimisation</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__e_lm</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_levenberg_marquardt_update</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown optimisation string selected. Valid&#39;</span>
+                             <span class="s">&#39;options are: GN, GN_lp, LM&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gradient_descent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Gradient descent optimization not &quot;</span>
+                                  <span class="s">&quot;implemented yet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gauss_newton_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gauss_newton_lp_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Gauss-Newton lp-norm optimization not &quot;</span>
+                                  <span class="s">&quot;implemented yet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_levenberg_marquardt_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">):</span>
+        <span class="n">LM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">))</span>
+        <span class="n">H_lm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_step</span> <span class="o">*</span> <span class="n">LM</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual</span><span class="o">.</span><span class="n">error</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__e_lm</span><span class="p">:</span>
+            <span class="c"># Bad step, increase step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_step</span> <span class="o">*=</span> <span class="mi">10</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Good step, decrease step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_step</span> <span class="o">/=</span> <span class="mi">10</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__e_lm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual</span><span class="o">.</span><span class="n">error</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">H_lm</span><span class="p">,</span> <span class="n">sd_delta_p</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_create_fitting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ParametricFittingResult</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="n">parameters</span><span class="p">],</span>
+                                       <span class="n">gt_shape</span><span class="o">=</span><span class="n">gt_shape</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

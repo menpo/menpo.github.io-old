@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.tree`
+=========================
+.. automodule:: menpo.shape.tree
+
+.. currentmodule:: menpo.shape.tree
+
+1 Class
+-------
+
+.. autoclass:: Tree
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

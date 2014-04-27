@@ -1,0 +1,636 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.io.landmark &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.io.landmark</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.io.base</span> <span class="kn">import</span> <span class="n">Importer</span>
+<span class="kn">from</span> <span class="nn">menpo.landmark.base</span> <span class="kn">import</span> <span class="n">LandmarkGroup</span>
+<span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">Scale</span>
+
+
+<div class="viewcode-block" id="LandmarkImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LandmarkImporter">[docs]</a><span class="k">class</span> <span class="nc">LandmarkImporter</span><span class="p">(</span><span class="n">Importer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for importing landmarks.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        Absolute filepath of the landmarks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="LandmarkImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LandmarkImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;default&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="LandmarkImporter.build"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LandmarkImporter.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides the :meth:`build &lt;menpo.io.base.Importer.build&gt;` method.</span>
+
+<span class="sd">        Parse the landmark format and return the label and landmark dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        asset : object, optional</span>
+<span class="sd">            The asset that the landmarks are being built for. Can be used to</span>
+<span class="sd">            adjust landmarks as necessary (e.g. rescaling image landmarks</span>
+<span class="sd">            from 0-1 to image.shape)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        landmark_group : string</span>
+<span class="sd">            The landmark group parsed from the file.</span>
+<span class="sd">            Every point will be labelled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_format</span><span class="p">(</span><span class="n">asset</span><span class="o">=</span><span class="n">asset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LandmarkGroup</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span><span class="p">)</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Read the landmarks file from disk, parse it in to semantic labels and</span>
+<span class="sd">        :class:`menpo.shape.base.PointCloud`.</span>
+
+<span class="sd">        Set the ``self.label`` and ``self.pointcloud`` attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to turn an array of indices in to a boolean mask.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_points : int</span>
+<span class="sd">        The total number of points for the mask</span>
+<span class="sd">    indices : ndarray of ints</span>
+<span class="sd">        An array of integers representing the ``True`` indices.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boolean_mask : ndarray of bools</span>
+<span class="sd">        The mask for the set of landmarks where each index from indices is set</span>
+<span class="sd">        to ``True`` and the rest are ``False``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">mask</span>
+
+
+<div class="viewcode-block" id="ASFImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.ASFImporter">[docs]</a><span class="k">class</span> <span class="nc">ASFImporter</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract base class for an importer for the ASF file format.</span>
+<span class="sd">    Currently **does not support the connectivity specified in the format**.</span>
+
+<span class="sd">    Implementations of this class should override the :meth:`_build_points`</span>
+<span class="sd">    which determines the ordering of axes. For example, for images, the</span>
+<span class="sd">    ``x`` and ``y`` axes are flipped such that the first axis is ``y`` (height</span>
+<span class="sd">    in the image domain).</span>
+
+<span class="sd">    Landmark set label: ASF</span>
+
+<span class="sd">    Landmark labels:</span>
+
+<span class="sd">    +---------+</span>
+<span class="sd">    | label   |</span>
+<span class="sd">    +=========+</span>
+<span class="sd">    | all     |</span>
+<span class="sd">    +---------+</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : string</span>
+<span class="sd">        Absolute filepath to landmark file.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www2.imm.dtu.dk/~aam/datasets/datasets.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="ASFImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.ASFImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ASFImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_build_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Determines the ordering of points within the landmarks. For meshes</span>
+<span class="sd">        ``x`` is the first axis, where as for images ``y`` is the first axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c"># Remove comments and blank lines</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                     <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s">&#39;#&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)]</span>
+
+        <span class="c"># Pop the front of the list for the number of landmarks</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="c"># Pop the last element of the list for the image_name</span>
+        <span class="n">image_name</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">count</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">count</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">count</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+            <span class="c"># Though unpacked, they are still all strings</span>
+            <span class="c"># Only unpack the first 7</span>
+            <span class="p">(</span><span class="n">path_num</span><span class="p">,</span> <span class="n">path_type</span><span class="p">,</span> <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">,</span>
+             <span class="n">point_num</span><span class="p">,</span> <span class="n">connects_from</span><span class="p">,</span> <span class="n">connects_to</span><span class="p">)</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[:</span><span class="mi">7</span><span class="p">]</span>
+            <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">xpos</span><span class="p">)</span>
+            <span class="n">ys</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ypos</span><span class="p">)</span>
+            <span class="n">connectivity</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">connects_from</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">connects_to</span><span class="p">)]</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_points</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">asset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># we&#39;ve been given an asset. As ASF files are normalized,</span>
+            <span class="c"># fix that here</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="c"># TODO: Use connectivity and create a graph type instead of PointCloud</span>
+        <span class="c"># edges = scaled_points[connectivity]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ASF&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)}</span>
+
+</div>
+<div class="viewcode-block" id="PTSImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.PTSImporter">[docs]</a><span class="k">class</span> <span class="nc">PTSImporter</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the PTS file format. Assumes version 1 of the format.</span>
+
+<span class="sd">    Implementations of this class should override the :meth:`_build_points`</span>
+<span class="sd">    which determines the ordering of axes. For example, for images, the</span>
+<span class="sd">    ``x`` and ``y`` axes are flipped such that the first axis is ``y`` (height</span>
+<span class="sd">    in the image domain).</span>
+
+<span class="sd">    Note that PTS has a very loose format definition. Here we make the</span>
+<span class="sd">    assumption (as is common) that PTS landmarks are 1-based. That is,</span>
+<span class="sd">    landmarks on a 480x480 image are in the range [1-480]. As Menpo is</span>
+<span class="sd">    consistently 0-based, we *subtract 1* off each landmark value</span>
+<span class="sd">    automatically.</span>
+
+<span class="sd">    If you want to use PTS landmarks that are 0-based, you will have to</span>
+<span class="sd">    manually add one back on to landmarks post importing.</span>
+
+<span class="sd">    Landmark set label: PTS</span>
+
+<span class="sd">    Landmark labels:</span>
+
+<span class="sd">    +---------+</span>
+<span class="sd">    | label   |</span>
+<span class="sd">    +=========+</span>
+<span class="sd">    | all     |</span>
+<span class="sd">    +---------+</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="PTSImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.PTSImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PTSImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_build_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Determines the ordering of points within the landmarks. For meshes</span>
+<span class="sd">        ``x`` is the first axis, where as for images ``y`` is the first axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;{&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;}&#39;</span><span class="p">:</span>
+                <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xpos</span><span class="p">)</span>
+                <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ypos</span><span class="p">)</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c"># PTS landmarks are 1-based, need to convert to 0-based (subtract 1)</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_points</span><span class="p">(</span><span class="n">xs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ys</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;PTS&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)}</span>
+
+</div>
+<div class="viewcode-block" id="LM3Importer"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LM3Importer">[docs]</a><span class="k">class</span> <span class="nc">LM3Importer</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the LM3 file format from the bosphorus dataset. This is a 3D</span>
+<span class="sd">    landmark type and so it is assumed it only applies to meshes.</span>
+
+<span class="sd">    Landmark set label: LM3</span>
+
+<span class="sd">    Landmark labels:</span>
+
+<span class="sd">    +------------------------+</span>
+<span class="sd">    | label                  |</span>
+<span class="sd">    +========================+</span>
+<span class="sd">    | outer_left_eyebrow     |</span>
+<span class="sd">    | middle_left_eyebrow    |</span>
+<span class="sd">    | inner_left_eyebrow     |</span>
+<span class="sd">    | inner_right_eyebrow    |</span>
+<span class="sd">    | middle_right_eyebrow   |</span>
+<span class="sd">    | outer_right_eyebrow    |</span>
+<span class="sd">    | outer_left_eye_corner  |</span>
+<span class="sd">    | inner_left_eye_corner  |</span>
+<span class="sd">    | inner_right_eye_corner |</span>
+<span class="sd">    | outer_right_eye_corner |</span>
+<span class="sd">    | nose_saddle_left       |</span>
+<span class="sd">    | nose_saddle_right      |</span>
+<span class="sd">    | left_nose_peak         |</span>
+<span class="sd">    | nose_tip               |</span>
+<span class="sd">    | right_nose_peak        |</span>
+<span class="sd">    | left_mouth_corner      |</span>
+<span class="sd">    | upper_lip_outer_middle |</span>
+<span class="sd">    | right_mouth_corner     |</span>
+<span class="sd">    | upper_lip_inner_middle |</span>
+<span class="sd">    | lower_lip_inner_middle |</span>
+<span class="sd">    | lower_lip_outer_middle |</span>
+<span class="sd">    | chin_middle            |</span>
+<span class="sd">    +------------------------+</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="LM3Importer.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LM3Importer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LM3Importer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c"># Remove comments and blank lines</span>
+        <span class="n">landmark_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                         <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s">&#39;#&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)]</span>
+
+        <span class="c"># First line says how many landmarks there are: 22 Landmarks</span>
+        <span class="c"># So pop it off the front</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># The lines then alternate between the labels and the coordinates</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_points</span> <span class="o">*</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c"># label</span>
+                <span class="c"># Lowercase, remove spaces and replace with underscores</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># coordinate</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;LM3&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">]))</span>
+        <span class="c"># Create the mask whereby there is one landmark per label</span>
+        <span class="c"># (identity matrix)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vsplit</span><span class="p">(</span><span class="n">masks</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">masks</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="LM2Importer"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LM2Importer">[docs]</a><span class="k">class</span> <span class="nc">LM2Importer</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the LM2 file format from the bosphorus dataset. This is a 2D</span>
+<span class="sd">    landmark type and so it is assumed it only applies to images.</span>
+
+<span class="sd">    Landmark set label: LM2</span>
+
+<span class="sd">    Landmark labels:</span>
+
+<span class="sd">    +------------------------+</span>
+<span class="sd">    | label                  |</span>
+<span class="sd">    +========================+</span>
+<span class="sd">    | outer_left_eyebrow     |</span>
+<span class="sd">    | middle_left_eyebrow    |</span>
+<span class="sd">    | inner_left_eyebrow     |</span>
+<span class="sd">    | inner_right_eyebrow    |</span>
+<span class="sd">    | middle_right_eyebrow   |</span>
+<span class="sd">    | outer_right_eyebrow    |</span>
+<span class="sd">    | outer_left_eye_corner  |</span>
+<span class="sd">    | inner_left_eye_corner  |</span>
+<span class="sd">    | inner_right_eye_corner |</span>
+<span class="sd">    | outer_right_eye_corner |</span>
+<span class="sd">    | nose_saddle_left       |</span>
+<span class="sd">    | nose_saddle_right      |</span>
+<span class="sd">    | left_nose_peak         |</span>
+<span class="sd">    | nose_tip               |</span>
+<span class="sd">    | right_nose_peak        |</span>
+<span class="sd">    | left_mouth_corner      |</span>
+<span class="sd">    | upper_lip_outer_middle |</span>
+<span class="sd">    | right_mouth_corner     |</span>
+<span class="sd">    | upper_lip_inner_middle |</span>
+<span class="sd">    | lower_lip_inner_middle |</span>
+<span class="sd">    | lower_lip_outer_middle |</span>
+<span class="sd">    | chin_middle            |</span>
+<span class="sd">    +------------------------+</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="LM2Importer.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LM2Importer.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LM2Importer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c"># Remove comments and blank lines</span>
+        <span class="n">landmark_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                         <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s">&#39;#&#39;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)]</span>
+
+        <span class="c"># First line says how many landmarks there are: 22 Landmarks</span>
+        <span class="c"># So pop it off the front</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># The next set of lines defines the labels</span>
+        <span class="n">labels_str</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">labels_str</span> <span class="o">==</span> <span class="s">&#39;Labels:&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s">&quot;LM2 landmarks are incorrectly formatted. &quot;</span>
+                              <span class="s">&quot;Expected a list of labels beginning with &quot;</span>
+                              <span class="s">&quot;&#39;Labels:&#39; but found &#39;{0}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">labels_str</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="c"># Lowercase, remove spaces and replace with underscores</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="s">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="c"># The next set of lines defines the coordinates</span>
+        <span class="n">coords_str</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">coords_str</span> <span class="o">==</span> <span class="s">&#39;2D Image coordinates:&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s">&quot;LM2 landmarks are incorrectly formatted. &quot;</span>
+                              <span class="s">&quot;Expected a list of coordinates beginning with &quot;</span>
+                              <span class="s">&quot;&#39;2D Image coordinates:&#39; &quot;</span>
+                              <span class="s">&quot;but found &#39;{0}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coords_str</span><span class="p">))</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">landmark_text</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;LM2&#39;</span>
+        <span class="c"># Flip the x and y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">]))</span>
+        <span class="c"># Create the mask whereby there is one landmark per label</span>
+        <span class="c"># (identity matrix)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vsplit</span><span class="p">(</span><span class="n">masks</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">masks</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="LANImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LANImporter">[docs]</a><span class="k">class</span> <span class="nc">LANImporter</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the LAN file format for the GOSH dataset. This is a 3D</span>
+<span class="sd">    landmark type and so it is assumed it only applies to meshes.</span>
+
+<span class="sd">    Landmark set label: LAN</span>
+
+<span class="sd">    Note that the exact meaning of each landmark in this set varies,</span>
+<span class="sd">    so all we can do is import all landmarks found under the label &#39;LAN&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="LANImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.LANImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LANImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span>
+                <span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)[</span><span class="mi">3</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;LM3&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                               <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)}</span>
+
+</div>
+<div class="viewcode-block" id="BNDImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.BNDImporter">[docs]</a><span class="k">class</span> <span class="nc">BNDImporter</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the BND file format for the BU-3DFE dataset. This is a 3D</span>
+<span class="sd">    landmark type and so it is assumed it only applies to meshes.</span>
+
+<span class="sd">    Landmark set label: BND</span>
+
+<span class="sd">    Landmark labels:</span>
+
+<span class="sd">    +---------------+</span>
+<span class="sd">    | label         |</span>
+<span class="sd">    +===============+</span>
+<span class="sd">    | left_eye      |</span>
+<span class="sd">    | right_eye     |</span>
+<span class="sd">    | left_eyebrow  |</span>
+<span class="sd">    | right_eyebrow |</span>
+<span class="sd">    | nose          |</span>
+<span class="sd">    | mouth         |</span>
+<span class="sd">    | chin          |</span>
+<span class="sd">    +---------------+</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="BNDImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.BNDImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BNDImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c"># Remove blank lines</span>
+        <span class="n">landmark_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()]</span>
+        <span class="n">landmark_text</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">landmark_text</span><span class="p">]</span>
+
+        <span class="n">n_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">landmark_text</span><span class="p">)</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">n_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">landmark_text</span><span class="p">):</span>
+            <span class="c"># Skip the first number as it&#39;s an index into the mesh</span>
+            <span class="n">landmarks</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">3</span><span class="p">])],</span>
+                                       <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;BND&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;left_eye&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">)),</span>
+            <span class="s">&#39;right_eye&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">)),</span>
+            <span class="s">&#39;left_eyebrow&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">26</span><span class="p">)),</span>
+            <span class="s">&#39;right_eyebrow&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">36</span><span class="p">)),</span>
+            <span class="s">&#39;nose&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">48</span><span class="p">)),</span>
+            <span class="s">&#39;mouth&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">68</span><span class="p">)),</span>
+            <span class="s">&#39;chin&#39;</span><span class="p">:</span> <span class="n">_indices_to_mask</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">68</span><span class="p">,</span> <span class="mi">83</span><span class="p">))</span>
+        <span class="p">}</span>
+
+</div>
+<div class="viewcode-block" id="JSONImporter"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.JSONImporter">[docs]</a><span class="k">class</span> <span class="nc">JSONImporter</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Importer for the Menpo JSON format. This is an nD</span>
+<span class="sd">    landmark type for both images and meshes that encodes semantic labels in</span>
+<span class="sd">    the format</span>
+
+<span class="sd">    Landmark set label: JSON</span>
+
+<span class="sd">    Landmark labels: decided by file</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+<div class="viewcode-block" id="JSONImporter.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.io.landmark.html#menpo.io.landmark.JSONImporter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LandmarkImporter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parse_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lms_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c"># lms_dict is now a dict rep the JSON</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;JSON&#39;</span>
+        <span class="n">all_points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># label per group</span>
+        <span class="n">labels_slices</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># slices into the full pointcloud per label</span>
+        <span class="c"># ensure that we always respect the sorting of keys</span>
+        <span class="n">ordered_groups</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">lms_dict</span><span class="p">[</span><span class="s">&#39;groups&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">ordered_groups</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">lms</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s">&#39;landmarks&#39;</span><span class="p">]</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">labels_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms</span><span class="p">)</span> <span class="o">+</span> <span class="n">start</span><span class="p">))</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lms</span><span class="p">)</span> <span class="o">+</span> <span class="n">start</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">lms</span><span class="p">:</span>
+                <span class="n">all_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;point&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">all_points</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># go through each label and build the appropriate boolean array</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">l_slice</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">labels_slices</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">l_slice</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

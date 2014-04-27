@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.shape.mesh.textured &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="menpo.shape.mesh" href="../mesh.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../mesh.html" accesskey="U">menpo.shape.mesh</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.shape.mesh.textured</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.rasterize.base</span> <span class="kn">import</span> <span class="n">TextureRasterInfo</span>
+<span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize</span> <span class="kn">import</span> <span class="n">TexturedTriMeshViewer3d</span>
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">Scale</span>
+<span class="kn">from</span> <span class="nn">menpo.rasterize</span> <span class="kn">import</span> <span class="n">Rasterizable</span>
+<span class="kn">from</span> <span class="nn">menpo.exception</span> <span class="kn">import</span> <span class="n">DimensionalityError</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">TriMesh</span>
+
+
+<div class="viewcode-block" id="TexturedTriMesh"><a class="viewcode-back" href="../../../../api/generated/menpo.shape.mesh.textured.html#menpo.shape.mesh.textured.TexturedTriMesh">[docs]</a><span class="k">class</span> <span class="nc">TexturedTriMesh</span><span class="p">(</span><span class="n">TriMesh</span><span class="p">,</span> <span class="n">Rasterizable</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Combines a :class:`menpo.shape.mesh.base.TriMesh` with a texture. Also</span>
+<span class="sd">    encapsulates the texture coordinates required to render the texture on the</span>
+<span class="sd">    mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : (N, D) ndarray</span>
+<span class="sd">        The coordinates of the mesh.</span>
+<span class="sd">    trilist : (M, 3) ndarray</span>
+<span class="sd">        The triangle list for the mesh</span>
+<span class="sd">    tcoords : (N, 2) ndarray</span>
+<span class="sd">        The texture coordinates for the mesh.</span>
+<span class="sd">    texture : :class:`menpo.image.base.Image`</span>
+<span class="sd">        The texture for the mesh.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TexturedTriMesh.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.shape.mesh.textured.html#menpo.shape.mesh.textured.TexturedTriMesh.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">trilist</span><span class="p">,</span> <span class="n">tcoords</span><span class="p">,</span> <span class="n">texture</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TexturedTriMesh</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">trilist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcoords</span> <span class="o">=</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">tcoords</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texture</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">texture</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TexturedTriMesh.tcoords_pixel_scaled"><a class="viewcode-back" href="../../../../api/generated/menpo.shape.mesh.textured.html#menpo.shape.mesh.textured.TexturedTriMesh.tcoords_pixel_scaled">[docs]</a>    <span class="k">def</span> <span class="nf">tcoords_pixel_scaled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a PointCloud that is modified to be suitable for directly</span>
+<span class="sd">        indexing into the pixels of the texture (e.g. for manual mapping</span>
+<span class="sd">        operations). The resulting tcoords behave just like image landmarks</span>
+<span class="sd">        do:</span>
+
+<span class="sd">         &gt;&gt;&gt; texture = texturedtrimesh.texture</span>
+<span class="sd">         &gt;&gt;&gt; tc_ps = texturedtrimesh.tcoords_pixel_scaled()</span>
+<span class="sd">         &gt;&gt;&gt; pixel_values_at_tcs = texture[tc_ps[: ,0], tc_ps[:, 1]]</span>
+
+<span class="sd">        The operations that are performed are:</span>
+
+<span class="sd">        - Flipping the origin from bottom-left to top-left</span>
+<span class="sd">        - Scaling the tcoords by the image shape (denormalising them)</span>
+<span class="sd">        - Permuting the axis so that</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tcoords_scaled : :class:`menpo.shape.PointCloud`</span>
+<span class="sd">            A copy of the tcoords that behave like Image landmarks</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">texture</span><span class="o">.</span><span class="n">shape</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">tcoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcoords</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c"># flip the &#39;y&#39; st 1 -&gt; 0 and 0 -&gt; 1, moving the axis to upper left</span>
+        <span class="n">tcoords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">tcoords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="c"># apply the scale to get the units correct</span>
+        <span class="n">tcoords</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">tcoords</span><span class="p">)</span>
+        <span class="c"># flip axis 0 and axis 1 so indexing is as expected</span>
+        <span class="n">tcoords</span> <span class="o">=</span> <span class="n">tcoords</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">tcoords</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TexturedTriMesh.tojson"><a class="viewcode-back" href="../../../../api/generated/menpo.shape.mesh.textured.html#menpo.shape.mesh.textured.TexturedTriMesh.tojson">[docs]</a>    <span class="k">def</span> <span class="nf">tojson</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Convert this `TriMesh` to a dictionary JSON representation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dictionary with &#39;points&#39;, &#39;trilist&#39; and &#39;tcoords&#39; keys. Both are lists</span>
+<span class="sd">        suitable for use in the by the `json` standard library package.</span>
+
+<span class="sd">        Note that textures are best transmitted in a native format like jpeg</span>
+<span class="sd">        rather that in a JSON format. For this reason the texture itself is</span>
+<span class="sd">        not encoded. Consumers of this method (e.g. a web server serving</span>
+<span class="sd">        Menpo TexturedTriMeshes) could use the ioinfo property to locate the</span>
+<span class="sd">        original texture on disk for clients and serve this directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json_dict</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="o">.</span><span class="n">tojson</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">json_dict</span><span class="p">[</span><span class="s">&#39;tcoords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tcoords</span><span class="o">.</span><span class="n">tojson</span><span class="p">()[</span><span class="s">&#39;points&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">json_dict</span>
+</div>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">textured</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Visualize the :class:`TexturedTriMesh`. Only 3D objects are currently</span>
+<span class="sd">        supported.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        textured : bool, optional</span>
+<span class="sd">            If ``True``, render the texture.</span>
+
+<span class="sd">            Default: ``True``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`menpo.visualize.base.Renderer`</span>
+<span class="sd">            The viewer object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            If ``self.n_dims != 3``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">textured</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">TexturedTriMeshViewer3d</span><span class="p">(</span>
+                    <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tcoords</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DimensionalityError</span><span class="p">(</span><span class="s">&quot;Only viewing of 3D textured meshes&quot;</span>
+                                          <span class="s">&quot;is currently supported.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TexturedTriMesh</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_view</span><span class="p">(</span><span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span>
+                                                      <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span>
+                                                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;{}</span><span class="se">\n</span><span class="s">texture_shape: {}, n_texture_channels: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">TriMesh</span><span class="o">.</span><span class="n">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture</span><span class="o">.</span><span class="n">n_channels</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_rasterize_type_texture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>  <span class="c"># TexturedTriMesh can specify texture rendering params</span>
+
+    <span class="k">def</span> <span class="nf">_rasterize_generate_textured_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">TextureRasterInfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">tcoords</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">texture</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../mesh.html" >menpo.shape.mesh</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

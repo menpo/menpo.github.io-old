@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fitmultilevel.aam.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fitmultilevel.aam.base</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">AlignmentSimilarity</span>
+<span class="kn">from</span> <span class="nn">menpo.transform.modeldriven</span> <span class="kn">import</span> <span class="n">OrthoMDTransform</span><span class="p">,</span> <span class="n">ModelDrivenTransform</span>
+<span class="kn">from</span> <span class="nn">menpo.fit.lucaskanade.residual</span> <span class="kn">import</span> <span class="n">LSIntensity</span>
+<span class="kn">from</span> <span class="nn">menpo.fit.lucaskanade.appearance</span> <span class="kn">import</span> <span class="n">AlternatingInverseCompositional</span>
+<span class="kn">from</span> <span class="nn">menpo.fitmultilevel.base</span> <span class="kn">import</span> <span class="n">MultilevelFitter</span>
+<span class="kn">from</span> <span class="nn">menpo.fitmultilevel.fittingresult</span> <span class="kn">import</span> <span class="n">AAMMultilevelFittingResult</span>
+<span class="kn">from</span> <span class="nn">menpo.fitmultilevel.featurefunctions</span> <span class="kn">import</span> <span class="n">compute_features</span>
+
+
+<div class="viewcode-block" id="AAMFitter"><a class="viewcode-back" href="../../../../api/generated/menpo.fitmultilevel.aam.base.html#menpo.fitmultilevel.aam.base.AAMFitter">[docs]</a><span class="k">class</span> <span class="nc">AAMFitter</span><span class="p">(</span><span class="n">MultilevelFitter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Mixin for Active Appearance Models Fitters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    aam: :class:`menpo.aam.AAM`</span>
+<span class="sd">        The Active Appearance Model to be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AAMFitter.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.fitmultilevel.aam.base.html#menpo.fitmultilevel.aam.base.AAMFitter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aam</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aam</span> <span class="o">=</span> <span class="n">aam</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">reference_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">reference_shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feature_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">feature_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">downscale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">downscale</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scaled_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">scaled_levels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">interpolator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">interpolator</span>
+
+    <span class="c"># TODO: Can this be moved up?</span>
+    <span class="k">def</span> <span class="nf">_prepare_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">initial_shape</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The image is first rescaled wrt the reference_landmarks, then</span>
+<span class="sd">        smoothing or gaussian pyramid are computed and, finally, features</span>
+<span class="sd">        are extracted from each pyramidal element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;initial_shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">initial_shape</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">rescale_to_reference_shape</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reference_shape</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s">&#39;initial_shape&#39;</span><span class="p">,</span>
+            <span class="n">interpolator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gt_shape</span><span class="p">:</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;gt_shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">initial_shape</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_levels</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled_levels</span><span class="p">:</span>
+                <span class="n">pyramid</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">gaussian_pyramid</span><span class="p">(</span>
+                    <span class="n">n_levels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_levels</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">downscale</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pyramid</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">smoothing_pyramid</span><span class="p">(</span>
+                    <span class="n">n_levels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_levels</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">downscale</span><span class="p">)</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_features</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pyramid</span><span class="p">]</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">compute_features</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_type</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">images</span>
+
+    <span class="k">def</span> <span class="nf">_create_fitting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">fittings</span><span class="p">,</span> <span class="n">affine_correction</span><span class="p">,</span>
+                        <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AAMMultilevelFittingResult</span><span class="p">(</span>
+            <span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">fittings</span><span class="p">,</span> <span class="n">affine_correction</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="n">gt_shape</span><span class="p">,</span>
+            <span class="n">error_type</span><span class="o">=</span><span class="n">error_type</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LucasKanadeAAMFitter"><a class="viewcode-back" href="../../../../api/generated/menpo.fitmultilevel.aam.base.html#menpo.fitmultilevel.aam.base.LucasKanadeAAMFitter">[docs]</a><span class="k">class</span> <span class="nc">LucasKanadeAAMFitter</span><span class="p">(</span><span class="n">AAMFitter</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Lucas-Kanade based Fitter for Active Appearance Models.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    aam: :class:`menpo.fitmultilevel.aam.builder.AAM`</span>
+<span class="sd">        The Active Appearance Model to be use.</span>
+
+<span class="sd">    algorithm: :class:`menpo.fit.lucaskanade.appearance`, optional</span>
+<span class="sd">        The Lucas-Kanade class to be used.</span>
+
+<span class="sd">        Default: AlternatingInverseCompositional</span>
+
+<span class="sd">    residual: :class:`menpo.fit.lucaskanade.residual`, optional</span>
+<span class="sd">        The residual class to be used</span>
+
+<span class="sd">        Default: &#39;LSIntensity&#39;</span>
+
+<span class="sd">    md_transform: :class:`menpo.transform.ModelDrivenTransform`,</span>
+<span class="sd">                      optional</span>
+<span class="sd">        The model driven transform class to be used.</span>
+
+<span class="sd">        Default: OrthoMDTransform</span>
+
+<span class="sd">    global_transform: :class:`menpo.transform.affine`, optional</span>
+<span class="sd">        The global transform class to be used by the previous</span>
+<span class="sd">        md_transform_cls. Currently, only</span>
+<span class="sd">        :class:`menpo.transform.affine.Similarity` is supported.</span>
+
+<span class="sd">        Default: Similarity</span>
+
+<span class="sd">    n_shape: list, optional</span>
+<span class="sd">        The number of shape components to be used per fitting level.</span>
+<span class="sd">        If None, for each shape model n_active_components will be used.</span>
+
+<span class="sd">        Default: None</span>
+
+<span class="sd">    n_appearance: list, optional</span>
+<span class="sd">        The number of appearance components to be used per fitting level.</span>
+<span class="sd">        If None, for each appearance model n_active_components will be used.</span>
+
+<span class="sd">        Default: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LucasKanadeAAMFitter.__init__"><a class="viewcode-back" href="../../../../api/generated/menpo.fitmultilevel.aam.base.html#menpo.fitmultilevel.aam.base.LucasKanadeAAMFitter.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aam</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">AlternatingInverseCompositional</span><span class="p">,</span>
+                 <span class="n">residual</span><span class="o">=</span><span class="n">LSIntensity</span><span class="p">,</span> <span class="n">md_transform</span><span class="o">=</span><span class="n">OrthoMDTransform</span><span class="p">,</span>
+                 <span class="n">global_transform</span><span class="o">=</span><span class="n">AlignmentSimilarity</span><span class="p">,</span> <span class="n">n_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">n_appearance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LucasKanadeAAMFitter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">aam</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_up</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span>
+                     <span class="n">md_transform</span><span class="o">=</span><span class="n">md_transform</span><span class="p">,</span>
+                     <span class="n">global_transform</span><span class="o">=</span><span class="n">global_transform</span><span class="p">,</span>
+                     <span class="n">n_shape</span><span class="o">=</span><span class="n">n_shape</span><span class="p">,</span> <span class="n">n_appearance</span><span class="o">=</span><span class="n">n_appearance</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;LK-AAM-&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">algorithm</span>
+
+    <span class="k">def</span> <span class="nf">_set_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">AlternatingInverseCompositional</span><span class="p">,</span>
+                <span class="n">residual</span><span class="o">=</span><span class="n">LSIntensity</span><span class="p">,</span> <span class="n">md_transform</span><span class="o">=</span><span class="n">OrthoMDTransform</span><span class="p">,</span>
+                <span class="n">global_transform</span><span class="o">=</span><span class="n">AlignmentSimilarity</span><span class="p">,</span> <span class="n">n_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">n_appearance</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the lucas-kanade fitter object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        algorithm: :class:`menpo.lucaskanade.appearance`, optional</span>
+<span class="sd">            The Lucas-Kanade class to be used.</span>
+
+<span class="sd">            Default: AlternatingInverseCompositional</span>
+
+<span class="sd">        residual: :class:`menpo.lucaskanade.residual`, optional</span>
+<span class="sd">            The residual class to be used</span>
+
+<span class="sd">            Default: &#39;LSIntensity&#39;</span>
+
+<span class="sd">        md_transform: :class:`menpo.transform.ModelDrivenTransform`,</span>
+<span class="sd">                          optional</span>
+<span class="sd">            The model driven transform class to be used.</span>
+
+<span class="sd">            Default: OrthoMDTransform</span>
+
+<span class="sd">        global_trans: :class:`menpo.transform.affine`, optional</span>
+<span class="sd">            The global transform class to be used by the previous</span>
+<span class="sd">            md_transform. Currently, only</span>
+<span class="sd">            :class:`menpo.transform.affine.Similarity` is supported.</span>
+
+<span class="sd">            Default: Similarity</span>
+
+<span class="sd">        n_shape: list, optional</span>
+<span class="sd">            The number of shape components to be used per fitting level.</span>
+<span class="sd">            If None, for each shape model n_active_components will be used.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        n_appearance: list, optional</span>
+<span class="sd">            The number of appearance components to be used per fitting level.</span>
+<span class="sd">            If None, for each appearance model n_active_components will be used.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n_shape</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">shape_models</span><span class="p">:</span>
+                    <span class="n">sm</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n_shape</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_shape</span><span class="p">)</span> <span class="ow">is</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">shape_models</span><span class="p">:</span>
+                    <span class="n">sm</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_shape</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sm</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">shape_models</span><span class="p">,</span> <span class="n">n_shape</span><span class="p">):</span>
+                    <span class="n">sm</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;n_shape can be integer, integer list &#39;</span>
+                                 <span class="s">&#39;containing 1 or {} elements or &#39;</span>
+                                 <span class="s">&#39;None&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">n_appearance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n_appearance</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">appearance_models</span><span class="p">:</span>
+                    <span class="n">am</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n_appearance</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_appearance</span><span class="p">)</span> <span class="ow">is</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">appearance_models</span><span class="p">:</span>
+                    <span class="n">am</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n_appearance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_appearance</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">am</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">appearance_models</span><span class="p">,</span> <span class="n">n_shape</span><span class="p">):</span>
+                    <span class="n">am</span><span class="o">.</span><span class="n">n_active_components</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;n_appearance can be integer, integer list &#39;</span>
+                                 <span class="s">&#39;containing 1 or {} elements or &#39;</span>
+                                 <span class="s">&#39;None&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">n_levels</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">appearance_models</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">shape_models</span><span class="p">)):</span>
+
+            <span class="k">if</span> <span class="n">md_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ModelDrivenTransform</span><span class="p">:</span>
+                <span class="n">md_trans</span> <span class="o">=</span> <span class="n">md_transform</span><span class="p">(</span>
+                    <span class="n">sm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">global_transform</span><span class="p">,</span>
+                    <span class="n">source</span><span class="o">=</span><span class="n">am</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">md_trans</span> <span class="o">=</span> <span class="n">md_transform</span><span class="p">(</span>
+                    <span class="n">sm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aam</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span>
+                    <span class="n">source</span><span class="o">=</span><span class="n">am</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fitters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">algorithm</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">residual</span><span class="p">(),</span> <span class="n">md_trans</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

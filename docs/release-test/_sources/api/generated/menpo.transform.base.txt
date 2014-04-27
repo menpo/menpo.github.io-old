@@ -1,0 +1,18 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.base`
+=============================
+.. automodule:: menpo.transform.base
+
+.. currentmodule:: menpo.transform.base
+
+2 Classes
+---------
+
+.. autoclass:: Transform
+  :members:
+  :show-inheritance:
+
+.. autoclass:: Transformable
+  :members:
+  :show-inheritance:

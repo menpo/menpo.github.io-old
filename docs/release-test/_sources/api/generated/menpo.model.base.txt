@@ -1,0 +1,26 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`model.base`
+=========================
+.. automodule:: menpo.model.base
+
+.. currentmodule:: menpo.model.base
+
+2 Classes
+---------
+
+.. autoclass:: InstanceLinearModel
+  :members:
+  :show-inheritance:
+
+.. autoclass:: MeanInstanceLinearModel
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+1 Function
+----------
+
+.. autofunction:: menpo.model.base.Similarity2dInstanceModel
+

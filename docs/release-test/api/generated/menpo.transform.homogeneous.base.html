@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: transform.homogeneous.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.transform.homogeneous.base">
+<span id="module-transform-homogeneous-base"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">transform.homogeneous.base</span></tt><a class="headerlink" href="#module-menpo.transform.homogeneous.base" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.base.HomogFamilyAlignment">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.base.</tt><tt class="descname">HomogFamilyAlignment</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/base.html#HomogFamilyAlignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.base.HomogFamilyAlignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.base.alignment.html#menpo.transform.base.alignment.Alignment" title="menpo.transform.base.alignment.Alignment"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.alignment.Alignment</span></tt></a></p>
+<p>Simple subclass of Alignment that adds the ability to create a copy of an
+alignment class without the alignment behavior.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.transform.homogeneous.base.Homogeneous">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.base.</tt><tt class="descname">Homogeneous</tt><big>(</big><em>h_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/base.html#Homogeneous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.base.Homogeneous" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.base.composable.html#menpo.transform.base.composable.ComposableTransform" title="menpo.transform.base.composable.ComposableTransform"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.composable.ComposableTransform</span></tt></a>, <a class="reference internal" href="menpo.base.html#menpo.base.Vectorizable" title="menpo.base.Vectorizable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.base.Vectorizable</span></tt></a>, <a class="reference internal" href="menpo.transform.base.composable.html#menpo.transform.base.composable.VComposable" title="menpo.transform.base.composable.VComposable"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.composable.VComposable</span></tt></a>, <a class="reference internal" href="menpo.transform.base.invertable.html#menpo.transform.base.invertable.VInvertible" title="menpo.transform.base.invertable.VInvertible"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.invertable.VInvertible</span></tt></a></p>
+<p>A simple n-dimensional homogeneous transformation.</p>
+<p>Adds a unit homogeneous coordinate to points, performs the dot
+product, re-normalizes by division by the homogeneous coordinate,
+and returns the result.</p>
+<p>Can be composed with another Homogeneous, so long as the dimensionality
+matches.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>h_matrix</strong> : (n_dims + 1, n_dims + 1) ndarray</p>
+<blockquote class="last">
+<div><p>The homogeneous matrix to be applied.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.base.Homogeneous.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>h_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/base.html#Homogeneous.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.base.Homogeneous.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.base.Homogeneous.composes_inplace_with">
+<tt class="descname">composes_inplace_with</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/base.html#Homogeneous.composes_inplace_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.base.Homogeneous.composes_inplace_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous can swallow composition with any other Homogeneous,
+subclasses will have to override and be more specific.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.base.Homogeneous.composes_with">
+<tt class="descname">composes_with</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/base.html#Homogeneous.composes_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.base.Homogeneous.composes_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any Homogeneous can compose with any other Homogeneous.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">transform.homogeneous.base</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.transform.homogeneous.base.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

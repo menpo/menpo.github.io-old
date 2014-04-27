@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: image.boolean &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.image.boolean">
+<span id="module-image-boolean"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">image.boolean</span></tt><a class="headerlink" href="#module-menpo.image.boolean" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.image.boolean.BooleanImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.boolean.</tt><tt class="descname">BooleanImage</tt><big>(</big><em>mask_data</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.image.base.html#menpo.image.base.Image" title="menpo.image.base.Image"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.base.Image</span></tt></a></p>
+<p>A mask image made from binary pixels. The region of the image that is
+left exposed by the mask is referred to as the &#8216;masked region&#8217;. The
+set of &#8216;masked&#8217; pixels is those pixels corresponding to a True value in
+the mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask_data</strong> : (M, N, ..., L) ndarray</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>The binary mask data. Note that there is no channel axis - a 2D Mask</dt>
+<dd><p class="first last">Image is built from just a 2D numpy array of mask_data.</p>
+</dd>
+</dl>
+<p>Automatically coerced in to boolean values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>mask_data</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.all_indices">
+<tt class="descname">all_indices</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.all_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.all_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indices into all pixels of the mask, as consistent with
+true_indices and false_indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_pixels</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="menpo.image.boolean.BooleanImage.blank">
+<em class="property">classmethod </em><tt class="descname">blank</tt><big>(</big><em>shape</em>, <em>fill=True</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a blank <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a> of the requested shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple or list</p>
+<blockquote>
+<div><p>The shape of the image. Any floating point values are rounded
+according to the <tt class="docutils literal"><span class="pre">round</span></tt> kwarg.</p>
+</div></blockquote>
+<p><strong>fill</strong> : True or False, optional</p>
+<blockquote>
+<div><p>The mask value to be set everywhere</p>
+<dl class="docutils">
+<dt>Default: True (masked region is the whole image - meaning the whole</dt>
+<dd><p class="first last">image is exposed)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>blank_image</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>A blank mask of the requested size</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.bounds_false">
+<tt class="descname">bounds_false</tt><big>(</big><em>boundary=0</em>, <em>constrain_to_bounds=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.bounds_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.bounds_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum to maximum indices along all dimensions that the
+mask includes which fully surround the False mask values. In the case
+of a 2D Image for instance, the min and max define two corners of a
+rectangle bounding the False pixel values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary</strong> : int &gt;= 0, optional</p>
+<blockquote>
+<div><p>A number of pixels that should be added to the extent. A
+negative value can be used to shrink the bounds in.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_bounds: bool, optional</strong> :</p>
+<blockquote>
+<div><p>If True, the bounding extent is snapped to not go beyond
+the edge of the image. If False, the bounds are left unchanged.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the False mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the False mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.bounds_true">
+<tt class="descname">bounds_true</tt><big>(</big><em>boundary=0</em>, <em>constrain_to_bounds=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.bounds_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.bounds_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum to maximum indices along all dimensions that the
+mask includes which fully surround the True mask values. In the case
+of a 2D Image for instance, the min and max define two corners of a
+rectangle bounding the True pixel values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary</strong> : int, optional</p>
+<blockquote>
+<div><p>A number of pixels that should be added to the extent. A
+negative value can be used to shrink the bounds in.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_bounds: bool, optional</strong> :</p>
+<blockquote>
+<div><p>If True, the bounding extent is snapped to not go beyond
+the edge of the image. If False, the bounds are left unchanged.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the True mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the True mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.false_indices">
+<tt class="descname">false_indices</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.false_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.false_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The indices of pixels that are false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_false</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>flattened</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.from_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and returns a new
+<a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a> formed by
+reshaping the vector to the correct dimensions. Note that this is
+rebuilding a boolean image <strong>itself</strong> from boolean values. The mask
+is in no way interpreted in performing the operation, in contrast to
+MaskedImage, where only the masked region is used in from_vector()
+and as_vector(). Any image landmarks are transferred in the process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,) np.bool ndarray</p>
+<blockquote>
+<div><p>A flattened vector of all the pixels of a BooleanImage.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>New BooleanImage of same shape as this image</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.invert">
+<tt class="descname">invert</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.invert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverts the current mask in place, setting all True values to False,
+and all False values to True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.inverted_copy">
+<tt class="descname">inverted_copy</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.inverted_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.inverted_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of this Boolean image, which is inverted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>inverted_image: :class:`BooleanNSImage`</strong> :</p>
+<blockquote class="last">
+<div><p>An inverted copy of this boolean image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.mask">
+<tt class="descname">mask</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixels of the mask with no channel axis. This is what
+should be used to mask any k-dimensional image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(M, N, ..., L), np.bool ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_false">
+<tt class="descname">n_false</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.n_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of <tt class="docutils literal"><span class="pre">False</span></tt> values in the mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_true">
+<tt class="descname">n_true</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.n_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of <tt class="docutils literal"><span class="pre">True</span></tt> values in the mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.proportion_false">
+<tt class="descname">proportion_false</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.proportion_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.proportion_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>The proportion of the mask which is <tt class="docutils literal"><span class="pre">False</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.proportion_true">
+<tt class="descname">proportion_true</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.proportion_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.proportion_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>The proportion of the mask which is <tt class="docutils literal"><span class="pre">True</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.true_indices">
+<tt class="descname">true_indices</tt><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.true_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.true_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The indices of pixels that are true.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_true</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.warp_to">
+<tt class="descname">warp_to</tt><big>(</big><em>template_mask</em>, <em>transform</em>, <em>warp_landmarks=False</em>, <em>interpolator='scipy'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/boolean.html#BooleanImage.warp_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.warp_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Warps this BooleanImage into a different reference space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>template_mask</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.boolean.BooleanImage</span></tt></a></p>
+<blockquote>
+<div><p>Defines the shape of the result, and what pixels should be
+sampled.</p>
+</div></blockquote>
+<p><strong>transform</strong> : <a class="reference internal" href="menpo.transform.base.html#menpo.transform.base.Transform" title="menpo.transform.base.Transform"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.Transform</span></tt></a></p>
+<blockquote>
+<div><p>Transform <strong>from the template space back to this image</strong>.
+Defines, for each True pixel location on the template, which pixel
+location should be sampled from on this image.</p>
+</div></blockquote>
+<p><strong>warp_landmarks</strong> : bool, optional</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt>, warped_image will have the same landmark dictionary
+as self, but with each landmark updated to the warped position.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217; or &#8216;c&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>warped_image</strong> : type(self)</p>
+<blockquote class="last">
+<div><p>A copy of this image, warped.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">image.boolean</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.image.boolean.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

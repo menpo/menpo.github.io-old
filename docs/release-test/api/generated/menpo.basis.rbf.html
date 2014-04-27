@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: basis.rbf &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.basis.rbf">
+<span id="module-basis-rbf"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">basis.rbf</span></tt><a class="headerlink" href="#module-menpo.basis.rbf" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>3 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.basis.rbf.BasisFunction">
+<em class="property">class </em><tt class="descclassname">menpo.basis.rbf.</tt><tt class="descname">BasisFunction</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#BasisFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.BasisFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>An abstract base class for Basis functions. In the case, radial basis
+functions. They provide two methods, <a class="reference internal" href="#menpo.basis.rbf.BasisFunction.apply" title="menpo.basis.rbf.BasisFunction.apply"><tt class="xref py py-meth docutils literal"><span class="pre">apply()</span></tt></a>, which calculates the
+basis itself, and <a class="reference internal" href="#menpo.basis.rbf.BasisFunction.jacobian_points" title="menpo.basis.rbf.BasisFunction.jacobian_points"><tt class="xref py py-meth docutils literal"><span class="pre">jacobian_points()</span></tt></a>, which calculates the derivative
+of the basis wrt the coordinate system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>c</strong> : (L, D) ndarray</p>
+<blockquote class="last">
+<div><p>The set of centers that make the basis. Usually represents a set of
+source landmarks.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.basis.rbf.BasisFunction.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#BasisFunction.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.BasisFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.BasisFunction.apply">
+<tt class="descname">apply</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#BasisFunction.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.BasisFunction.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the basis function on the given residuals. The input is the
+set of points the basis should be calculated for. The euclidean
+distance between <tt class="docutils literal"><span class="pre">x</span></tt> and the centers, <tt class="docutils literal"><span class="pre">c</span></tt>, will be used as the
+residual.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Divisions by zero are avoided and any zero residuals remain zero.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>u</strong> : (N, L) ndarray</p>
+<blockquote class="last">
+<div><p>The basis function applied to each distance,
+<span class="math">\(\lVert x - c \rVert\)</span>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.BasisFunction.jacobian_points">
+<tt class="descname">jacobian_points</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#BasisFunction.jacobian_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.BasisFunction.jacobian_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the derivative of the basis function wrt the
+coordinate system.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Divisions by zero are avoided and any zero residuals remain zero.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dudx</strong> : (N, L, D) ndarray</p>
+<blockquote class="last">
+<div><p>Tensor representing the first order partial derivative
+of each points with respect to the centers, over each dimension.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.basis.rbf.R2LogR2">
+<em class="property">class </em><tt class="descclassname">menpo.basis.rbf.</tt><tt class="descname">R2LogR2</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.basis.rbf.BasisFunction" title="menpo.basis.rbf.BasisFunction"><tt class="xref py py-class docutils literal"><span class="pre">menpo.basis.rbf.BasisFunction</span></tt></a></p>
+<p>The <span class="math">\(r^2 \log{r^2}\)</span> basis function.</p>
+<p>The derivative of this function is <span class="math">\(2 r (\log{r^2} + 1)\)</span>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><span class="math">\(r = \lVert x - c \rVert\)</span></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>c</strong> : (L, D) ndarray</p>
+<blockquote class="last">
+<div><p>The set of centers that make the basis. Usually represents a set of
+source landmarks.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR2.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR2.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR2.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR2.apply">
+<tt class="descname">apply</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR2.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR2.apply" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Apply the basis function.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><span class="math">\(r^2 \log{r^2} === r^2 2 \log{r}\)</span></p>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>u</strong> : (N, L) ndarray</p>
+<blockquote>
+<div><p>The basis function applied to each distance,
+:math:<a href="#id1"><span class="problematic" id="id2">`</span></a>lVert x - c</p>
+</div></blockquote>
+<p class="last"><strong>Vert`.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR2.jacobian_points">
+<tt class="descname">jacobian_points</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR2.jacobian_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR2.jacobian_points" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Apply the derivative of the basis function wrt the coordinate system.
+This is applied over each dimension of the input vector, <cite>x</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>..math:</p>
+<div class="highlight-python"><div class="highlight"><pre>2 (x - c)^T (\log{r^2_{x, l}} + 1) ===
+2 (x - c)^T (2 \log{r_{x, l}} + 1)
+</pre></div>
+</div>
+<p>where:</p>
+<p class="last">:math:<a href="#id3"><span class="problematic" id="id4">`</span></a>r_{x, l} = lVert x - c</p>
+</div>
+</div></blockquote>
+<p>Vert``</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dudx</strong> : (N, L, D) ndarray</p>
+<blockquote class="last">
+<div><p>The jacobian tensor representing the first order partial derivative
+of each point wrt the coordinate system</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.basis.rbf.R2LogR">
+<em class="property">class </em><tt class="descclassname">menpo.basis.rbf.</tt><tt class="descname">R2LogR</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.basis.rbf.BasisFunction" title="menpo.basis.rbf.BasisFunction"><tt class="xref py py-class docutils literal"><span class="pre">menpo.basis.rbf.BasisFunction</span></tt></a></p>
+<p>Calculates the <span class="math">\(r^2 \log{r}\)</span> basis function.</p>
+<p>The derivative of this function is <span class="math">\(r (1 + 2 \log{r})\)</span>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><span class="math">\(r = \lVert x - c \rVert\)</span></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>c</strong> : (L, D) ndarray</p>
+<blockquote class="last">
+<div><p>The set of centers that make the basis. Usually represents a set of
+source landmarks.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>c</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR.apply">
+<tt class="descname">apply</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR.apply" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Apply the basis function <span class="math">\(r^2 \log{r}\)</span>.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>u</strong> : (N, L) ndarray</p>
+<blockquote>
+<div><p>The basis function applied to each distance,
+:math:<a href="#id5"><span class="problematic" id="id6">`</span></a>lVert x - c</p>
+</div></blockquote>
+<p class="last"><strong>Vert`.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.basis.rbf.R2LogR.jacobian_points">
+<tt class="descname">jacobian_points</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="../../_modules/menpo/basis/rbf.html#R2LogR.jacobian_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.basis.rbf.R2LogR.jacobian_points" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The derivative of the basis function wrt the coordinate system
+evaluated at <cite>x</cite>.</p>
+<p><span class="math">\((x - c)^T (1 + 2 \log{r_{x, l}})\)</span>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">:math:<a href="#id7"><span class="problematic" id="id8">`</span></a>r_{x, l} = lVert x - c</p>
+</div>
+</div></blockquote>
+<p>Vert``</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>Set of points to apply the basis to.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dudx</strong> : (N, L, D) ndarray</p>
+<blockquote class="last">
+<div><p>The jacobian tensor representing the first order partial derivative
+of each points wrt the coordinate system</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">basis.rbf</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">3 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.basis.rbf.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

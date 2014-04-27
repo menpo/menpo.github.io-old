@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.base`
+=========================
+.. automodule:: menpo.shape.base
+
+.. currentmodule:: menpo.shape.base
+
+1 Class
+-------
+
+.. autoclass:: Shape
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

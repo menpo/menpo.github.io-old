@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.featurefunctions`
+=============================================
+.. automodule:: menpo.fitmultilevel.featurefunctions
+
+.. currentmodule:: menpo.fitmultilevel.featurefunctions
+
+2 Functions
+-----------
+
+.. autofunction:: menpo.fitmultilevel.featurefunctions.compute_features
+
+
+.. autofunction:: menpo.fitmultilevel.featurefunctions.sparse_hog
+

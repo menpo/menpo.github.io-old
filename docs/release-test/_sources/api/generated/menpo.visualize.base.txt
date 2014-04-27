@@ -1,0 +1,56 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`visualize.base`
+=============================
+.. automodule:: menpo.visualize.base
+
+.. currentmodule:: menpo.visualize.base
+
+8 Classes
+---------
+
+.. autoclass:: Renderer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: Viewable
+  :members:
+  :show-inheritance:
+
+.. autoclass:: LandmarkViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: PointCloudViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ImageViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: TriMeshViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: MultipleImageViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: FittingViewer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

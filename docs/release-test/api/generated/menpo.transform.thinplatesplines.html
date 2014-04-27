@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: transform.thinplatesplines &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.transform.thinplatesplines">
+<span id="module-transform-thinplatesplines"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">transform.thinplatesplines</span></tt><a class="headerlink" href="#module-menpo.transform.thinplatesplines" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.transform.thinplatesplines.ThinPlateSplines">
+<em class="property">class </em><tt class="descclassname">menpo.transform.thinplatesplines.</tt><tt class="descname">ThinPlateSplines</tt><big>(</big><em>source</em>, <em>target</em>, <em>kernel=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/thinplatesplines.html#ThinPlateSplines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.thinplatesplines.ThinPlateSplines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.base.alignment.html#menpo.transform.base.alignment.Alignment" title="menpo.transform.base.alignment.Alignment"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.alignment.Alignment</span></tt></a>, <a class="reference internal" href="menpo.transform.base.html#menpo.transform.base.Transform" title="menpo.transform.base.Transform"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.Transform</span></tt></a>, <a class="reference internal" href="menpo.transform.base.invertable.html#menpo.transform.base.invertable.Invertible" title="menpo.transform.base.invertable.Invertible"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.invertable.Invertible</span></tt></a></p>
+<p>The thin plate splines (TPS) alignment between 2D source and target
+landmarks.</p>
+<p><cite>kernel</cite> can be used to specify an alternative kernel function. If
+<cite>None</cite> is supplied, the <a class="reference internal" href="menpo.basis.rbf.html#menpo.basis.rbf.R2LogR2" title="menpo.basis.rbf.R2LogR2"><tt class="xref py py-class docutils literal"><span class="pre">menpo.basis.rbf.R2LogR2</span></tt></a> kernel will be
+used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source</strong> : (N, 2) ndarray</p>
+<blockquote>
+<div><p>The source points to apply the tps from</p>
+</div></blockquote>
+<p><strong>target</strong> : (N, 2) ndarray</p>
+<blockquote>
+<div><p>The target points to apply the tps to</p>
+</div></blockquote>
+<p><strong>kernel</strong> : <a class="reference internal" href="menpo.basis.rbf.html#menpo.basis.rbf.BasisFunction" title="menpo.basis.rbf.BasisFunction"><tt class="xref py py-class docutils literal"><span class="pre">menpo.basis.rbf.BasisFunction</span></tt></a>, optional</p>
+<blockquote>
+<div><p>The kernel to apply.</p>
+<p>Default: <a class="reference internal" href="menpo.basis.rbf.html#menpo.basis.rbf.R2LogR2" title="menpo.basis.rbf.R2LogR2"><tt class="xref py py-class docutils literal"><span class="pre">menpo.basis.rbf.R2LogR2</span></tt></a></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>TPS is only with on 2-dimensional data</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.thinplatesplines.ThinPlateSplines.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>source</em>, <em>target</em>, <em>kernel=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/thinplatesplines.html#ThinPlateSplines.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.thinplatesplines.ThinPlateSplines.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_points">
+<tt class="descname">jacobian_points</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/thinplatesplines.html#ThinPlateSplines.jacobian_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Jacobian of the TPS warp wrt to the coordinate system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D)</p>
+<blockquote>
+<div><p>Points at which the Jacobian will be evaluated.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW/dx</strong> : (N, D, D) ndarray</p>
+<blockquote class="last">
+<div><p>The Jacobian of the transform wrt the coordinate system in
+which the transform is applied. Axis 0: points, Axis 1: direction
+of derivative (x or y) Axis 2: Component in which we are
+evaluating derivative (x or y)</p>
+<p>e.g. [7, 0, 1] = derivative wrt x on the y coordinate of the
+8th point.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_source">
+<tt class="descname">jacobian_source</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/thinplatesplines.html#ThinPlateSplines.jacobian_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.thinplatesplines.ThinPlateSplines.jacobian_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Jacobian of the TPS warp wrt to the source landmark
+position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D)</p>
+<blockquote>
+<div><p>Points at which the Jacobian will be evaluated.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW/dp</strong> : (N, P, D) ndarray</p>
+<blockquote class="last">
+<div><p>The Jacobian of the transform wrt to the source landmarks evaluated
+at the previous points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.thinplatesplines.ThinPlateSplines.weight_points">
+<tt class="descname">weight_points</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/thinplatesplines.html#ThinPlateSplines.weight_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.thinplatesplines.ThinPlateSplines.weight_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Jacobian of the TPS warp wrt to the source landmarks
+assuming that he target is equal to the source. This is a special
+case of the Jacobian wrt to the source landmarks that is used in AAMs
+to weight the relative importance of each pixel in the reference
+frame wrt to each one of the source landmarks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D)</p>
+<blockquote>
+<div><p>Points at which the Jacobian will be evaluated.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW/dp</strong> : (N, P, D) ndarray</p>
+<blockquote class="last">
+<div><p>The Jacobian of the transform wrt to the source landmarks evaluated
+at the previous points and assuming that the target is equal to
+the source.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">transform.thinplatesplines</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.transform.thinplatesplines.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

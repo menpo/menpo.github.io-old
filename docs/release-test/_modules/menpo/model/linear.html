@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.model.linear &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.model.linear</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg.blas</span> <span class="kn">import</span> <span class="n">dgemm</span>
+
+
+<div class="viewcode-block" id="LinearModel"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel">[docs]</a><span class="k">class</span> <span class="nc">LinearModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A Linear Model contains a matrix of vector components, each component</span>
+<span class="sd">    vector being made up of `features`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LinearModel.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="n">components</span>  <span class="c"># getter/setter variable</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LinearModel.n_components"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.n_components">[docs]</a>    <span class="k">def</span> <span class="nf">n_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of bases of the model</span>
+
+<span class="sd">        type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LinearModel.n_features"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.n_features">[docs]</a>    <span class="k">def</span> <span class="nf">n_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of elements in each linear component.</span>
+
+<span class="sd">        type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The component matrix of the linear model.</span>
+
+<span class="sd">        type: (n_available_components, n_features) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span>
+
+    <span class="nd">@components.setter</span>
+<div class="viewcode-block" id="LinearModel.components"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.components">[docs]</a>    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Updates the components of this linear model, ensuring that the shape</span>
+<span class="sd">        of the components is not changed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Trying to replace components of shape {} with some of &quot;</span>
+                <span class="s">&quot;shape {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s">&#39;safe&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LinearModel.component_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.component_vector">[docs]</a>    <span class="k">def</span> <span class="nf">component_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        A particular component of the model, in vectorized form.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The component that is to be returned</span>
+
+<span class="sd">        :type: (n_features,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="LinearModel.instance_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.instance_vector">[docs]</a>    <span class="k">def</span> <span class="nf">instance_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new vector instance of the model by weighting together the</span>
+<span class="sd">        components.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weights : (n_weights,) ndarray or list</span>
+<span class="sd">            The weightings for the first n_weights components that</span>
+<span class="sd">            should be used.</span>
+
+<span class="sd">            ``weights[j]`` is the linear contribution of the j&#39;th principal</span>
+<span class="sd">            component to the instance vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vector : (n_features,) ndarray</span>
+<span class="sd">            The instance vector for the weighting provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># just call the plural version and adapt</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c"># if eg a list is provided</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_vectors</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LinearModel.instance_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.instance_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">instance_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates new vectorized instances of the model using all the</span>
+<span class="sd">        components of the linear model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weights : (n_vectors, n_weights) ndarray or list of lists</span>
+<span class="sd">            The weightings for all components of the linear model. All</span>
+<span class="sd">            components will be used to produce the instance.</span>
+
+<span class="sd">            ``weights[i, j]`` is the linear contribution of the j&#39;th</span>
+<span class="sd">            principal component to the i&#39;th instance vector produced.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError: If n_weights &gt; n_available_components</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vectors : (n_vectors, n_features) ndarray</span>
+<span class="sd">            The instance vectors for the weighting provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c"># if eg a list is provided</span>
+        <span class="n">n_instances</span><span class="p">,</span> <span class="n">n_weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">n_weights</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Number of weightings has to match number of available &quot;</span>
+                <span class="s">&quot;components = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_instance_vectors_for_full_weights</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+    <span class="c"># TODO check this is right</span></div>
+    <span class="k">def</span> <span class="nf">_instance_vectors_for_full_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_weights</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">full_weights</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                     <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">trans_b</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LinearModel.project_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.project_vector">[docs]</a>    <span class="k">def</span> <span class="nf">project_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects the ``vector`` onto the model, retrieving the optimal</span>
+<span class="sd">        linear reconstruction weights</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        vector : (n_features,) ndarray</span>
+<span class="sd">            A vectorized novel instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        weights : (n_components,)</span>
+<span class="sd">            A vector of optimal linear weights</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_vectors</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LinearModel.project_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.project_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">project_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects each of the ``vectors`` onto the model, retrieving</span>
+<span class="sd">        the optimal linear reconstruction weights for each instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : (n_samples, n_features) ndarray</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        weights : (n_samples, n_components) ndarray</span>
+<span class="sd">            The matrix of optimal linear weights</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                     <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LinearModel.reconstruct_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.reconstruct_vector">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Project a ``vector`` onto the linear space and</span>
+<span class="sd">        rebuild from the weights found.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : (n_features, ) ndarray</span>
+<span class="sd">            A vectorized novel instance to project</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reconstructed : (n_features,) ndarray</span>
+<span class="sd">            The reconstructed vector.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruct_vectors</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LinearModel.reconstruct_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.reconstruct_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects the ``vectors`` onto the linear space and</span>
+<span class="sd">        rebuilds vectors from the weights found.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : (n_vectors, n_features) ndarray</span>
+<span class="sd">            A set of vectors to project</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reconstructed : (n_vectors, n_features) ndarray</span>
+<span class="sd">            The reconstructed vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_vectors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_vectors</span><span class="p">(</span><span class="n">vectors</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LinearModel.project_out_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.project_out_vector">[docs]</a>    <span class="k">def</span> <span class="nf">project_out_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a version of ``vector`` where all the basis of the</span>
+<span class="sd">        model have been projected out.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : (n_features,) ndarray</span>
+<span class="sd">            A novel vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        projected_out : (n_features,) ndarray</span>
+<span class="sd">            A copy of ``vector`` with all basis of the model</span>
+<span class="sd">            projected out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_out_vectors</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">:])</span>
+</div>
+<div class="viewcode-block" id="LinearModel.project_out_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.project_out_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">project_out_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a version of ``vectors`` where all the basis of the</span>
+<span class="sd">        model have been projected out.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : (n_vectors, n_features) ndarray</span>
+<span class="sd">            A matrix of novel vectors.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        projected_out : (n_vectors, n_features) ndarray</span>
+<span class="sd">            A copy of ``vectors`` with all basis of the model</span>
+<span class="sd">            projected out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">vectors</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                        <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">vectors</span> <span class="o">-</span>
+                <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">weights</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                      <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">trans_b</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LinearModel.orthonormalize_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.orthonormalize_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">orthonormalize_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Enforces that this models components are orthonormalized</span>
+
+<span class="sd">        s.t. component_vector(i).dot(component_vector(j) = dirac_delta</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span>
+
+    <span class="c"># TODO: Investigate the meaning and consequences of trying to</span>
+    <span class="c"># orthonormalize two identical vectors</span></div>
+<div class="viewcode-block" id="LinearModel.orthonormalize_against_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.LinearModel.orthonormalize_against_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">orthonormalize_against_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_model</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Enforces that the union of this model&#39;s components and another are</span>
+<span class="sd">        both mutually orthonormal.</span>
+
+<span class="sd">        Both models keep its number of components unchanged or else a</span>
+<span class="sd">        value error is raised.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        linear_model : :class:`LinearModel`</span>
+<span class="sd">            A second linear model to orthonormalize this against.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_components_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">+</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span> <span class="o">&gt;=</span> <span class="n">n_components_sum</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;The number of features must be greater or equal than the &quot;</span>
+                <span class="s">&quot;sum of the number of components in both linear models {} &lt; &quot;</span>
+                <span class="s">&quot;{})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_components_sum</span><span class="p">))</span>
+        <span class="c"># take the QR decomposition of the model components</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">linear_model</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">T</span><span class="p">)))[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+        <span class="c"># set the orthonormalized components of the model being passed</span>
+        <span class="n">linear_model</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[:</span><span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="c"># set the orthonormalized components of this model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[</span><span class="n">linear_model</span><span class="o">.</span><span class="n">n_components</span><span class="p">:,</span> <span class="p">:]</span>
+
+</div></div>
+<div class="viewcode-block" id="MeanLinearModel"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.MeanLinearModel">[docs]</a><span class="k">class</span> <span class="nc">MeanLinearModel</span><span class="p">(</span><span class="n">LinearModel</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A Linear Model containing a matrix of vector components, each component</span>
+<span class="sd">    vector being made up of `features`. The model additionally has a mean</span>
+<span class="sd">    component which is handled accordingly when either:</span>
+
+<span class="sd">    1. A component of the model is selected</span>
+<span class="sd">    2. A projection operation is performed</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MeanLinearModel.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.MeanLinearModel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">mean_vector</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MeanLinearModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean_vector</span> <span class="o">=</span> <span class="n">mean_vector</span>
+</div>
+<div class="viewcode-block" id="MeanLinearModel.component_vector"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.MeanLinearModel.component_vector">[docs]</a>    <span class="k">def</span> <span class="nf">component_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">with_mean</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        A particular component of the model, in vectorized form.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The component that is to be returned</span>
+
+<span class="sd">        with_mean: boolean (optional)</span>
+<span class="sd">            If True, the component will be blended with the mean vector</span>
+<span class="sd">            before being returned. If not, the component is returned on it&#39;s</span>
+<span class="sd">            own.</span>
+
+<span class="sd">            Default: True</span>
+<span class="sd">        scale : float</span>
+<span class="sd">            A scale factor that should be directly applied to the component.</span>
+<span class="sd">            Only valid in the case where with_mean is True.</span>
+
+<span class="sd">        :type: (n_features,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">with_mean</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_vector</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MeanLinearModel.project_vectors"><a class="viewcode-back" href="../../../api/generated/menpo.model.linear.html#menpo.model.linear.MeanLinearModel.project_vectors">[docs]</a>    <span class="k">def</span> <span class="nf">project_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projects each of the ``vectors`` onto the model, retrieving</span>
+<span class="sd">        the optimal linear reconstruction weights for each instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors : (n_samples, n_features) ndarray</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        projected: (n_samples, n_components) ndarray</span>
+<span class="sd">            The matrix of optimal linear weights</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">vectors</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_vector</span>
+        <span class="k">return</span> <span class="n">dgemm</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">trans_a</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_instance_vectors_for_full_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_weights</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">LinearModel</span><span class="o">.</span><span class="n">_instance_vectors_for_full_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_weights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_vector</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

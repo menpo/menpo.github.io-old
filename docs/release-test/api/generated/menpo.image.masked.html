@@ -1,0 +1,777 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: image.masked &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.image.masked">
+<span id="module-image-masked"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">image.masked</span></tt><a class="headerlink" href="#module-menpo.image.masked" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.image.masked.MaskedImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.masked.</tt><tt class="descname">MaskedImage</tt><big>(</big><em>image_data</em>, <em>mask=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.image.base.html#menpo.image.base.Image" title="menpo.image.base.Image"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.base.Image</span></tt></a></p>
+<p>Represents an n-dimensional k-channel image, which has a mask.
+Images can be masked in order to identify a region of interest. All
+images implicitly have a mask that is defined as the the entire image.
+The mask is an instance of
+<tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image_data</strong> :  ndarray</p>
+<blockquote>
+<div><p>The pixel data for the image, where the last axis represents the
+number of channels.</p>
+</div></blockquote>
+<p><strong>mask</strong> : (M, N) <tt class="docutils literal"><span class="pre">np.bool</span></tt> ndarray or <tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt>, optional</p>
+<blockquote>
+<div><p>A binary array representing the mask. Must be the same
+shape as the image. Only one mask is supported for an image (so the
+mask is applied to every channel equally).</p>
+<p>Default: <tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt> covering the whole image</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>Mask is not the same shape as the image</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image_data</em>, <em>mask=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><em>keep_channels=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.as_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert image to a vectorized form. Note that the only pixels
+returned here are from the masked region on the image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>keep_channels</strong> : bool, optional</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Value</th>
+<th class="head">Return shape</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">True</span></tt></td>
+<td>(<tt class="docutils literal"><span class="pre">mask.n_true</span></tt>,``n_channels``)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">False</span></tt></td>
+<td>(<tt class="docutils literal"><span class="pre">mask.n_true</span></tt> x <tt class="docutils literal"><span class="pre">n_channels</span></tt>,)</td>
+</tr>
+</tbody>
+</table>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>vectorized_image</strong> : (shape given by <tt class="docutils literal"><span class="pre">keep_channels</span></tt>) ndarray</p>
+<blockquote class="last">
+<div><p>Vectorized image</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="menpo.image.masked.MaskedImage.blank">
+<em class="property">classmethod </em><tt class="descname">blank</tt><big>(</big><em>shape</em>, <em>n_channels=1</em>, <em>fill=0</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>mask=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a blank image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple or list</p>
+<blockquote>
+<div><p>The shape of the image. Any floating point values are rounded up
+to the nearest integer.</p>
+</div></blockquote>
+<p><strong>n_channels: int, optional</strong> :</p>
+<blockquote>
+<div><p>The number of channels to create the image with</p>
+<p>Default: 1</p>
+</div></blockquote>
+<p><strong>fill</strong> : int, optional</p>
+<blockquote>
+<div><p>The value to fill all pixels with</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>dtype: numpy datatype, optional</strong> :</p>
+<blockquote>
+<div><p>The datatype of the image.</p>
+<p>Default: np.float</p>
+</div></blockquote>
+<p><strong>mask: (M, N) boolean ndarray or :class:`BooleanImage`</strong> :</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>An optional mask that can be applied to the image. Has to have a</dt>
+<dd><p class="first">shape equal to that of the image.</p>
+<p class="last">Default: all True <tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>blank_image</strong> : <a class="reference internal" href="#menpo.image.masked.MaskedImage" title="menpo.image.masked.MaskedImage"><tt class="xref py py-class docutils literal"><span class="pre">MaskedImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new masked image of the requested size.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Subclasses of <cite>MaskedImage</cite> need to overwrite this method and
+explicitly call this superclass method:</p>
+<blockquote>
+<div>super(SubClass, cls).blank(shape,**kwargs)</div></blockquote>
+<p>in order to appropriately propagate the SubClass type to cls.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.build_mask_around_landmarks">
+<tt class="descname">build_mask_around_landmarks</tt><big>(</big><em>patch_size</em>, <em>group=None</em>, <em>label='all'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.build_mask_around_landmarks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.build_mask_around_landmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restricts this image&#8217;s mask to be equal to the convex hull
+around the landmarks chosen.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>patch_shape: tuple</strong> :</p>
+<blockquote>
+<div><p>The size of the patch. Any floating point values are rounded up
+to the nearest integer.</p>
+</div></blockquote>
+<p><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote class="last">
+<div><p>The label of of the landmark manager that you wish to use. If
+&#8216;all&#8217; all landmarks are used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.constrain_mask_to_landmarks">
+<tt class="descname">constrain_mask_to_landmarks</tt><big>(</big><em>group=None</em>, <em>label='all'</em>, <em>trilist=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.constrain_mask_to_landmarks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.constrain_mask_to_landmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restricts this image&#8217;s mask to be equal to the convex hull
+around the landmarks chosen.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If no
+label is passed, the convex hull of all landmarks is used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>trilist: (t, 3) ndarray, Optional</strong> :</p>
+<blockquote class="last">
+<div><p>Triangle list to be used on the landmarked points in selecting
+the mask region. If None defaults to performing Delaunay
+triangulation on the points.</p>
+<p>Default: None</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.crop">
+<tt class="descname">crop</tt><big>(</big><em>min_indices</em>, <em>max_indices</em>, <em>constrain_to_boundary=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crops this image using the given minimum and maximum indices.
+Landmarks are correctly adjusted so they maintain their position
+relative to the newly cropped image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>min_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The minimum index over each dimension</p>
+</div></blockquote>
+<p><strong>max_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The maximum index over each dimension</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True the crop will be snapped to not go beyond this images
+boundary. If False, a ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cropped_image</strong> : <tt class="xref py py-class docutils literal"><span class="pre">type(self)</span></tt></p>
+<blockquote>
+<div><p>This image, but cropped.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote>
+<div><p>min_indices and max_indices both have to be of length n_dims.
+All max_indices must be greater than min_indices.</p>
+</div></blockquote>
+<p><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is False, and an attempt is made
+to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.crop_to_true_mask">
+<tt class="descname">crop_to_true_mask</tt><big>(</big><em>boundary=0</em>, <em>constrain_to_boundary=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.crop_to_true_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.crop_to_true_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop this image to be bounded just the <tt class="docutils literal"><span class="pre">True</span></tt> values of it&#8217;s mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>An extra padding to be added all around the true mask region.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt> the crop will be snapped to not go beyond this images
+boundary. If <tt class="docutils literal"><span class="pre">False</span></tt>, a ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image. Note that is
+only possible if boundary != 0.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">True</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is <tt class="docutils literal"><span class="pre">False</span></tt>, and an attempt is
+made to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>flattened</em>, <em>n_channels=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.from_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and returns a new image formed by reshaping
+the vector to the correct pixels and channels. Note that the only
+region of the image that will be filled is the masked region.</p>
+<p>The <tt class="docutils literal"><span class="pre">n_channels</span></tt> argument is useful for when we want to add an extra
+channel to an image but maintain the shape. For example, when
+calculating the gradient.</p>
+<p>Note that landmarks are transferred in the process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,)</p>
+<blockquote>
+<div><p>A flattened vector of all pixels and channels of an image.</p>
+</div></blockquote>
+<p><strong>n_channels</strong> : int, optional</p>
+<blockquote>
+<div><p>If given, will assume that flattened is the same
+shape as this image, but with a possibly different number of
+channels</p>
+<p>Default: Use the existing image channels</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image</strong> : <a class="reference internal" href="#menpo.image.masked.MaskedImage" title="menpo.image.masked.MaskedImage"><tt class="xref py py-class docutils literal"><span class="pre">MaskedImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>New image of same shape as this image and the number of
+specified channels.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>vector</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and updates this image by reshaping
+the vector to the correct pixels and channels. Note that the only
+region of the image that will be filled is the masked region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,)</p>
+<blockquote class="last">
+<div><p>A flattened vector of all pixels and channels of an image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.gaussian_pyramid">
+<tt class="descname">gaussian_pyramid</tt><big>(</big><em>n_levels=3</em>, <em>downscale=2</em>, <em>sigma=None</em>, <em>order=1</em>, <em>mode='reflect'</em>, <em>cval=0</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.gaussian_pyramid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.gaussian_pyramid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the gaussian pyramid of this image. The first image of the
+pyramid will be the original, unmodified, image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_levels</strong> : int</p>
+<blockquote>
+<div><p>Number of levels in the pyramid. When set to -1 the maximum
+number of levels will be build.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale</strong> : float, optional</p>
+<blockquote>
+<div><p>Downscale factor.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>sigma</strong> : float, optional</p>
+<blockquote>
+<div><p>Sigma for gaussian filter. Default is <cite>2 * downscale / 6.0</cite> which
+corresponds to a filter mask twice the size of the scale factor
+that covers more than 99% of the gaussian distribution.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>order</strong> : int, optional</p>
+<blockquote>
+<div><p>Order of splines used in interpolation of downsampling. See
+<cite>scipy.ndimage.map_coordinates</cite> for detail.</p>
+<p>Default: 1</p>
+</div></blockquote>
+<p><strong>mode</strong> :  {&#8216;reflect&#8217;, &#8216;constant&#8217;, &#8216;nearest&#8217;, &#8216;mirror&#8217;, &#8216;wrap&#8217;}, optional</p>
+<blockquote>
+<div><p>The mode parameter determines how the array borders are handled,
+where cval is the value when mode is equal to &#8216;constant&#8217;.</p>
+<p>Default: &#8216;reflect&#8217;</p>
+</div></blockquote>
+<p><strong>cval</strong> : float, optional</p>
+<blockquote>
+<div><p>Value to fill past edges of input if mode is &#8216;constant&#8217;.</p>
+<p>Default: 0</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image_pyramid:</strong> :</p>
+<blockquote class="last">
+<div><p>Generator yielding pyramid layers as menpo image objects.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.gradient">
+<tt class="descname">gradient</tt><big>(</big><em>nullify_values_at_mask_boundaries=False</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a MaskedImage which is the gradient of this one. In the case
+of multiple channels, it returns the gradient over each axis over
+each channel as a flat list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>nullify_values_at_mask_boundaries</strong> : bool, optional</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt> a one pixel boundary is set to 0 around the edge of
+the <tt class="docutils literal"><span class="pre">True</span></tt> mask region. This is useful in situations where
+there is absent data in the image which will cause erroneous
+gradient settings.</p>
+</div></blockquote>
+<p><strong>Default: False</strong> :</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>gradient</strong> : :class:<tt class="docutils literal"><span class="pre">MaskedImage</span></tt></p>
+<blockquote class="last">
+<div><p>The gradient over each axis over each channel. Therefore, the
+gradient of a 2D, single channel image, will have length <tt class="docutils literal"><span class="pre">2</span></tt>.
+The length of a 2D, 3-channel image, will have length <tt class="docutils literal"><span class="pre">6</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.masked.MaskedImage.masked_pixels">
+<tt class="descname">masked_pixels</tt><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.masked_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.masked_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the pixels covered by the <tt class="docutils literal"><span class="pre">True</span></tt> values in the mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">mask.n_true</span></tt>, <tt class="docutils literal"><span class="pre">n_channels</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.normalize_norm_inplace">
+<tt class="descname">normalize_norm_inplace</tt><big>(</big><em>mode='all'</em>, <em>limit_to_mask=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.normalize_norm_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.normalize_norm_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalizes this image such that it&#8217;s pixel values have zero mean and
+its norm equals 1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mode: {&#8216;all&#8217;, &#8216;per_channel&#8217;}</strong> :</p>
+<blockquote>
+<div><p>If &#8216;all&#8217;, the normalization is over all channels. If
+&#8216;per_channel&#8217;, each channel individually is mean centred and
+normalized in variance.</p>
+</div></blockquote>
+<p><strong>limit_to_mask: Boolean</strong> :</p>
+<blockquote class="last">
+<div><p>If True, the normalization is only performed wrt the masked
+pixels.
+If False, the normalization is wrt all pixels, regardless of
+their masking value.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.normalize_std_inplace">
+<tt class="descname">normalize_std_inplace</tt><big>(</big><em>mode='all'</em>, <em>limit_to_mask=True</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.normalize_std_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.normalize_std_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalizes this image such that it&#8217;s pixel values have zero mean and
+unit variance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mode: {&#8216;all&#8217;, &#8216;per_channel&#8217;}</strong> :</p>
+<blockquote>
+<div><p>If &#8216;all&#8217;, the normalization is over all channels. If
+&#8216;per_channel&#8217;, each channel individually is mean centred and
+normalized in variance.</p>
+</div></blockquote>
+<p><strong>limit_to_mask: Boolean</strong> :</p>
+<blockquote class="last">
+<div><p>If True, the normalization is only performed wrt the masked
+pixels.
+If False, the normalization is wrt all pixels, regardless of
+their masking value.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.rescale">
+<tt class="descname">rescale</tt><big>(</big><em>scale</em>, <em>interpolator='scipy'</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>A copy of this MaskedImage, rescaled by a given factor.</p>
+<p>All image information (landmarks and mask) are rescaled appropriately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>scale</strong> : float or tuple</p>
+<blockquote>
+<div><p>The scale factor. If a tuple, the scale to apply to each dimension.
+If a single float, the scale will be applied uniformly across
+each dimension.</p>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rescaled_image</strong> : type(self)</p>
+<blockquote>
+<div><p>A copy of this image, rescaled.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError:</strong> :</p>
+<blockquote class="last">
+<div><p>If less scales than dimensions are provided.
+If any scale is less than or equal to 0.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.smoothing_pyramid">
+<tt class="descname">smoothing_pyramid</tt><big>(</big><em>n_levels=3</em>, <em>downscale=2</em>, <em>sigma=None</em>, <em>mode='reflect'</em>, <em>cval=0</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.smoothing_pyramid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.smoothing_pyramid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the smoothing pyramid of this image. The first image of the
+pyramid will be the original, unmodified, image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_levels</strong> : int</p>
+<blockquote>
+<div><p>Number of levels in the pyramid. When set to -1 the maximum
+number of levels will be build.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale</strong> : float, optional</p>
+<blockquote>
+<div><p>Downscale factor.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>sigma</strong> : float, optional</p>
+<blockquote>
+<div><p>Sigma for gaussian filter. Default is <cite>2 * downscale / 6.0</cite> which
+corresponds to a filter mask twice the size of the scale factor
+that covers more than 99% of the gaussian distribution.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>mode</strong> :  {&#8216;reflect&#8217;, &#8216;constant&#8217;, &#8216;nearest&#8217;, &#8216;mirror&#8217;, &#8216;wrap&#8217;}, optional</p>
+<blockquote>
+<div><p>The mode parameter determines how the array borders are handled,
+where cval is the value when mode is equal to &#8216;constant&#8217;.</p>
+<p>Default: &#8216;reflect&#8217;</p>
+</div></blockquote>
+<p><strong>cval</strong> : float, optional</p>
+<blockquote>
+<div><p>Value to fill past edges of input if mode is &#8216;constant&#8217;.</p>
+<p>Default: 0</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image_pyramid:</strong> :</p>
+<blockquote class="last">
+<div><p>Generator yielding pyramid layers as menpo image objects.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.masked.MaskedImage.warp_to">
+<tt class="descname">warp_to</tt><big>(</big><em>template_mask</em>, <em>transform</em>, <em>warp_landmarks=False</em>, <em>warp_mask=False</em>, <em>interpolator='scipy'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/masked.html#MaskedImage.warp_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.masked.MaskedImage.warp_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Warps this image into a different reference space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>template_mask</strong> : <a class="reference internal" href="menpo.image.boolean.html#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.boolean.BooleanImage</span></tt></a></p>
+<blockquote>
+<div><p>Defines the shape of the result, and what pixels should be
+sampled.</p>
+</div></blockquote>
+<p><strong>transform</strong> : <a class="reference internal" href="menpo.transform.base.html#menpo.transform.base.Transform" title="menpo.transform.base.Transform"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.base.Transform</span></tt></a></p>
+<blockquote>
+<div><p>Transform <strong>from the template space back to this image</strong>.
+Defines, for each pixel location on the template, which pixel
+location should be sampled from on this image.</p>
+</div></blockquote>
+<p><strong>warp_landmarks</strong> : bool, optional</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt>, warped_image will have the same landmark dictionary
+as self, but with each landmark updated to the warped position.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div></blockquote>
+<p><strong>warp_mask</strong> : bool, optional</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt>, sample the <tt class="docutils literal"><span class="pre">image.mask</span></tt> at all <tt class="docutils literal"><span class="pre">template_image</span></tt>
+points, setting the returned image mask to the sampled value
+<strong>within the masked region of ``template_image``</strong>.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is most commonly set <tt class="docutils literal"><span class="pre">True</span></tt> in combination with an all
+True <tt class="docutils literal"><span class="pre">template_mask</span></tt>, as this is then a warp of the image
+and it&#8217;s full mask. If <tt class="docutils literal"><span class="pre">template_mask</span></tt>
+has False mask values, only the True region of the mask
+will be updated, which is rarely the desired behavior,
+but is possible for completion.</p>
+</div>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217; or &#8216;cinterp&#8217; or func, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>warped_image</strong> : type(self)</p>
+<blockquote class="last">
+<div><p>A copy of this image, warped.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">image.masked</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.image.masked.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

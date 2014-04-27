@@ -1,0 +1,58 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`io.landmark`
+==========================
+.. automodule:: menpo.io.landmark
+
+.. currentmodule:: menpo.io.landmark
+
+8 Classes
+---------
+
+.. autoclass:: LandmarkImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ASFImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: PTSImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LM3Importer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LM2Importer
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LANImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: BNDImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: JSONImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

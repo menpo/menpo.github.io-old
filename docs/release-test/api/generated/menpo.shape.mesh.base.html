@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: shape.mesh.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.shape.mesh.base">
+<span id="module-shape-mesh-base"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">shape.mesh.base</span></tt><a class="headerlink" href="#module-menpo.shape.mesh.base" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="class">
+<h2>1 Class<a class="headerlink" href="#class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.shape.mesh.base.TriMesh">
+<em class="property">class </em><tt class="descclassname">menpo.shape.mesh.base.</tt><tt class="descname">TriMesh</tt><big>(</big><em>points</em>, <em>trilist=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.shape.pointcloud.html#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.pointcloud.PointCloud</span></tt></a></p>
+<p>A pointcloud with a connectivity defined by a triangle list. These are
+designed to be explicitly 2D or 3D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>The set coordinates for the mesh.</p>
+</div></blockquote>
+<p><strong>trilist</strong> : (M, 3) ndarray, optional</p>
+<blockquote class="last">
+<div><p>The triangle list. If None is provided, a Delaunay triangulation of
+the points will be used instead.</p>
+<p>Default: None</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.shape.mesh.base.TriMesh.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>points</em>, <em>trilist=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.base.TriMesh.face_normals">
+<tt class="descname">face_normals</tt><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.face_normals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.face_normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal at each face.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_tris</span></tt>, 3) ndarray</td>
+</tr>
+</tbody>
+</table>
+<p>Compute the face normals from the current set of points and
+triangle list. Only valid for 3D dimensional meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p>If mesh is not 3D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.base.TriMesh.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>flattened</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.from_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a new <a class="reference internal" href="#menpo.shape.mesh.base.TriMesh" title="menpo.shape.mesh.base.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">TriMesh</span></tt></a> given then <tt class="docutils literal"><span class="pre">flattened</span></tt> vector.
+This allows rebuilding pointclouds with the correct number of
+dimensions from a vector. Note that the trilist will be drawn from
+self.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>Vector representing a set of points.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>trimesh</strong> : <a class="reference internal" href="#menpo.shape.mesh.base.TriMesh" title="menpo.shape.mesh.base.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">TriMesh</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new trimesh created from the vector with self&#8217;s trilist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.base.TriMesh.n_tris">
+<tt class="descname">n_tris</tt><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.n_tris"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.n_tris" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of triangles in the triangle list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.base.TriMesh.tojson">
+<tt class="descname">tojson</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.tojson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.tojson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this <cite>TriMesh</cite> to a dictionary JSON representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dictionary with &#8216;points&#8217; and &#8216;trilist&#8217; keys. Both are lists suitable</strong> :</p>
+<p class="last"><strong>for use in the by the `json` standard library package.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.base.TriMesh.vertex_normals">
+<tt class="descname">vertex_normals</tt><a class="reference internal" href="../../_modules/menpo/shape/mesh/base.html#TriMesh.vertex_normals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.base.TriMesh.vertex_normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal at each point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_points</span></tt>, 3) ndarray</td>
+</tr>
+</tbody>
+</table>
+<p>Compute the per-vertex normals from the current set of points and
+triangle list. Only valid for 3D dimensional meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p>If mesh is not 3D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">shape.mesh.base</span></tt></a><ul>
+<li><a class="reference internal" href="#class">1 Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.shape.mesh.base.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

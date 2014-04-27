@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`transform.modeldriven`
+====================================
+.. automodule:: menpo.transform.modeldriven
+
+.. currentmodule:: menpo.transform.modeldriven
+
+3 Classes
+---------
+
+.. autoclass:: ModelDrivenTransform
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: GlobalMDTransform
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: OrthoMDTransform
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fit.lucaskanade.test.residual_test &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fit.lucaskanade.test.residual_test</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_approx_equal</span>
+
+<span class="kn">from</span> <span class="nn">menpo.image</span> <span class="kn">import</span> <span class="n">BooleanImage</span>
+<span class="kn">import</span> <span class="nn">menpo.io</span> <span class="kn">as</span> <span class="nn">pio</span>
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">Affine</span>
+
+<span class="kn">from</span> <span class="nn">menpo.fit.lucaskanade.image</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                                         <span class="n">ImageForwardAdditive</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">menpo.fit.lucaskanade.residual</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">target_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+
+<span class="c"># Setup the static assets (the takeo image)</span>
+<span class="n">takeo</span> <span class="o">=</span> <span class="n">pio</span><span class="o">.</span><span class="n">import_builtin_asset</span><span class="p">(</span><span class="s">&#39;takeo.ppm&#39;</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">takeo</span><span class="o">.</span><span class="n">as_greyscale</span><span class="p">()</span>
+<span class="n">template_mask</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">target_shape</span><span class="p">)</span>
+
+<span class="c"># Setup global conditions</span>
+<span class="n">initial_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">70.5</span><span class="p">,</span> <span class="mf">30.5</span><span class="p">])</span>
+<span class="n">target_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="compute_rms_point_error"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.compute_rms_point_error">[docs]</a><span class="k">def</span> <span class="nf">compute_rms_point_error</span><span class="p">(</span><span class="n">test_pts</span><span class="p">,</span> <span class="n">template_affine</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="n">iteration_pts</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">template_affine</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">diff_pts</span> <span class="o">=</span> <span class="n">test_pts</span> <span class="o">-</span> <span class="n">iteration_pts</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">diff_pts</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="setup_conditions"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.setup_conditions">[docs]</a><span class="k">def</span> <span class="nf">setup_conditions</span><span class="p">(</span><span class="n">interpolator</span><span class="p">):</span>
+    <span class="n">target_transform</span> <span class="o">=</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">target_params</span><span class="p">)</span>
+    <span class="n">image_warped</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="n">template_mask</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+                                 <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">image_warped</span><span class="p">,</span> <span class="n">initial_params</span>
+
+</div>
+<div class="viewcode-block" id="setup_error"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.setup_error">[docs]</a><span class="k">def</span> <span class="nf">setup_error</span><span class="p">():</span>
+    <span class="n">target_transform</span> <span class="o">=</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">target_params</span><span class="p">)</span>
+    <span class="n">original_box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span>               <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="n">target_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">],</span>
+                             <span class="p">[</span><span class="n">target_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                             <span class="p">[</span><span class="mi">0</span><span class="p">,</span>               <span class="n">target_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">target_pts</span> <span class="o">=</span> <span class="n">target_transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">original_box</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">target_pts</span><span class="p">,</span> <span class="n">original_box</span>
+
+</div>
+<div class="viewcode-block" id="compute_fixed_error"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.compute_fixed_error">[docs]</a><span class="k">def</span> <span class="nf">compute_fixed_error</span><span class="p">(</span><span class="n">transform</span><span class="p">):</span>
+    <span class="n">target_pts</span><span class="p">,</span> <span class="n">original_box</span> <span class="o">=</span> <span class="n">setup_error</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">compute_rms_point_error</span><span class="p">(</span><span class="n">target_pts</span><span class="p">,</span> <span class="n">original_box</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="residual_wrapper"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.residual_wrapper">[docs]</a><span class="k">def</span> <span class="nf">residual_wrapper</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">interpolator</span><span class="p">,</span> <span class="n">expected_error</span><span class="p">):</span>
+    <span class="n">image</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">initial_params</span> <span class="o">=</span> <span class="n">setup_conditions</span><span class="p">(</span><span class="n">interpolator</span><span class="p">)</span>
+    <span class="n">align_algorithm</span> <span class="o">=</span> <span class="n">algorithm</span><span class="p">(</span>
+        <span class="n">template</span><span class="p">,</span> <span class="n">residual</span><span class="p">,</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span>
+            <span class="n">initial_params</span><span class="p">))</span>
+    <span class="n">fitting</span> <span class="o">=</span> <span class="n">align_algorithm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">initial_params</span><span class="p">)</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">fitting</span><span class="o">.</span><span class="n">final_transform</span>
+    <span class="n">rms_error</span> <span class="o">=</span> <span class="n">compute_fixed_error</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+    <span class="n">assert_approx_equal</span><span class="p">(</span><span class="n">rms_error</span><span class="p">,</span> <span class="n">expected_error</span><span class="p">)</span>
+
+<span class="c">###############################################################################</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_ls_ic_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_ls_ic_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_ls_ic_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">LSIntensity</span><span class="p">(),</span> <span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">1.551662325323618e-05</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_ls_fa_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_ls_fa_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_ls_fa_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">LSIntensity</span><span class="p">(),</span> <span class="n">ImageForwardAdditive</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">1.4743724618438824e-05</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_ecc_ic_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_ecc_ic_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_ecc_ic_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">ECC</span><span class="p">(),</span> <span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">2.0802365833550096e-06</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_ecc_fa_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_ecc_fa_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_ecc_fa_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">ECC</span><span class="p">(),</span> <span class="n">ImageForwardAdditive</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">1.9477094730117106</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gabor_ic_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gabor_ic_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gabor_ic_map_coords</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">target_shape</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GaborFourier</span><span class="p">(</span><span class="n">target_shape</span><span class="p">),</span> <span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">8.754889609451457</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gabor_fa_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gabor_fa_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gabor_fa_map_coords</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">target_shape</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GaborFourier</span><span class="p">(</span><span class="n">target_shape</span><span class="p">),</span> <span class="n">ImageForwardAdditive</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">0.03729593561127312</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gradientimages_ic_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gradientimages_ic_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gradientimages_ic_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GradientImages</span><span class="p">(),</span> <span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">10.002935866056646</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gradientimages_fa_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gradientimages_fa_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gradientimages_fa_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GradientImages</span><span class="p">(),</span> <span class="n">ImageForwardAdditive</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">9.952157644001336</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gradientcorrelation_ic_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gradientcorrelation_ic_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gradientcorrelation_ic_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GradientCorrelation</span><span class="p">(),</span> <span class="n">ImageInverseCompositional</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">6.93587178891484</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="test_2d_gradientcorrelation_fa_map_coords"><a class="viewcode-back" href="../../../../../api/generated/menpo.fit.lucaskanade.test.residual_test.html#menpo.fit.lucaskanade.test.residual_test.test_2d_gradientcorrelation_fa_map_coords">[docs]</a><span class="k">def</span> <span class="nf">test_2d_gradientcorrelation_fa_map_coords</span><span class="p">():</span>
+    <span class="n">residual_wrapper</span><span class="p">(</span><span class="n">GradientCorrelation</span><span class="p">(),</span> <span class="n">ImageForwardAdditive</span><span class="p">,</span>
+                     <span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                     <span class="mf">5.388114566437586</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: shape.mesh &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.shape.mesh">
+<span id="module-shape-mesh"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">shape.mesh</span></tt><a class="headerlink" href="#module-menpo.shape.mesh" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.shape.mesh.FastTriMesh">
+<em class="property">class </em><tt class="descclassname">menpo.shape.mesh.</tt><tt class="descname">FastTriMesh</tt><big>(</big><em>points</em>, <em>trilist</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh.html#FastTriMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.FastTriMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.shape.mesh.base.html#menpo.shape.mesh.base.TriMesh" title="menpo.shape.mesh.base.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.mesh.base.TriMesh</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.mesh.cpptrimesh.CppTriMesh</span></tt></p>
+<p>A TriMesh with an underlying C++ data structure, allowing for efficient
+iterations around mesh vertices and triangles. Includes fast calculations
+of the surface divergence, gradient and laplacian.</p>
+<dl class="method">
+<dt id="menpo.shape.mesh.FastTriMesh.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>points</em>, <em>trilist</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh.html#FastTriMesh.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.FastTriMesh.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.shape.mesh.PolyMesh">
+<em class="property">class </em><tt class="descclassname">menpo.shape.mesh.</tt><tt class="descname">PolyMesh</tt><big>(</big><em>points</em>, <em>polylist</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh.html#PolyMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.PolyMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.shape.pointcloud.html#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.pointcloud.PointCloud</span></tt></a></p>
+<p>A 3D shape which has a notion of a manifold built from piecewise planar
+polyhedrons with vertices indexed from points. This is largely a stub that
+can be expanded later on if we need arbitrary polymeshes.</p>
+<dl class="method">
+<dt id="menpo.shape.mesh.PolyMesh.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>points</em>, <em>polylist</em><big>)</big><a class="reference internal" href="../../_modules/menpo/shape/mesh.html#PolyMesh.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.shape.mesh.PolyMesh.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">shape.mesh</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.shape.mesh.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

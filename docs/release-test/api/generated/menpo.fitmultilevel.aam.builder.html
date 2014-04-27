@@ -1,0 +1,729 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: fitmultilevel.aam.builder &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.fitmultilevel.aam.builder">
+<span id="module-fitmultilevel-aam-builder"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">fitmultilevel.aam.builder</span></tt><a class="headerlink" href="#module-menpo.fitmultilevel.aam.builder" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>4 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.fitmultilevel.aam.builder.AAMBuilder">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">AAMBuilder</tt><big>(</big><em>feature_type=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>transform=&lt;class 'menpo.transform.piecewiseaffine.base.CachedPWA'&gt;</em>, <em>trilist=None</em>, <em>diagonal_range=None</em>, <em>n_levels=3</em>, <em>downscale=1.1</em>, <em>scaled_levels=True</em>, <em>max_shape_components=None</em>, <em>max_appearance_components=None</em>, <em>boundary=3</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAMBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAMBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.fitmultilevel.builder.html#menpo.fitmultilevel.builder.DeformableModelBuilder" title="menpo.fitmultilevel.builder.DeformableModelBuilder"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultilevel.builder.DeformableModelBuilder</span></tt></a></p>
+<p>Class that builds Multilevel Active Appearance Models.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>feature_type: string or function/closure, Optional</strong> :</p>
+<blockquote>
+<div><p>If None, the appearance model will be build using the original image
+representation, i.e. no features will be extracted from the original
+images.
+If string or closure, the appearance model will be built from a
+feature representation of the original images:</p>
+<blockquote>
+<div><p>If string, image features will be computed by executing:</p>
+<blockquote>
+<div><p>feature_image = eval(&#8216;img.feature_type.&#8217; + feature_type + &#8216;()&#8217;)</p>
+</div></blockquote>
+<p>For this to work properly <cite>feature_type</cite> needs to be one of
+menpo&#8217;s standard image feature methods. Note that, in this case,
+the feature computation will be carried out using the default
+options.</p>
+<p>Non-default feature options and new experimental features can be
+defined using functions/closures. In this case, the function must
+receive an image as input and return a particular feature
+representation of that image. For example:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def igo_double_from_std_normalized_intensities(image)</dt>
+<dd><p class="first last">image = deepcopy(image)
+image.normalize_std_inplace()
+return image.feature_type.igo(double_angles=True)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>See <cite>menpo.image.feature.py</cite> for details more details on
+menpo&#8217;s standard image features and feature options.</p>
+</div></blockquote>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>transform: :class:`menpo.transform.PureAlignmentTransform`, Optional</strong> :</p>
+<blockquote>
+<div><p>The <tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.PureAlignmentTransform</span></tt> that will be
+used to warp the images.</p>
+<p>Default: <tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.PiecewiseAffine</span></tt></p>
+</div></blockquote>
+<p><strong>trilist: (t, 3) ndarray, Optional</strong> :</p>
+<blockquote>
+<div><p>Triangle list that will be used to build the reference frame. If None,
+defaults to performing Delaunay triangulation on the points.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>diagonal_range: int, Optional</strong> :</p>
+<blockquote>
+<div><p>All images will be rescaled to ensure that the scale of their
+landmarks matches the scale of the mean shape.</p>
+<p>If int, ensures that the mean shape is scaled so that
+the diagonal of the bounding box containing it matches the
+diagonal_range value.
+If None, the mean landmarks are not rescaled.</p>
+<p>Note that, because the reference frame is computed from the mean
+landmarks, this kwarg also specifies the diagonal length of the
+reference frame (provided that features computation does not change
+the image size).</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>n_levels: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of multi-resolution pyramidal levels to be used.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale: float &gt; 1, Optional</strong> :</p>
+<blockquote>
+<div><p>The downscale factor that will be used to create the different
+pyramidal levels.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>scaled_levels: boolean, Optional</strong> :</p>
+<blockquote>
+<div><p>If True, the original images will be both smoothed and scaled using
+a Gaussian pyramid to create the different pyramidal levels.
+If False, they will only be smoothed.</p>
+<p>Default: True</p>
+</div></blockquote>
+<p><strong>max_shape_components: 0 &lt; int &lt; n_components, Optional</strong> :</p>
+<blockquote>
+<div><p>If int, it specifies the specific number of components of the
+original shape model to be retained.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>max_appearance_components: 0 &lt; int &lt; n_components, Optional</strong> :</p>
+<blockquote>
+<div><p>If int, it specifies the specific number of components of the
+original appearance model to be retained.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of pixels to be left as a safe margin on the boundaries
+of the reference frame (has potential effects on the gradient
+computation).</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>interpolator:&#8217;scipy&#8217;, Optional</strong> :</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warps.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>aam</strong> : <tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultiple.aam.builder.AAMBuilder</span></tt></p>
+<blockquote class="last">
+<div><p>The AAM Builder object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.AAMBuilder.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>feature_type=&lt;function sparse_hog at 0x1046f31b8&gt;</em>, <em>transform=&lt;class 'menpo.transform.piecewiseaffine.base.CachedPWA'&gt;</em>, <em>trilist=None</em>, <em>diagonal_range=None</em>, <em>n_levels=3</em>, <em>downscale=1.1</em>, <em>scaled_levels=True</em>, <em>max_shape_components=None</em>, <em>max_appearance_components=None</em>, <em>boundary=3</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAMBuilder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAMBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.AAMBuilder.build">
+<tt class="descname">build</tt><big>(</big><em>images</em>, <em>group=None</em>, <em>label='all'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAMBuilder.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAMBuilder.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a Multilevel Active Appearance Model from a list of
+landmarked images.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>images: list of :class:`menpo.image.Image`</strong> :</p>
+<blockquote>
+<div><p>The set of landmarked images from which to build the AAM.</p>
+</div></blockquote>
+<p><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If no
+label is passed, the convex hull of all landmarks is used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>aam</strong> : <tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultiple.aam.builder.AAM</span></tt></p>
+<blockquote class="last">
+<div><p>The AAM object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fitmultilevel.aam.builder.PatchBasedAAMBuilder">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">PatchBasedAAMBuilder</tt><big>(</big><em>feature_type='hog'</em>, <em>transform=&lt;class 'menpo.transform.thinplatesplines.ThinPlateSplines'&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>diagonal_range=None</em>, <em>n_levels=3</em>, <em>downscale=2</em>, <em>scaled_levels=True</em>, <em>max_shape_components=None</em>, <em>max_appearance_components=None</em>, <em>boundary=3</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#PatchBasedAAMBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.PatchBasedAAMBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fitmultilevel.aam.builder.AAMBuilder" title="menpo.fitmultilevel.aam.builder.AAMBuilder"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultilevel.aam.builder.AAMBuilder</span></tt></a></p>
+<p>Class that builds Patch-Based Multilevel Active Appearance Models.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>feature_type: string or function/closure, Optional</strong> :</p>
+<blockquote>
+<div><p>If None, the appearance model will be build using the original image
+representation, i.e. no features will be extracted from the original
+images.
+If string or closure, the appearance model will be built from a
+feature representation of the original images:</p>
+<blockquote>
+<div><p>If string, image features will be computed by executing:</p>
+<blockquote>
+<div><p>feature_image = eval(&#8216;img.feature_type.&#8217; + feature_type + &#8216;()&#8217;)</p>
+</div></blockquote>
+<p>For this to work properly <cite>feature_type</cite> needs to be one of
+menpo&#8217;s standard image feature methods. Note that, in this case,
+the feature computation will be carried out using the default
+options.</p>
+<p>Non-default feature options and new experimental features can be
+defined using functions/closures. In this case, the function must
+receive an image as input and return a particular feature
+representation of that image. For example:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def igo_double_from_std_normalized_intensities(image)</dt>
+<dd><p class="first last">image = deepcopy(image)
+image.normalize_std_inplace()
+return image.feature_type.igo(double_angles=True)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>See <cite>menpo.image.feature.py</cite> for details more details on
+menpo&#8217;s standard image features and feature options.</p>
+</div></blockquote>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>transform: :class:`menpo.transform.PureAlignmentTransform`, Optional</strong> :</p>
+<blockquote>
+<div><p>The <tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.PureAlignmentTransform</span></tt> that will be
+used to warp the images.</p>
+<p>Default: <tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.PiecewiseAffine</span></tt></p>
+</div></blockquote>
+<p><strong>patch_shape: tuple of ints, Optional</strong> :</p>
+<blockquote>
+<div><p>The appearance model of the Patch-Based AAM will be obtained by
+sampling appearance patches with the specified shape around each
+landmark.</p>
+<p>Default: (16, 16)</p>
+</div></blockquote>
+<p><strong>diagonal_range: int, Optional</strong> :</p>
+<blockquote>
+<div><p>All images will be rescaled to ensure that the scale of their
+landmarks matches the scale of the mean shape.</p>
+<p>If int, ensures that the mean shape is scaled so that
+the diagonal of the bounding box containing it matches the
+diagonal_range value.
+If None, the mean landmarks are not rescaled.</p>
+<p>Note that, because the reference frame is computed from the mean
+landmarks, this kwarg also specifies the diagonal length of the
+reference frame (provided that features computation does not change
+the image size).</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>n_levels: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of multi-resolution pyramidal levels to be used.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale: float &gt; 1, Optional</strong> :</p>
+<blockquote>
+<div><p>The downscale factor that will be used to create the different
+pyramidal levels.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>scaled_levels: boolean, Optional</strong> :</p>
+<blockquote>
+<div><p>If True, the original images will be both smoothed and scaled using
+a Gaussian pyramid to create the different pyramidal levels.
+If False, they will only be smoothed.</p>
+<p>Default: True</p>
+</div></blockquote>
+<p><strong>max_shape_components: 0 &lt; int &lt; n_components, Optional</strong> :</p>
+<blockquote>
+<div><p>If int, it specifies the specific number of components of the
+original shape model to be retained.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>max_appearance_components: 0 &lt; int &lt; n_components, Optional</strong> :</p>
+<blockquote>
+<div><p>If int, it specifies the specific number of components of the
+original appearance model to be retained.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of pixels to be left as a safe margin on the boundaries
+of the reference frame (has potential effects on the gradient
+computation).</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>interpolator:&#8217;scipy&#8217;, Optional</strong> :</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warps.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>aam</strong> : <tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultiple.aam.builder.PatchBasedAAMBuilder</span></tt></p>
+<blockquote class="last">
+<div><p>The Patch Based AAM Builder object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.PatchBasedAAMBuilder.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>feature_type='hog'</em>, <em>transform=&lt;class 'menpo.transform.thinplatesplines.ThinPlateSplines'&gt;</em>, <em>patch_shape=(16</em>, <em>16)</em>, <em>diagonal_range=None</em>, <em>n_levels=3</em>, <em>downscale=2</em>, <em>scaled_levels=True</em>, <em>max_shape_components=None</em>, <em>max_appearance_components=None</em>, <em>boundary=3</em>, <em>interpolator='scipy'</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#PatchBasedAAMBuilder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.PatchBasedAAMBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fitmultilevel.aam.builder.AAM">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">AAM</tt><big>(</big><em>shape_models</em>, <em>appearance_models</em>, <em>transform</em>, <em>feature_type</em>, <em>reference_shape</em>, <em>downscale</em>, <em>scaled_levels</em>, <em>interpolator</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Active Appearance Model class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape_models: :class:`menpo.model.PCA` list</strong> :</p>
+<blockquote>
+<div><p>A list containing the shape models of the AAM.</p>
+</div></blockquote>
+<p><strong>appearance_models: :class:`menpo.model.PCA` list</strong> :</p>
+<blockquote>
+<div><p>A list containing the appearance models of the AAM.</p>
+</div></blockquote>
+<p><strong>transform: :class:`menpo.transform.PureAlignmentTransform`</strong> :</p>
+<blockquote>
+<div><p>The transform used to warp the images from which the AAM was
+constructed.</p>
+</div></blockquote>
+<p><strong>feature_type: str or function</strong> :</p>
+<blockquote>
+<div><p>The image feature that was be used to build the appearance_models. Will
+subsequently be used by fitter objects using this class to fitter to
+novel images.</p>
+<p>If None, the appearance model was built immediately from the image
+representation, i.e. intensity.</p>
+<p>If string, the appearance model was built using one of Menpo&#8217;s default
+built-in feature representations - those
+accessible at image.features.some_feature(). Note that this case can
+only be used with default feature weights - for custom feature
+weights, use the functional form of this argument instead.</p>
+<p>If function, the user can directly provide the feature that was
+calculated on the images. This class will simply invoke this
+function, passing in as the sole argument the image to be fitted,
+and expect as a return type an Image representing the feature
+calculation ready for further fitting. See the examples for
+details.</p>
+</div></blockquote>
+<p><strong>reference_shape: PointCloud</strong> :</p>
+<blockquote>
+<div><p>The reference shape that was used to resize all training images to a
+consistent object size.</p>
+</div></blockquote>
+<p><strong>downscale: float</strong> :</p>
+<blockquote>
+<div><p>The constant downscale factor used to create the different levels of
+the AAM. For example, a factor of 2 would imply that the second level
+of the AAM pyramid is half the width and half the height of the first.
+The third would be 1/2 * 1/2 = 1/4 the width and 1/4 the height of
+the original.</p>
+</div></blockquote>
+<p><strong>scaled_levels: boolean</strong> :</p>
+<blockquote>
+<div><p>Boolean value specifying whether the AAM levels are scaled or not.</p>
+</div></blockquote>
+<p><strong>interpolator: string</strong> :</p>
+<blockquote class="last">
+<div><p>The interpolator that was used to build the AAM.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.AAM.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>shape_models</em>, <em>appearance_models</em>, <em>transform</em>, <em>feature_type</em>, <em>reference_shape</em>, <em>downscale</em>, <em>scaled_levels</em>, <em>interpolator</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAM.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.AAM.instance">
+<tt class="descname">instance</tt><big>(</big><em>shape_weights=None</em>, <em>appearance_weights=None</em>, <em>level=-1</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAM.instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAM.instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a novel AAM instance given a set of shape and appearance
+weights. If no weights are provided, the mean AAM instance is
+returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape_weights: (n_weights,) ndarray or float list</strong> :</p>
+<blockquote>
+<div><p>Weights of the shape model that will be used to create
+a novel shape instance. If None, the mean shape
+(shape_weights = [0, 0, ..., 0]) is used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>appearance_weights: (n_weights,) ndarray or float list</strong> :</p>
+<blockquote>
+<div><p>Weights of the appearance model that will be used to create
+a novel appearance instance. If None, the mean appearance
+(appearance_weights = [0, 0, ..., 0]) is used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>level: int, optional</strong> :</p>
+<blockquote>
+<div><p>The pyramidal level to be used.</p>
+<p>Default: -1</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image: :class:`menpo.image.base.Image`</strong> :</p>
+<blockquote class="last">
+<div><p>The novel AAM instance.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.fitmultilevel.aam.builder.AAM.n_levels">
+<tt class="descname">n_levels</tt><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAM.n_levels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAM.n_levels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of multi-resolution pyramidal levels of the AAM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.AAM.random_instance">
+<tt class="descname">random_instance</tt><big>(</big><em>level=-1</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#AAM.random_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.AAM.random_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a novel random instance of the AAM.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>level: int, optional</strong> :</p>
+<blockquote>
+<div><p>The pyramidal level to be used.</p>
+<p>Default: -1</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image: :class:`menpo.image.base.Image`</strong> :</p>
+<blockquote class="last">
+<div><p>The novel AAM instance.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.fitmultilevel.aam.builder.PatchBasedAAM">
+<em class="property">class </em><tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">PatchBasedAAM</tt><big>(</big><em>shape_models</em>, <em>appearance_models</em>, <em>patch_shape</em>, <em>transform</em>, <em>feature_type</em>, <em>reference_shape</em>, <em>downscale</em>, <em>scaled_levels</em>, <em>interpolator</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#PatchBasedAAM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.PatchBasedAAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.fitmultilevel.aam.builder.AAM" title="menpo.fitmultilevel.aam.builder.AAM"><tt class="xref py py-class docutils literal"><span class="pre">menpo.fitmultilevel.aam.builder.AAM</span></tt></a></p>
+<p>Patch Based Active Appearance Model class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape_models: :class:`menpo.model.PCA` list</strong> :</p>
+<blockquote>
+<div><p>A list containing the shape models of the AAM.</p>
+</div></blockquote>
+<p><strong>appearance_models: :class:`menpo.model.PCA` list</strong> :</p>
+<blockquote>
+<div><p>A list containing the appearance models of the AAM.</p>
+</div></blockquote>
+<p><strong>patch_shape: tuple of ints</strong> :</p>
+<blockquote>
+<div><p>The shape of the patches used to build the Patch Based AAM.</p>
+</div></blockquote>
+<p><strong>transform: :class:`menpo.transform.PureAlignmentTransform`</strong> :</p>
+<blockquote>
+<div><p>The transform used to warp the images from which the AAM was
+constructed.</p>
+</div></blockquote>
+<p><strong>feature_type: str or function</strong> :</p>
+<blockquote>
+<div><p>The image feature that was be used to build the appearance_models. Will
+subsequently be used by fitter objects using this class to fitter to
+novel images.</p>
+<p>If None, the appearance model was built immediately from the image
+representation, i.e. intensity.</p>
+<p>If string, the appearance model was built using one of Menpo&#8217;s default
+built-in feature representations - those
+accessible at image.features.some_feature(). Note that this case can
+only be used with default feature weights - for custom feature
+weights, use the functional form of this argument instead.</p>
+<p>If function, the user can directly provide the feature that was
+calculated on the images. This class will simply invoke this
+function, passing in as the sole argument the image to be fitted,
+and expect as a return type an Image representing the feature
+calculation ready for further fitting. See the examples for
+details.</p>
+</div></blockquote>
+<p><strong>reference_shape: PointCloud</strong> :</p>
+<blockquote>
+<div><p>The reference shape that was used to resize all training images to a
+consistent object size.</p>
+</div></blockquote>
+<p><strong>downscale: float</strong> :</p>
+<blockquote>
+<div><p>The constant downscale factor used to create the different levels of
+the AAM. For example, a factor of 2 would imply that the second level
+of the AAM pyramid is half the width and half the height of the first.
+The third would be 1/2 * 1/2 = 1/4 the width and 1/4 the height of
+the original.</p>
+</div></blockquote>
+<p><strong>scaled_levels: boolean</strong> :</p>
+<blockquote>
+<div><p>Boolean value specifying whether the AAM levels are scaled or not.</p>
+</div></blockquote>
+<p><strong>interpolator: string</strong> :</p>
+<blockquote class="last">
+<div><p>The interpolator that was used to build the AAM.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.fitmultilevel.aam.builder.PatchBasedAAM.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>shape_models</em>, <em>appearance_models</em>, <em>patch_shape</em>, <em>transform</em>, <em>feature_type</em>, <em>reference_shape</em>, <em>downscale</em>, <em>scaled_levels</em>, <em>interpolator</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#PatchBasedAAM.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.PatchBasedAAM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>2 Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="menpo.fitmultilevel.aam.builder.build_reference_frame">
+<tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">build_reference_frame</tt><big>(</big><em>landmarks</em>, <em>boundary=3</em>, <em>group='source'</em>, <em>trilist=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#build_reference_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.build_reference_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a reference frame from a particular set of landmarks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>landmarks: PointCloud</strong> :</p>
+<blockquote>
+<div><p>The landmarks that will be used to build the reference frame.</p>
+</div></blockquote>
+<p><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of pixels to be left as a safe margin on the boundaries
+of the reference frame (has potential effects on the gradient
+computation).</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>group: str, optional</strong> :</p>
+<blockquote>
+<div><p>Group that will be assigned to the provided set of landmarks on the
+reference frame.</p>
+<p>Default: &#8216;source&#8217;</p>
+</div></blockquote>
+<p><strong>trilist: (t, 3) ndarray, Optional</strong> :</p>
+<blockquote>
+<div><p>Triangle list that will be used to build the reference frame. If None,
+defaults to performing Delaunay triangulation on the points.</p>
+<p>Default: None</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>reference_frame</strong> : <a class="reference internal" href="menpo.image.base.html#menpo.image.base.Image" title="menpo.image.base.Image"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.base.Image</span></tt></a></p>
+<blockquote class="last">
+<div><p>The reference frame.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="menpo.fitmultilevel.aam.builder.build_patch_reference_frame">
+<tt class="descclassname">menpo.fitmultilevel.aam.builder.</tt><tt class="descname">build_patch_reference_frame</tt><big>(</big><em>landmarks</em>, <em>boundary=3</em>, <em>group='source'</em>, <em>patch_shape=(16</em>, <em>16)</em><big>)</big><a class="reference internal" href="../../_modules/menpo/fitmultilevel/aam/builder.html#build_patch_reference_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.fitmultilevel.aam.builder.build_patch_reference_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a reference frame from a particular set of landmarks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>landmarks: PointCloud</strong> :</p>
+<blockquote>
+<div><p>The landmarks that will be used to build the reference frame.</p>
+</div></blockquote>
+<p><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>The number of pixels to be left as a safe margin on the boundaries
+of the reference frame (has potential effects on the gradient
+computation).</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>group: str, optional</strong> :</p>
+<blockquote>
+<div><p>Group that will be assigned to the provided set of landmarks on the
+reference frame.</p>
+<p>Default: &#8216;source&#8217;</p>
+</div></blockquote>
+<p><strong>patch_shape: tuple of ints, Optional</strong> :</p>
+<blockquote>
+<div><p>Tuple specifying the shape of the patches.</p>
+<p>Default: (16, 16)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>patch_based_reference_frame</strong> : <a class="reference internal" href="menpo.image.base.html#menpo.image.base.Image" title="menpo.image.base.Image"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.base.Image</span></tt></a></p>
+<blockquote class="last">
+<div><p>The patch based reference frame.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">fitmultilevel.aam.builder</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">4 Classes</a></li>
+<li><a class="reference internal" href="#functions">2 Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.fitmultilevel.aam.builder.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

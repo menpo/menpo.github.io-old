@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: transform.homogeneous.translation &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.transform.homogeneous.translation">
+<span id="module-transform-homogeneous-translation"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">transform.homogeneous.translation</span></tt><a class="headerlink" href="#module-menpo.transform.homogeneous.translation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.translation.Translation">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.translation.</tt><tt class="descname">Translation</tt><big>(</big><em>translation</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#Translation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.Translation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.affine.html#menpo.transform.homogeneous.affine.DiscreteAffine" title="menpo.transform.homogeneous.affine.DiscreteAffine"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.affine.DiscreteAffine</span></tt></a>, <a class="reference internal" href="menpo.transform.homogeneous.similarity.html#menpo.transform.homogeneous.similarity.Similarity" title="menpo.transform.homogeneous.similarity.Similarity"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.similarity.Similarity</span></tt></a></p>
+<p>An N-dimensional translation transform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>translation</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The translation in each axis.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.translation.Translation.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>translation</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#Translation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.Translation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.translation.Translation.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#Translation.as_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.Translation.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters of the transform as a 1D array. These parameters
+are parametrised as deltas from the identity warp. The parameters
+are output in the order [t0, t1, ...].</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="0%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" colspan="3">parameter | definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>t0
+t1
+...
+tn</td>
+<td colspan="2">The translation in the first axis
+The translation in the second axis
+...
+The translation in the nth axis</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ts</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The translation in each axis.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.translation.Translation.n_parameters">
+<tt class="descname">n_parameters</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#Translation.n_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.Translation.n_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of parameters: <tt class="docutils literal"><span class="pre">n_dims</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.transform.homogeneous.translation.AlignmentTranslation">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.translation.</tt><tt class="descname">AlignmentTranslation</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#AlignmentTranslation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.AlignmentTranslation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.HomogFamilyAlignment" title="menpo.transform.homogeneous.base.HomogFamilyAlignment"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.base.HomogFamilyAlignment</span></tt></a>, <a class="reference internal" href="#menpo.transform.homogeneous.translation.Translation" title="menpo.transform.homogeneous.translation.Translation"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.translation.Translation</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.translation.AlignmentTranslation.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/translation.html#AlignmentTranslation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.translation.AlignmentTranslation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">transform.homogeneous.translation</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.transform.homogeneous.translation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

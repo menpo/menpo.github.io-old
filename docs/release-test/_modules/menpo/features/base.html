@@ -1,0 +1,605 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.features.base &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.features.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">menpo.features.cppimagewindowiterator</span> <span class="kn">import</span> <span class="n">CppImageWindowIterator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
+
+
+<div class="viewcode-block" id="gradient"><a class="viewcode-back" href="../../../api/generated/menpo.features.base.html#menpo.features.base.gradient">[docs]</a><span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">image_data</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the gradient of an input image. The image is assumed to have</span>
+<span class="sd">    channel information on the last axis. In the case of multiple channels,</span>
+<span class="sd">    it returns the gradient over each axis over each channel as the last axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data : ndarray, shape (X, Y, ..., Z, C)</span>
+<span class="sd">        An array where the last dimension is interpreted as channels. This</span>
+<span class="sd">        means an N-dimensional image is represented by an N+1 dimensional array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gradient : ndarray, shape (X, Y, ..., Z, C * length([X, Y, ..., Z]))</span>
+<span class="sd">        The gradient over each axis over each channel. Therefore, the</span>
+<span class="sd">        last axis of the gradient of a 2D, single channel image, will have</span>
+<span class="sd">        length ``2``. The last axis of the gradient of a 2D, 3-channel image,</span>
+<span class="sd">        will have length ``6``, he ordering being [Rd_x, Rd_y, Gd_x, Gd_y,</span>
+<span class="sd">        Bd_x, Bd_y].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grad_per_dim_per_channel</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="c"># Flatten out the separate dims</span>
+    <span class="n">grad_per_channel</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
+        <span class="n">grad_per_dim_per_channel</span><span class="p">))</span>
+    <span class="c"># Add a channel axis for broadcasting</span>
+    <span class="n">grad_per_channel</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">grad_per_channel</span><span class="p">]</span>
+    <span class="c"># Concatenate gradient list into an array (the new_image)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">grad_per_channel</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="hog"><a class="viewcode-back" href="../../../api/generated/menpo.features.base.html#menpo.features.base.hog">[docs]</a><span class="k">def</span> <span class="nf">hog</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;dense&#39;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s">&#39;dalaltriggs&#39;</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+        <span class="n">cell_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">signed_gradient</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">l2_norm_clip</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">window_height</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_unit</span><span class="o">=</span><span class="s">&#39;blocks&#39;</span><span class="p">,</span>
+        <span class="n">window_step_vertical</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_step_horizontal</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">window_step_unit</span><span class="o">=</span><span class="s">&#39;pixels&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes a 2-dimensional HOG features image with k number of channels, of</span>
+<span class="sd">    size ``(M, N, C)`` and data type ``np.float``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data :  ndarray</span>
+<span class="sd">        The pixel data for the image, where the last axis represents the</span>
+<span class="sd">        number of channels.</span>
+<span class="sd">    mode : &#39;dense&#39; or &#39;sparse&#39;</span>
+<span class="sd">        The &#39;sparse&#39; case refers to the traditional usage of HOGs, so default</span>
+<span class="sd">        parameters values are passed to the ImageWindowIterator. The sparse</span>
+<span class="sd">        case of &#39;dalaltriggs&#39; algorithm sets the window height and width equal</span>
+<span class="sd">        to block size and the window step horizontal and vertical equal to cell</span>
+<span class="sd">        size. Thse sparse case of &#39;zhuramanan&#39; algorithm sets the window height</span>
+<span class="sd">        and width equal to 3 times the cell size and the window step horizontal</span>
+<span class="sd">        and vertical equal to cell size. In the &#39;dense&#39; case, the user can</span>
+<span class="sd">        change the ImageWindowIterator related parameters (window_height,</span>
+<span class="sd">        window_width, window_unit, window_step_vertical,</span>
+<span class="sd">        window_step_horizontal, window_step_unit, padding).</span>
+
+<span class="sd">        Default: &#39;dense&#39;</span>
+<span class="sd">    window_height : float</span>
+<span class="sd">        Defines the height of the window for the ImageWindowIterator object.</span>
+<span class="sd">        The metric unit is defined by window_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_width : float</span>
+<span class="sd">        Defines the width of the window for the ImageWindowIterator object.</span>
+<span class="sd">        The metric unit is defined by window_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_unit : &#39;blocks&#39; or &#39;pixels&#39;</span>
+<span class="sd">        Defines the metric unit of the window_height and window_width</span>
+<span class="sd">        parameters for the ImageWindowIterator object.</span>
+
+<span class="sd">        Default: &#39;blocks&#39;</span>
+<span class="sd">    window_step_vertical : float</span>
+<span class="sd">        Defines the vertical step by which the window in the</span>
+<span class="sd">        ImageWindowIterator is moved, thus it controls the features density.</span>
+<span class="sd">        The metric unit is defined by window_step_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_step_horizontal : float</span>
+<span class="sd">        Defines the horizontal step by which the window in the</span>
+<span class="sd">        ImageWindowIterator is moved, thus it controls the features density.</span>
+<span class="sd">        The metric unit is defined by window_step_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_step_unit : &#39;pixels&#39; or &#39;cells&#39;</span>
+<span class="sd">        Defines the metric unit of the window_step_vertical and</span>
+<span class="sd">        window_step_horizontal parameters for the ImageWindowIterator object.</span>
+
+<span class="sd">        Default: &#39;pixels&#39;</span>
+<span class="sd">    padding : bool</span>
+<span class="sd">        Enables/disables padding for the close-to-boundary windows in the</span>
+<span class="sd">        ImageWindowIterator object. When padding is enabled, the</span>
+<span class="sd">        out-of-boundary pixels are set to zero.</span>
+
+<span class="sd">        Default: True</span>
+<span class="sd">    algorithm : &#39;dalaltriggs&#39; or &#39;zhuramanan&#39;</span>
+<span class="sd">        Specifies the algorithm used to compute HOGs.</span>
+
+<span class="sd">        Default: &#39;dalaltriggs&#39;</span>
+<span class="sd">    cell_size : float</span>
+<span class="sd">        Defines the cell size in pixels. This value is set to both the width</span>
+<span class="sd">        and height of the cell. This option is valid for both algorithms.</span>
+
+<span class="sd">        Default: 8</span>
+<span class="sd">    block_size : float</span>
+<span class="sd">        Defines the block size in cells. This value is set to both the width</span>
+<span class="sd">        and height of the block. This option is valid only for the</span>
+<span class="sd">        &#39;dalaltriggs&#39; algorithm.</span>
+
+<span class="sd">        Default: 2</span>
+<span class="sd">    num_bins : float</span>
+<span class="sd">        Defines the number of orientation histogram bins. This option is valid</span>
+<span class="sd">        only for the &#39;dalaltriggs&#39; algorithm.</span>
+
+<span class="sd">        Default: 9</span>
+<span class="sd">    signed_gradient : bool</span>
+<span class="sd">        Flag that defines whether we use signed or unsigned gradient angles.</span>
+<span class="sd">        This option is valid only for the &#39;dalaltriggs&#39; algorithm.</span>
+
+<span class="sd">        Default: True</span>
+<span class="sd">    l2_norm_clip : float</span>
+<span class="sd">        Defines the clipping value of the gradients&#39; L2-norm. This option is</span>
+<span class="sd">        valid only for the &#39;dalaltriggs&#39; algorithm.</span>
+
+<span class="sd">        Default: 0.2</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Flag to print HOG related information.</span>
+
+<span class="sd">        Default: False</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        HOG features mode must be either dense or sparse</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Algorithm must be either dalaltriggs or zhuramanan</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Number of orientation bins must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Cell size (in pixels) must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Block size (in cells) must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Value for L2-norm clipping must be &gt; 0.0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Window height must be &gt;= block size and &lt;= image height</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Window width must be &gt;= block size and &lt;= image width</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Window unit must be either pixels or blocks</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Horizontal window step must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Vertical window step must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Window step unit must be either pixels or cells</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Parse options</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;dense&#39;</span><span class="p">,</span> <span class="s">&#39;sparse&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;HOG features mode must be either dense or sparse&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;dalaltriggs&#39;</span><span class="p">,</span> <span class="s">&#39;zhuramanan&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Algorithm must be either dalaltriggs or zhuramanan&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_bins</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Number of orientation bins must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cell_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Cell size (in pixels) must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">block_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Block size (in cells) must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">l2_norm_clip</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Value for L2-norm clipping must be &gt; 0.0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="s">&#39;dense&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">window_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;pixels&#39;</span><span class="p">,</span> <span class="s">&#39;blocks&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Window unit must be either pixels or blocks&quot;</span><span class="p">)</span>
+        <span class="n">window_height_temp</span> <span class="o">=</span> <span class="n">window_height</span>
+        <span class="n">window_width_temp</span> <span class="o">=</span> <span class="n">window_width</span>
+        <span class="k">if</span> <span class="n">window_unit</span> <span class="o">==</span> <span class="s">&#39;blocks&#39;</span><span class="p">:</span>
+            <span class="n">window_height_temp</span> <span class="o">=</span> <span class="n">window_height</span><span class="o">*</span><span class="n">block_size</span><span class="o">*</span><span class="n">cell_size</span>
+            <span class="n">window_width_temp</span> <span class="o">=</span> <span class="n">window_width</span><span class="o">*</span><span class="n">block_size</span><span class="o">*</span><span class="n">cell_size</span>
+        <span class="k">if</span> <span class="n">window_height_temp</span> <span class="o">&lt;</span> <span class="n">block_size</span><span class="o">*</span><span class="n">cell_size</span> <span class="ow">or</span> \
+           <span class="n">window_height_temp</span> <span class="o">&gt;</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Window height must be &gt;= block size and &lt;= &quot;</span>
+                             <span class="s">&quot;image height&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window_width_temp</span> <span class="o">&lt;</span> <span class="n">block_size</span><span class="o">*</span><span class="n">cell_size</span> <span class="ow">or</span> \
+           <span class="n">window_width_temp</span> <span class="o">&gt;</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Window width must be &gt;= block size and &lt;= &quot;</span>
+                             <span class="s">&quot;image width&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window_step_horizontal</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Horizontal window step must be &gt; 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window_step_vertical</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Vertical window step must be &gt; 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window_step_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;pixels&#39;</span><span class="p">,</span> <span class="s">&#39;cells&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Window step unit must be either pixels or cells&quot;</span><span class="p">)</span>
+
+    <span class="c"># Correct input image_data</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="n">image_data</span> <span class="o">*=</span> <span class="mf">255.</span>
+
+    <span class="c"># Dense case</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;dense&#39;</span><span class="p">:</span>
+        <span class="c"># Iterator parameters</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s">&#39;dalaltriggs&#39;</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">window_unit</span> <span class="o">==</span> <span class="s">&#39;blocks&#39;</span><span class="p">:</span>
+                <span class="n">block_in_pixels</span> <span class="o">=</span> <span class="n">cell_size</span> <span class="o">*</span> <span class="n">block_size</span>
+                <span class="n">window_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_height</span> <span class="o">*</span> <span class="n">block_in_pixels</span><span class="p">)</span>
+                <span class="n">window_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_width</span> <span class="o">*</span> <span class="n">block_in_pixels</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">window_step_unit</span> <span class="o">==</span> <span class="s">&#39;cells&#39;</span><span class="p">:</span>
+                <span class="n">window_step_vertical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_vertical</span> <span class="o">*</span>
+                                                 <span class="n">cell_size</span><span class="p">)</span>
+                <span class="n">window_step_horizontal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_horizontal</span> <span class="o">*</span>
+                                                   <span class="n">cell_size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s">&#39;zhuramanan&#39;</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">window_unit</span> <span class="o">==</span> <span class="s">&#39;blocks&#39;</span><span class="p">:</span>
+                <span class="n">block_in_pixels</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">cell_size</span>
+                <span class="n">window_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_height</span> <span class="o">*</span> <span class="n">block_in_pixels</span><span class="p">)</span>
+                <span class="n">window_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_width</span> <span class="o">*</span> <span class="n">block_in_pixels</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">window_step_unit</span> <span class="o">==</span> <span class="s">&#39;cells&#39;</span><span class="p">:</span>
+                <span class="n">window_step_vertical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_vertical</span> <span class="o">*</span>
+                                                 <span class="n">cell_size</span><span class="p">)</span>
+                <span class="n">window_step_horizontal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_horizontal</span> <span class="o">*</span>
+                                                   <span class="n">cell_size</span><span class="p">)</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">CppImageWindowIterator</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">window_height</span><span class="p">,</span>
+                                          <span class="n">window_width</span><span class="p">,</span> <span class="n">window_step_horizontal</span><span class="p">,</span>
+                                          <span class="n">window_step_vertical</span><span class="p">,</span> <span class="n">padding</span><span class="p">)</span>
+    <span class="c"># Sparse case</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Create iterator</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="s">&#39;dalaltriggs&#39;</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">window_size</span> <span class="o">=</span> <span class="n">cell_size</span> <span class="o">*</span> <span class="n">block_size</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">cell_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">window_size</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">cell_size</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">cell_size</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">CppImageWindowIterator</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span>
+                                          <span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="c"># Print iterator&#39;s info</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">iterator</span>
+    <span class="c"># Compute HOG</span>
+    <span class="n">output_image</span><span class="p">,</span> <span class="n">windows_centers</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="n">HOG</span><span class="p">(</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">num_bins</span><span class="p">,</span>
+                                                 <span class="n">cell_size</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span>
+                                                 <span class="n">signed_gradient</span><span class="p">,</span> <span class="n">l2_norm_clip</span><span class="p">,</span>
+                                                 <span class="n">verbose</span><span class="p">)</span>
+    <span class="c"># Destroy iterator and return</span>
+    <span class="k">del</span> <span class="n">iterator</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">output_image</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+        <span class="n">windows_centers</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="igo"><a class="viewcode-back" href="../../../api/generated/menpo.features.base.html#menpo.features.base.igo">[docs]</a><span class="k">def</span> <span class="nf">igo</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">double_angles</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Represents a 2-dimensional IGO features image with k=[2,4] number of</span>
+<span class="sd">    channels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data :  ndarray</span>
+<span class="sd">        The pixel data for the image, where the last axis represents the</span>
+<span class="sd">        number of channels.</span>
+<span class="sd">    double_angles : bool</span>
+<span class="sd">        Assume that phi represents the gradient orientations. If this flag</span>
+<span class="sd">        is disabled, the features image is the concatenation of cos(phi)</span>
+<span class="sd">        and sin(phi), thus 2 channels. If it is enabled, the features image</span>
+<span class="sd">        is the concatenation of cos(phi), sin(phi), cos(2*phi), sin(2*phi).</span>
+
+<span class="sd">        Default: False</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Flag to print IGO related information.</span>
+
+<span class="sd">        Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># check number of dimensions</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;IGOs only work on 2D images. Expects image data &#39;</span>
+                         <span class="s">&#39;to be 3D, shape + channels.&#39;</span><span class="p">)</span>
+    <span class="c"># feature channels per image channel</span>
+    <span class="n">feat_channels</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">double_angles</span><span class="p">:</span>
+        <span class="n">feat_channels</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="c"># compute gradients</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="c"># compute angles</span>
+    <span class="n">grad_orient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1j</span> <span class="o">*</span> <span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+    <span class="c"># compute igo image</span>
+    <span class="n">igo_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                         <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">feat_channels</span><span class="p">))</span>
+    <span class="n">igo_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">grad_orient</span><span class="p">)</span>
+    <span class="n">igo_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grad_orient</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">double_angles</span><span class="p">:</span>
+        <span class="n">igo_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">grad_orient</span><span class="p">)</span>
+        <span class="n">igo_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">grad_orient</span><span class="p">)</span>
+    <span class="c"># print information</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;IGO Features:</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}  - Input image is {}W x {}H with {} channels.</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">info_str</span><span class="p">,</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">double_angles</span><span class="p">:</span>
+            <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}  - Double angles are enabled.</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}  - Double angles are disabled.</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">info_str</span><span class="p">)</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}Output image size {}W x {}H x {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">info_str</span><span class="p">,</span> <span class="n">igo_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">igo_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">igo_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">print</span> <span class="n">info_str</span>
+    <span class="k">return</span> <span class="n">igo_data</span>
+
+</div>
+<div class="viewcode-block" id="es"><a class="viewcode-back" href="../../../api/generated/menpo.features.base.html#menpo.features.base.es">[docs]</a><span class="k">def</span> <span class="nf">es</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Represents a 2-dimensional Edge Structure (ES) features image</span>
+<span class="sd">    with k=2 number of channels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data :  ndarray</span>
+<span class="sd">        The pixel data for the image, where the last axis represents the</span>
+<span class="sd">        number of channels.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Flag to print ES related information.</span>
+
+<span class="sd">        Default: False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># check number of dimensions</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;ES features only work on 2D images. Expects &#39;</span>
+                         <span class="s">&#39;image data to be 3D, shape + channels.&#39;</span><span class="p">)</span>
+    <span class="c"># feature channels per image channel</span>
+    <span class="n">feat_channels</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="c"># compute gradients</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="c"># compute magnitude</span>
+    <span class="n">grad_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1j</span> <span class="o">*</span> <span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+    <span class="c"># compute es image</span>
+    <span class="n">grad_abs</span> <span class="o">=</span> <span class="n">grad_abs</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">grad_abs</span><span class="p">)</span>
+    <span class="n">es_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">feat_channels</span><span class="p">))</span>
+    <span class="n">es_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">grad_abs</span>
+    <span class="n">es_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="n">feat_channels</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">grad_abs</span>
+    <span class="c"># print information</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;ES Features:</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}  - Input image is {}W x {}H with {} channels.</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">info_str</span><span class="p">,</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">image_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">info_str</span> <span class="o">=</span> <span class="s">&quot;{}Output image size {}W x {}H x {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">info_str</span><span class="p">,</span> <span class="n">es_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">es_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">es_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">print</span> <span class="n">info_str</span>
+    <span class="k">return</span> <span class="n">es_data</span>
+
+</div>
+<div class="viewcode-block" id="lbp"><a class="viewcode-back" href="../../../api/generated/menpo.features.base.html#menpo.features.base.lbp">[docs]</a><span class="k">def</span> <span class="nf">lbp</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">samples</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="n">mapping_type</span><span class="o">=</span><span class="s">&#39;riu2&#39;</span><span class="p">,</span>
+        <span class="n">window_step_vertical</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_step_horizontal</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">window_step_unit</span><span class="o">=</span><span class="s">&#39;pixels&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Computes a 2-dimensional LBP features image with k number of channels, of</span>
+<span class="sd">    size ``(M, N, C)`` and data type ``np.float``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data :  ndarray</span>
+<span class="sd">        The pixel data for the image, where the last axis represents the</span>
+<span class="sd">        number of channels.</span>
+<span class="sd">    radius : int or list of integers</span>
+<span class="sd">        It defines the radius of the circle (or circles) at which the sampling</span>
+<span class="sd">        points will be extracted. The radius (or radii) values must be greater</span>
+<span class="sd">        than zero. There must be a radius value for each samples value, thus</span>
+<span class="sd">        they both need to have the same length.</span>
+
+<span class="sd">        Default: [1, 2, 3, 4]</span>
+<span class="sd">    samples : int or list of integers</span>
+<span class="sd">        It defines the number of sampling points that will be extracted at each</span>
+<span class="sd">        circle. The samples value (or values) must be greater than zero. There</span>
+<span class="sd">        must be a samples value for each radius value, thus they both need to</span>
+<span class="sd">        have the same length.</span>
+
+<span class="sd">        Default: [8, 8, 8, 8]</span>
+<span class="sd">    mapping_type : &#39;u2&#39; or &#39;ri&#39; or &#39;riu2&#39; or &#39;none&#39;</span>
+<span class="sd">        It defines the mapping type of the LBP codes. Select &#39;u2&#39; for uniform-2</span>
+<span class="sd">        mapping, &#39;ri&#39; for rotation-invariant mapping, &#39;riu2&#39; for uniform-2 and</span>
+<span class="sd">        rotation-invariant mapping and &#39;none&#39; to use no mapping nd only the</span>
+<span class="sd">        decimal values instead.</span>
+
+<span class="sd">        Default: &#39;riu2&#39;</span>
+<span class="sd">    window_step_vertical : float</span>
+<span class="sd">        Defines the vertical step by which the window in the</span>
+<span class="sd">        ImageWindowIterator is moved, thus it controls the features density.</span>
+<span class="sd">        The metric unit is defined by window_step_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_step_horizontal : float</span>
+<span class="sd">        Defines the horizontal step by which the window in the</span>
+<span class="sd">        ImageWindowIterator is moved, thus it controls the features density.</span>
+<span class="sd">        The metric unit is defined by window_step_unit.</span>
+
+<span class="sd">        Default: 1</span>
+<span class="sd">    window_step_unit : &#39;pixels&#39; or &#39;window&#39;</span>
+<span class="sd">        Defines the metric unit of the window_step_vertical and</span>
+<span class="sd">        window_step_horizontal parameters for the ImageWindowIterator object.</span>
+
+<span class="sd">        Default: &#39;pixels&#39;</span>
+<span class="sd">    padding : bool</span>
+<span class="sd">        Enables/disables padding for the close-to-boundary windows in the</span>
+<span class="sd">        ImageWindowIterator object. When padding is enabled, the</span>
+<span class="sd">        out-of-boundary pixels are set to zero.</span>
+
+<span class="sd">        Default: True</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Flag to print LBP related information.</span>
+
+<span class="sd">        Default: False</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Radius and samples must both be either integers or lists</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Radius and samples must have the same length</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Radius must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Radii must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Samples must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Mapping type must be u2, ri, riu2 or none</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Horizontal window step must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Vertical window step must be &gt; 0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Window step unit must be either pixels or window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Check options</span>
+    <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">or</span>
+            <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Radius and samples must both be either integers or &quot;</span>
+                         <span class="s">&quot;lists&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Radius and samples must have the same length&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">radius</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Radius must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">radius</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Radii must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">samples</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Samples must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Samples must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mapping_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;u2&#39;</span><span class="p">,</span> <span class="s">&#39;ri&#39;</span><span class="p">,</span> <span class="s">&#39;riu2&#39;</span><span class="p">,</span> <span class="s">&#39;none&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Mapping type must be u2, ri, riu2 or &quot;</span>
+                         <span class="s">&quot;none&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window_step_horizontal</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Horizontal window step must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window_step_vertical</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Vertical window step must be &gt; 0&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window_step_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;pixels&#39;</span><span class="p">,</span> <span class="s">&#39;window&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Window step unit must be either pixels or window&quot;</span><span class="p">)</span>
+
+    <span class="c"># Correct input image_data</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+
+    <span class="c"># Parse options</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+    <span class="n">window_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">window_width</span> <span class="o">=</span> <span class="n">window_height</span>
+    <span class="k">if</span> <span class="n">window_step_unit</span> <span class="o">==</span> <span class="s">&#39;window&#39;</span><span class="p">:</span>
+        <span class="n">window_step_vertical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_vertical</span> <span class="o">*</span> <span class="n">window_height</span><span class="p">)</span>
+        <span class="n">window_step_horizontal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">window_step_horizontal</span> <span class="o">*</span>
+                                           <span class="n">window_width</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mapping_type</span> <span class="o">==</span> <span class="s">&#39;u2&#39;</span><span class="p">:</span>
+        <span class="n">mapping_type</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">mapping_type</span> <span class="o">==</span> <span class="s">&#39;ri&#39;</span><span class="p">:</span>
+        <span class="n">mapping_type</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">mapping_type</span> <span class="o">==</span> <span class="s">&#39;riu2&#39;</span><span class="p">:</span>
+        <span class="n">mapping_type</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mapping_type</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c"># Create iterator object</span>
+    <span class="n">iterator</span> <span class="o">=</span> <span class="n">CppImageWindowIterator</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">window_height</span><span class="p">,</span>
+                                      <span class="n">window_width</span><span class="p">,</span> <span class="n">window_step_horizontal</span><span class="p">,</span>
+                                      <span class="n">window_step_vertical</span><span class="p">,</span> <span class="n">padding</span><span class="p">)</span>
+
+    <span class="c"># Print iterator&#39;s info</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">iterator</span>
+
+    <span class="c"># Compute LBP</span>
+    <span class="n">output_image</span><span class="p">,</span> <span class="n">windows_centers</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="n">LBP</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">mapping_type</span><span class="p">,</span>
+                                                 <span class="n">verbose</span><span class="p">)</span>
+    <span class="c"># Destroy iterator and return</span>
+    <span class="k">del</span> <span class="n">iterator</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">output_image</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+        <span class="n">windows_centers</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

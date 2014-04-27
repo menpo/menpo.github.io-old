@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.image.boolean &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.image.boolean</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">menpo.image.base</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">pyramid_gaussian</span>
+
+
+<div class="viewcode-block" id="BooleanImage"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage">[docs]</a><span class="k">class</span> <span class="nc">BooleanImage</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    A mask image made from binary pixels. The region of the image that is</span>
+<span class="sd">    left exposed by the mask is referred to as the &#39;masked region&#39;. The</span>
+<span class="sd">    set of &#39;masked&#39; pixels is those pixels corresponding to a True value in</span>
+<span class="sd">    the mask.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    mask_data : (M, N, ..., L) ndarray</span>
+<span class="sd">        The binary mask data. Note that there is no channel axis - a 2D Mask</span>
+<span class="sd">         Image is built from just a 2D numpy array of mask_data.</span>
+<span class="sd">        Automatically coerced in to boolean values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BooleanImage.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_data</span><span class="p">):</span>
+        <span class="c"># Enforce boolean pixels, and add a channel dim</span>
+        <span class="n">mask_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BooleanImage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">mask_data</span><span class="p">)</span>
+</div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_init_with_channel</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">image_data_with_channel</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Constructor that always requires the image has a</span>
+<span class="sd">        channel on the last axis. Only used by from_vector. By default,</span>
+<span class="sd">        just calls the constructor. Subclasses with constructors that don&#39;t</span>
+<span class="sd">        require channel axes need to overwrite this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">image_data_with_channel</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BooleanImage.blank"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.blank">[docs]</a>    <span class="k">def</span> <span class="nf">blank</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="nb">round</span><span class="o">=</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a blank :class:`BooleanImage` of the requested shape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : tuple or list</span>
+<span class="sd">            The shape of the image. Any floating point values are rounded</span>
+<span class="sd">            according to the ``round`` kwarg.</span>
+
+<span class="sd">        fill : True or False, optional</span>
+<span class="sd">            The mask value to be set everywhere</span>
+
+<span class="sd">            Default: True (masked region is the whole image - meaning the whole</span>
+<span class="sd">                 image is exposed)</span>
+<span class="sd">        round: {&#39;ceil&#39;, &#39;floor&#39;, &#39;round&#39;}</span>
+<span class="sd">            Rounding function to be applied to floating point shapes.</span>
+
+<span class="sd">            Default: &#39;ceil&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        blank_image : :class:`BooleanImage`</span>
+<span class="sd">            A blank mask of the requested size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">round</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="s">&#39;round&#39;</span><span class="p">,</span> <span class="s">&#39;floor&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;round must be either ceil, round or floor&#39;</span><span class="p">)</span>
+            <span class="c"># Ensure that the &#39;+&#39; operator means concatenate tuples</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="nb">round</span><span class="p">)(</span><span class="n">shape</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">fill</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.mask"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.mask">[docs]</a>    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the pixels of the mask with no channel axis. This is what</span>
+<span class="sd">        should be used to mask any k-dimensional image.</span>
+
+<span class="sd">        :type: (M, N, ..., L), np.bool ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.n_true"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.n_true">[docs]</a>    <span class="k">def</span> <span class="nf">n_true</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of ``True`` values in the mask</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.n_false"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.n_false">[docs]</a>    <span class="k">def</span> <span class="nf">n_false</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of ``False`` values in the mask</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_true</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.proportion_true"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.proportion_true">[docs]</a>    <span class="k">def</span> <span class="nf">proportion_true</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The proportion of the mask which is ``True``</span>
+
+<span class="sd">        :type: double</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_true</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.proportion_false"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.proportion_false">[docs]</a>    <span class="k">def</span> <span class="nf">proportion_false</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The proportion of the mask which is ``False``</span>
+
+<span class="sd">        :type: double</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_false</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.true_indices"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.true_indices">[docs]</a>    <span class="k">def</span> <span class="nf">true_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The indices of pixels that are true.</span>
+
+<span class="sd">        :type: (``n_dims``, ``n_true``) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Ignore the channel axis</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.false_indices"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.false_indices">[docs]</a>    <span class="k">def</span> <span class="nf">false_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The indices of pixels that are false.</span>
+
+<span class="sd">        :type: (``n_dims``, ``n_false``) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Ignore the channel axis</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="BooleanImage.all_indices"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.all_indices">[docs]</a>    <span class="k">def</span> <span class="nf">all_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Indices into all pixels of the mask, as consistent with</span>
+<span class="sd">        true_indices and false_indices</span>
+
+<span class="sd">        :type: (``n_dims``, ``n_pixels``) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;{} {}D mask, {:.1%} &#39;</span>
+                <span class="s">&#39;of which is True &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_str_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">proportion_true</span><span class="p">))</span>
+
+<div class="viewcode-block" id="BooleanImage.from_vector"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.from_vector">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flattened</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Takes a flattened vector and returns a new</span>
+<span class="sd">        :class:`BooleanImage` formed by</span>
+<span class="sd">        reshaping the vector to the correct dimensions. Note that this is</span>
+<span class="sd">        rebuilding a boolean image **itself** from boolean values. The mask</span>
+<span class="sd">        is in no way interpreted in performing the operation, in contrast to</span>
+<span class="sd">        MaskedImage, where only the masked region is used in from_vector()</span>
+<span class="sd">        and as_vector(). Any image landmarks are transferred in the process.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flattened : (``n_pixels``,) np.bool ndarray</span>
+<span class="sd">            A flattened vector of all the pixels of a BooleanImage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image : :class:`BooleanImage`</span>
+<span class="sd">            New BooleanImage of same shape as this image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="p">(</span><span class="n">flattened</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="n">mask</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+        <span class="k">return</span> <span class="n">mask</span>
+</div>
+<div class="viewcode-block" id="BooleanImage.invert"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.invert">[docs]</a>    <span class="k">def</span> <span class="nf">invert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Inverts the current mask in place, setting all True values to False,</span>
+<span class="sd">        and all False values to True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span>
+</div>
+<div class="viewcode-block" id="BooleanImage.inverted_copy"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.inverted_copy">[docs]</a>    <span class="k">def</span> <span class="nf">inverted_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a copy of this Boolean image, which is inverted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        inverted_image: :class:`BooleanNSImage`</span>
+<span class="sd">            An inverted copy of this boolean image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inverse</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">inverse</span><span class="o">.</span><span class="n">invert</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">inverse</span>
+</div>
+<div class="viewcode-block" id="BooleanImage.bounds_true"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.bounds_true">[docs]</a>    <span class="k">def</span> <span class="nf">bounds_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">constrain_to_bounds</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the minimum to maximum indices along all dimensions that the</span>
+<span class="sd">        mask includes which fully surround the True mask values. In the case</span>
+<span class="sd">        of a 2D Image for instance, the min and max define two corners of a</span>
+<span class="sd">        rectangle bounding the True pixel values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        boundary : int, optional</span>
+<span class="sd">            A number of pixels that should be added to the extent. A</span>
+<span class="sd">            negative value can be used to shrink the bounds in.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        constrain_to_bounds: bool, optional</span>
+<span class="sd">            If True, the bounding extent is snapped to not go beyond</span>
+<span class="sd">            the edge of the image. If False, the bounds are left unchanged.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        min_b : (D,) ndarray</span>
+<span class="sd">            The minimum extent of the True mask region with the boundary</span>
+<span class="sd">            along each dimension. If constrain_to_bounds was True,</span>
+<span class="sd">            is clipped to legal image bounds.</span>
+
+<span class="sd">        max_b : (D,) ndarray</span>
+<span class="sd">            The maximum extent of the True mask region with the boundary</span>
+<span class="sd">            along each dimension. If constrain_to_bounds was True,</span>
+<span class="sd">            is clipped to legal image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">true_indices</span>
+        <span class="n">maxes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mpi</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">boundary</span>
+        <span class="n">mins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mpi</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">boundary</span>
+        <span class="k">if</span> <span class="n">constrain_to_bounds</span><span class="p">:</span>
+            <span class="n">maxes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_points_to_bounds</span><span class="p">(</span><span class="n">maxes</span><span class="p">)</span>
+            <span class="n">mins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_points_to_bounds</span><span class="p">(</span><span class="n">mins</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mins</span><span class="p">,</span> <span class="n">maxes</span>
+</div>
+<div class="viewcode-block" id="BooleanImage.bounds_false"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.bounds_false">[docs]</a>    <span class="k">def</span> <span class="nf">bounds_false</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">constrain_to_bounds</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the minimum to maximum indices along all dimensions that the</span>
+<span class="sd">        mask includes which fully surround the False mask values. In the case</span>
+<span class="sd">        of a 2D Image for instance, the min and max define two corners of a</span>
+<span class="sd">        rectangle bounding the False pixel values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        boundary : int &gt;= 0, optional</span>
+<span class="sd">            A number of pixels that should be added to the extent. A</span>
+<span class="sd">            negative value can be used to shrink the bounds in.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        constrain_to_bounds: bool, optional</span>
+<span class="sd">            If True, the bounding extent is snapped to not go beyond</span>
+<span class="sd">            the edge of the image. If False, the bounds are left unchanged.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        min_b : (D,) ndarray</span>
+<span class="sd">            The minimum extent of the False mask region with the boundary</span>
+<span class="sd">            along each dimension. If constrain_to_bounds was True,</span>
+<span class="sd">            is clipped to legal image bounds.</span>
+
+<span class="sd">        max_b : (D,) ndarray</span>
+<span class="sd">            The maximum extent of the False mask region with the boundary</span>
+<span class="sd">            along each dimension. If constrain_to_bounds was True,</span>
+<span class="sd">            is clipped to legal image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverted_copy</span><span class="p">()</span><span class="o">.</span><span class="n">bounds_true</span><span class="p">(</span>
+            <span class="n">boundary</span><span class="o">=</span><span class="n">boundary</span><span class="p">,</span> <span class="n">constrain_to_bounds</span><span class="o">=</span><span class="n">constrain_to_bounds</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="BooleanImage.warp_to"><a class="viewcode-back" href="../../../api/generated/menpo.image.boolean.html#menpo.image.boolean.BooleanImage.warp_to">[docs]</a>    <span class="k">def</span> <span class="nf">warp_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">warp_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Warps this BooleanImage into a different reference space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        template_mask : :class:`menpo.image.boolean.BooleanImage`</span>
+<span class="sd">            Defines the shape of the result, and what pixels should be</span>
+<span class="sd">            sampled.</span>
+<span class="sd">        transform : :class:`menpo.transform.base.Transform`</span>
+<span class="sd">            Transform **from the template space back to this image**.</span>
+<span class="sd">            Defines, for each True pixel location on the template, which pixel</span>
+<span class="sd">            location should be sampled from on this image.</span>
+<span class="sd">        warp_landmarks : bool, optional</span>
+<span class="sd">            If ``True``, warped_image will have the same landmark dictionary</span>
+<span class="sd">            as self, but with each landmark updated to the warped position.</span>
+
+<span class="sd">            Default: ``False``</span>
+<span class="sd">        interpolator : &#39;scipy&#39; or &#39;c&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">            Default: &#39;scipy&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        warped_image : type(self)</span>
+<span class="sd">            A copy of this image, warped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># enforce the order as 0, for this boolean data, then call super</span>
+        <span class="n">manually_set_order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;order&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">manually_set_order</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;The order of the interpolation on a boolean image has to be &quot;</span>
+                <span class="s">&quot;0 (attempted to set {})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">manually_set_order</span><span class="p">))</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span>
+                             <span class="n">warp_landmarks</span><span class="o">=</span><span class="n">warp_landmarks</span><span class="p">,</span>
+                             <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_warped_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">sampled_pixel_values</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Builds the warped image from the template mask and</span>
+<span class="sd">        sampled pixel values. Overridden for BooleanImage as we can&#39;t use</span>
+<span class="sd">        the usual from_vector_inplace method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warped_image</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">template_mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="c"># As we are a mask image, we have to implement the update a little</span>
+        <span class="c"># more manually than other image classes.</span>
+        <span class="n">warped_image</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">warped_image</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled_pixel_values</span>
+        <span class="k">return</span> <span class="n">warped_image</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

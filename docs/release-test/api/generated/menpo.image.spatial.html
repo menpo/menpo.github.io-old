@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: image.spatial &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.image.spatial">
+<span id="module-image-spatial"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">image.spatial</span></tt><a class="headerlink" href="#module-menpo.image.spatial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>3 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.image.spatial.AbstractSpatialImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.spatial.</tt><tt class="descname">AbstractSpatialImage</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#AbstractSpatialImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.AbstractSpatialImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.image.masked.html#menpo.image.masked.MaskedImage" title="menpo.image.masked.MaskedImage"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.masked.MaskedImage</span></tt></a></p>
+<p>A 2D image that represents spatial data in some fashion in it&#8217;s channel
+data. As a result, it contains a <a class="reference internal" href="menpo.shape.mesh.base.html#menpo.shape.mesh.base.TriMesh" title="menpo.shape.mesh.base.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.mesh.base.TriMesh</span></tt></a>,
+or, if a texture is provided, a
+<tt class="xref py py-class docutils literal"><span class="pre">menpo.shape.mesh.base.TexturedTriMesh</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image_data: (M, N, ..., C) ndarray</strong> :</p>
+<blockquote>
+<div><p>Array representing the spatial image pixels, with the last axis being
+channels.</p>
+</div></blockquote>
+<p><strong>mask: (M, N, ..., L) boolean ndarray or :class:`BooleanImage`, optional</strong> :</p>
+<blockquote>
+<div><p>A suitable mask for the spatial data</p>
+<p>Default: All true mask</p>
+</div></blockquote>
+<p><strong>trilist: (n_tris, 3), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Triangle list for the trimesh. If None, the trilist is generation
+from all True points using Delaunay triangulation.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>tcoords: (n_true, 2), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Texture coordinates relating each True value of the mask to the
+texture space</p>
+<p>Default: If texture is provided, tcoords are generated on the
+assumption that the texture and the spatial data are in
+correspondence. If no texture, None.</p>
+</div></blockquote>
+<p><strong>texture: :class:`Abstract2DImage` instance, optional</strong> :</p>
+<blockquote class="last">
+<div><p>A texture to be associated with the spatial data</p>
+<p>Default: None (no texture)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.spatial.AbstractSpatialImage.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#AbstractSpatialImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.AbstractSpatialImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.spatial.AbstractSpatialImage.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>vector</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#AbstractSpatialImage.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.AbstractSpatialImage.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and updates this SpatialImage.</p>
+<p>Done by reshaping the vector to the correct pixels and channels.
+Note that the only region of the image that will be filled is the
+masked region.</p>
+<p>Calling this method will cause a cache invalidation on this spatial
+images&#8217; mesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,)</p>
+<blockquote class="last">
+<div><p>A flattened vector of all pixels and channels of an image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.image.spatial.ShapeImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.spatial.</tt><tt class="descname">ShapeImage</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#ShapeImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.ShapeImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.image.spatial.AbstractSpatialImage" title="menpo.image.spatial.AbstractSpatialImage"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.spatial.AbstractSpatialImage</span></tt></a></p>
+<p>An image the represents a shape image. Due to the fact a shape image has
+an implicit spatial meaning, it also contains a
+:class:&#8217;menpo.shape.mesh.base.TriMesh`. This allows the shape image to be
+treated as an image, but expose an object that represents the shape
+as a mesh.</p>
+<p>Has to be a 2D image, and has to have exactly 3 channels for (X,Y,
+Z) spatial values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image_data: (M, N, 3) ndarray</strong> :</p>
+<blockquote>
+<div><p>Array representing the spatial image pixels, with the last axis being
+the spatial data per pixel.</p>
+</div></blockquote>
+<p><strong>mask: (M, N) boolean ndarray or :class:`BooleanImage`, optional</strong> :</p>
+<blockquote>
+<div><p>A suitable mask for the spatial data</p>
+<p>Default: All true mask</p>
+</div></blockquote>
+<p><strong>trilist: (n_tris, 3), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Triangle list for the trimesh. If None, the trilist is generation
+from all True points using Delaunay triangulation.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>tcoords: (n_true, 2), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Texture coordinates relating each True value of the mask to the
+texture space</p>
+<p>Default: If texture is provided, tcoords are generated on the
+assumption that the texture and the spatial data are in
+correspondence. If no texture, None.</p>
+</div></blockquote>
+<p><strong>texture: :class:`Abstract2DImage` instance, optional</strong> :</p>
+<blockquote class="last">
+<div><p>A texture to be associated with the spatial data</p>
+<p>Default: None (no texture)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.spatial.ShapeImage.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#ShapeImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.ShapeImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.spatial.ShapeImage.as_depth_image">
+<tt class="descname">as_depth_image</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#ShapeImage.as_depth_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.ShapeImage.as_depth_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the shape image to a depth image by stripping off the z-values.
+Copies all associated data including landmarks and texture information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>depth_image</strong> : <a class="reference internal" href="#menpo.image.spatial.DepthImage" title="menpo.image.spatial.DepthImage"><tt class="xref py py-class docutils literal"><span class="pre">DepthImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>The depth image created by taking the z-values of this shape image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="menpo.image.spatial.ShapeImage.blank">
+<em class="property">classmethod </em><tt class="descname">blank</tt><big>(</big><em>shape</em>, <em>fill=0</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>mask=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#ShapeImage.blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.ShapeImage.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a blank ShapeImage</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple or list</p>
+<blockquote>
+<div><p>The shape of the image</p>
+</div></blockquote>
+<p><strong>fill</strong> : int, optional</p>
+<blockquote>
+<div><p>The value to fill all pixels with</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>dtype: numpy datatype, optional</strong> :</p>
+<blockquote>
+<div><p>The datatype of the image.</p>
+<p>Default: np.float</p>
+</div></blockquote>
+<p><strong>mask: (M, N) boolean ndarray or :class:`BooleanImage`</strong> :</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>An optional mask that can be applied to the image. Has to have a</dt>
+<dd><p class="first">shape equal to that of the image.</p>
+<p class="last">Default: all True <tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>blank_image</strong> : <a class="reference internal" href="#menpo.image.spatial.ShapeImage" title="menpo.image.spatial.ShapeImage"><tt class="xref py py-class docutils literal"><span class="pre">ShapeImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new shape image of the requested size.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.image.spatial.DepthImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.spatial.</tt><tt class="descname">DepthImage</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#DepthImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.DepthImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#menpo.image.spatial.AbstractSpatialImage" title="menpo.image.spatial.AbstractSpatialImage"><tt class="xref py py-class docutils literal"><span class="pre">menpo.image.spatial.AbstractSpatialImage</span></tt></a></p>
+<p>An image the represents a depth image. Due to the fact a depth image has
+an implicit spatial meaning, a DepthImage also contains a
+:class:&#8217;menpo.shape.mesh.base.TriMesh`. This allows the depth image to be
+treated as an image, but expose an object that represents the depth
+as a mesh.</p>
+<p>Will have exactly 1 channel. The numpy array used to build the
+DepthImage is of shape (M, N) - it does not include the channel axis.</p>
+<p>In images, the origin is in the top-left and the first axis represents
+the y-direction (down the image). For <tt class="docutils literal"><span class="pre">DepthImage</span></tt>, when accessing the
+mesh property, the origin is interpreted as the bottom-left and the first
+axis represents the x-direction (across the image). This is to maintain
+consistency with a right-handed coordinate scheme for meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image_data: (M, N) ndarray</strong> :</p>
+<blockquote>
+<div><p>Array representing the spatial image pixels. There is no channel
+axis - each pixel position stores a single depth value.</p>
+</div></blockquote>
+<p><strong>mask: (M, N) boolean ndarray or :class:`BooleanImage`, optional</strong> :</p>
+<blockquote>
+<div><p>A suitable mask for the spatial data</p>
+<p>Default: All true mask</p>
+</div></blockquote>
+<p><strong>trilist: (n_tris, 3), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Triangle list for the trimesh. If None, the trilist is generation
+from all True points using Delaunay triangulation.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>tcoords: (n_true, 2), ndarray, optional</strong> :</p>
+<blockquote>
+<div><p>Texture coordinates relating each True value of the mask to the
+texture space</p>
+<p>Default: If texture is provided, tcoords are generated on the
+assumption that the texture and the spatial data are in
+correspondence. If no texture, None.</p>
+</div></blockquote>
+<p><strong>texture: :class:`Abstract2DImage` instance, optional</strong> :</p>
+<blockquote class="last">
+<div><p>A texture to be associated with the spatial data</p>
+<p>Default: None (no texture)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.spatial.DepthImage.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>image_data</em>, <em>mask=None</em>, <em>trilist=None</em>, <em>tcoords=None</em>, <em>texture=None</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#DepthImage.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.DepthImage.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="menpo.image.spatial.DepthImage.blank">
+<em class="property">classmethod </em><tt class="descname">blank</tt><big>(</big><em>shape</em>, <em>fill=0</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>mask=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../_modules/menpo/image/spatial.html#DepthImage.blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.spatial.DepthImage.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a blank DepthImage</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple or list</p>
+<blockquote>
+<div><p>The shape of the image</p>
+</div></blockquote>
+<p><strong>fill</strong> : int, optional</p>
+<blockquote>
+<div><p>The value to fill all pixels with</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>dtype: numpy datatype, optional</strong> :</p>
+<blockquote>
+<div><p>The datatype of the image.</p>
+<p>Default: np.float</p>
+</div></blockquote>
+<p><strong>mask: (M, N) boolean ndarray or :class:`BooleanImage`</strong> :</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>An optional mask that can be applied to the image. Has to have a</dt>
+<dd><p class="first">shape equal to that of the image.</p>
+<p class="last">Default: all True <tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></p>
+</dd>
+</dl>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>blank_image</strong> : <a class="reference internal" href="#menpo.image.spatial.DepthImage" title="menpo.image.spatial.DepthImage"><tt class="xref py py-class docutils literal"><span class="pre">DepthImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new depth image of the requested size.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">image.spatial</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">3 Classes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.image.spatial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

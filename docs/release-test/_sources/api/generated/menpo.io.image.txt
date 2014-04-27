@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`io.image`
+=======================
+.. automodule:: menpo.io.image
+
+.. currentmodule:: menpo.io.image
+
+1 Class
+-------
+
+.. autoclass:: PILImporter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

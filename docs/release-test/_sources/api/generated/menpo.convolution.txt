@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`convolution`
+==========================
+.. automodule:: menpo.convolution
+
+.. currentmodule:: menpo.convolution
+
+1 Function
+----------
+
+.. autofunction:: menpo.convolution.log_gabor
+

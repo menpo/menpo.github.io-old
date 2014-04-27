@@ -1,0 +1,44 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fit.fittingresult`
+================================
+.. automodule:: menpo.fit.fittingresult
+
+.. currentmodule:: menpo.fit.fittingresult
+
+6 Classes
+---------
+
+.. autoclass:: FittingResult
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: NonParametricFittingResult
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: SemiParametricFittingResult
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: ParametricFittingResult
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: FittingResultList
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: TrackingResultList
+  :members:
+  :show-inheritance:

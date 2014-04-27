@@ -1,0 +1,16 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`groupalign.base`
+==============================
+.. automodule:: menpo.groupalign.base
+
+.. currentmodule:: menpo.groupalign.base
+
+1 Class
+-------
+
+.. autoclass:: MultipleAlignment
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

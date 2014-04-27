@@ -1,0 +1,851 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.image.masked &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.image.masked</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_erosion</span>
+<span class="kn">from</span> <span class="nn">menpo.image.base</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">menpo.image.boolean</span> <span class="kn">import</span> <span class="n">BooleanImage</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize.base</span> <span class="kn">import</span> <span class="n">ImageViewer</span>
+<span class="kn">import</span> <span class="nn">menpo.features</span> <span class="kn">as</span> <span class="nn">fc</span>
+
+
+<div class="viewcode-block" id="MaskedImage"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage">[docs]</a><span class="k">class</span> <span class="nc">MaskedImage</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Represents an n-dimensional k-channel image, which has a mask.</span>
+<span class="sd">    Images can be masked in order to identify a region of interest. All</span>
+<span class="sd">    images implicitly have a mask that is defined as the the entire image.</span>
+<span class="sd">    The mask is an instance of</span>
+<span class="sd">    :class:`BooleanImage`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image_data :  ndarray</span>
+<span class="sd">        The pixel data for the image, where the last axis represents the</span>
+<span class="sd">        number of channels.</span>
+<span class="sd">    mask : (M, N) ``np.bool`` ndarray or :class:`BooleanImage`, optional</span>
+<span class="sd">        A binary array representing the mask. Must be the same</span>
+<span class="sd">        shape as the image. Only one mask is supported for an image (so the</span>
+<span class="sd">        mask is applied to every channel equally).</span>
+
+<span class="sd">        Default: :class:`BooleanImage` covering the whole image</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Mask is not the same shape as the image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MaskedImage.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MaskedImage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">BooleanImage</span><span class="p">):</span>
+                <span class="n">mask_image</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask_image</span> <span class="o">=</span> <span class="n">mask</span>
+                <span class="c"># have a BooleanImage object that we definitely own</span>
+            <span class="k">if</span> <span class="n">mask_image</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask_image</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Trying to construct a Masked Image of &quot;</span>
+                                 <span class="s">&quot;shape {} with a Mask of differing &quot;</span>
+                                 <span class="s">&quot;shape {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                                   <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># no mask provided - make the default.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># noinspection PyMethodOverriding</span></div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_init_with_channel</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">image_data_with_channel</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Constructor that always requires the image has a</span>
+<span class="sd">        channel on the last axis. Only used by from_vector. By default,</span>
+<span class="sd">        just calls the constructor. Subclasses with constructors that don&#39;t</span>
+<span class="sd">        require channel axes need to overwrite this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">image_data_with_channel</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MaskedImage.blank"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.blank">[docs]</a>    <span class="k">def</span> <span class="nf">blank</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a blank image</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : tuple or list</span>
+<span class="sd">            The shape of the image. Any floating point values are rounded up</span>
+<span class="sd">            to the nearest integer.</span>
+
+<span class="sd">        n_channels: int, optional</span>
+<span class="sd">            The number of channels to create the image with</span>
+
+<span class="sd">            Default: 1</span>
+<span class="sd">        fill : int, optional</span>
+<span class="sd">            The value to fill all pixels with</span>
+
+<span class="sd">            Default: 0</span>
+<span class="sd">        dtype: numpy datatype, optional</span>
+<span class="sd">            The datatype of the image.</span>
+
+<span class="sd">            Default: np.float</span>
+<span class="sd">        mask: (M, N) boolean ndarray or :class:`BooleanImage`</span>
+<span class="sd">            An optional mask that can be applied to the image. Has to have a</span>
+<span class="sd">             shape equal to that of the image.</span>
+
+<span class="sd">             Default: all True :class:`BooleanImage`</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Subclasses of `MaskedImage` need to overwrite this method and</span>
+<span class="sd">        explicitly call this superclass method:</span>
+
+<span class="sd">            super(SubClass, cls).blank(shape,**kwargs)</span>
+
+<span class="sd">        in order to appropriately propagate the SubClass type to cls.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        blank_image : :class:`MaskedImage`</span>
+<span class="sd">            A new masked image of the requested size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MaskedImage</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">n_channels</span><span class="o">=</span><span class="n">n_channels</span><span class="p">,</span>
+                                             <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_true_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">n_true</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_false_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">n_false</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_true_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_true_pixels</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_false_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_false_pixels</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">masked_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Get the pixels covered by the ``True`` values in the mask.</span>
+
+<span class="sd">        :type: (``mask.n_true``, ``n_channels``) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="nd">@masked_pixels.setter</span>
+<div class="viewcode-block" id="MaskedImage.masked_pixels"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.masked_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">masked_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;{} {}D MaskedImage with {} channels. &#39;</span>
+                <span class="s">&#39;Attached mask {:.1%} true&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_str_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">proportion_true</span><span class="p">))</span>
+
+<div class="viewcode-block" id="MaskedImage.as_vector"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_channels</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Convert image to a vectorized form. Note that the only pixels</span>
+<span class="sd">        returned here are from the masked region on the image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keep_channels : bool, optional</span>
+
+<span class="sd">            ========== ====================================</span>
+<span class="sd">            Value      Return shape</span>
+<span class="sd">            ========== ====================================</span>
+<span class="sd">            ``True``   (``mask.n_true``,``n_channels``)</span>
+<span class="sd">            ``False``  (``mask.n_true`` x ``n_channels``,)</span>
+<span class="sd">            ========== ====================================</span>
+
+<span class="sd">            Default: ``False``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vectorized_image : (shape given by ``keep_channels``) ndarray</span>
+<span class="sd">            Vectorized image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keep_channels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_pixels</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_pixels</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.from_vector"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.from_vector">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flattened</span><span class="p">,</span> <span class="n">n_channels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Takes a flattened vector and returns a new image formed by reshaping</span>
+<span class="sd">        the vector to the correct pixels and channels. Note that the only</span>
+<span class="sd">        region of the image that will be filled is the masked region.</span>
+
+<span class="sd">        The ``n_channels`` argument is useful for when we want to add an extra</span>
+<span class="sd">        channel to an image but maintain the shape. For example, when</span>
+<span class="sd">        calculating the gradient.</span>
+
+<span class="sd">        Note that landmarks are transferred in the process.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flattened : (``n_pixels``,)</span>
+<span class="sd">            A flattened vector of all pixels and channels of an image.</span>
+<span class="sd">        n_channels : int, optional</span>
+<span class="sd">            If given, will assume that flattened is the same</span>
+<span class="sd">            shape as this image, but with a possibly different number of</span>
+<span class="sd">            channels</span>
+
+<span class="sd">            Default: Use the existing image channels</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image : :class:`MaskedImage`</span>
+<span class="sd">            New image of same shape as this image and the number of</span>
+<span class="sd">            specified channels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># This is useful for when we want to add an extra channel to an image</span>
+        <span class="c"># but maintain the shape. For example, when calculating the gradient</span>
+        <span class="n">n_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="k">if</span> <span class="n">n_channels</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">n_channels</span>
+        <span class="c"># Creates zeros of size (M x N x ... x n_channels)</span>
+        <span class="n">image_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_channels</span><span class="p">,))</span>
+        <span class="n">pixels_per_channel</span> <span class="o">=</span> <span class="n">flattened</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span>
+        <span class="n">image_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">pixels_per_channel</span>
+        <span class="c"># call the constructor accounting for the fact that some image</span>
+        <span class="c"># classes expect a channel axis and some don&#39;t.</span>
+        <span class="n">new_image</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_init_with_channel</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">new_image</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+        <span class="k">return</span> <span class="n">new_image</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.from_vector_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Takes a flattened vector and updates this image by reshaping</span>
+<span class="sd">        the vector to the correct pixels and channels. Note that the only</span>
+<span class="sd">        region of the image that will be filled is the masked region.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : (``n_pixels``,)</span>
+<span class="sd">            A flattened vector of all pixels and channels of an image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masked_pixels</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="n">masked</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        View the image using the default image viewer. Currently only</span>
+<span class="sd">        supports the rendering of 2D images.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_viewer : :class:`menpo.visualize.viewimage.ViewerImage`</span>
+<span class="sd">            The viewer the image is being shown within</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            If Image is not 2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span> <span class="k">if</span> <span class="n">masked</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="n">pixels_to_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span>
+        <span class="k">return</span> <span class="n">ImageViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span>
+                           <span class="n">pixels_to_view</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+                           <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskedImage.crop"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.crop">[docs]</a>    <span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+             <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Crops this image using the given minimum and maximum indices.</span>
+<span class="sd">        Landmarks are correctly adjusted so they maintain their position</span>
+<span class="sd">        relative to the newly cropped image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        min_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The minimum index over each dimension</span>
+
+<span class="sd">        max_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The maximum index over each dimension</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If True the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If False, a ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cropped_image : :class:`type(self)`</span>
+<span class="sd">            This image, but cropped.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            min_indices and max_indices both have to be of length n_dims.</span>
+<span class="sd">            All max_indices must be greater than min_indices.</span>
+
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is False, and an attempt is made</span>
+<span class="sd">            to crop the image in a way that violates the image bounds.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># crop our image</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MaskedImage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span>
+            <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+            <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+        <span class="c"># crop our mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                       <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.crop_to_true_mask"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.crop_to_true_mask">[docs]</a>    <span class="k">def</span> <span class="nf">crop_to_true_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Crop this image to be bounded just the ``True`` values of it&#39;s mask.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        boundary: int, Optional</span>
+<span class="sd">            An extra padding to be added all around the true mask region.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If ``True`` the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If ``False``, a ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image. Note that is</span>
+<span class="sd">            only possible if boundary != 0.</span>
+
+<span class="sd">            Default: ``True``</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is ``False``, and an attempt is</span>
+<span class="sd">            made to crop the image in a way that violates the image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">bounds_true</span><span class="p">(</span>
+            <span class="n">boundary</span><span class="o">=</span><span class="n">boundary</span><span class="p">,</span> <span class="n">constrain_to_bounds</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="c"># no point doing the bounds check twice - let the crop do it only.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                  <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.warp_to"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.warp_to">[docs]</a>    <span class="k">def</span> <span class="nf">warp_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">warp_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">warp_mask</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Warps this image into a different reference space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        template_mask : :class:`menpo.image.boolean.BooleanImage`</span>
+<span class="sd">            Defines the shape of the result, and what pixels should be</span>
+<span class="sd">            sampled.</span>
+<span class="sd">        transform : :class:`menpo.transform.base.Transform`</span>
+<span class="sd">            Transform **from the template space back to this image**.</span>
+<span class="sd">            Defines, for each pixel location on the template, which pixel</span>
+<span class="sd">            location should be sampled from on this image.</span>
+<span class="sd">        warp_landmarks : bool, optional</span>
+<span class="sd">            If ``True``, warped_image will have the same landmark dictionary</span>
+<span class="sd">            as self, but with each landmark updated to the warped position.</span>
+
+<span class="sd">            Default: ``False``</span>
+<span class="sd">        warp_mask : bool, optional</span>
+<span class="sd">            If ``True``, sample the ``image.mask`` at all ``template_image``</span>
+<span class="sd">            points, setting the returned image mask to the sampled value</span>
+<span class="sd">            **within the masked region of ``template_image``**.</span>
+
+<span class="sd">            Default: ``False``</span>
+
+<span class="sd">            .. note::</span>
+
+<span class="sd">                This is most commonly set ``True`` in combination with an all</span>
+<span class="sd">                True ``template_mask``, as this is then a warp of the image</span>
+<span class="sd">                and it&#39;s full mask. If ``template_mask``</span>
+<span class="sd">                has False mask values, only the True region of the mask</span>
+<span class="sd">                will be updated, which is rarely the desired behavior,</span>
+<span class="sd">                but is possible for completion.</span>
+<span class="sd">        interpolator : &#39;scipy&#39; or &#39;cinterp&#39; or func, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">            Default: &#39;scipy&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        warped_image : type(self)</span>
+<span class="sd">            A copy of this image, warped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warped_image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span>
+                                     <span class="n">warp_landmarks</span><span class="o">=</span><span class="n">warp_landmarks</span><span class="p">,</span>
+                                     <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># note that _build_warped_image for MaskedImage classes attaches</span>
+        <span class="c"># the template mask by default. If the user doesn&#39;t want to warp the</span>
+        <span class="c"># mask, we are done. If they do want to warp the mask, we warp the</span>
+        <span class="c"># mask separately and reattach.</span>
+        <span class="c"># TODO an optimisation could be added here for the case where mask</span>
+        <span class="c"># is all true/all false.</span>
+        <span class="k">if</span> <span class="n">warp_mask</span><span class="p">:</span>
+            <span class="n">warped_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span>
+                                            <span class="n">warp_landmarks</span><span class="o">=</span><span class="n">warp_landmarks</span><span class="p">,</span>
+                                            <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">warped_image</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">warped_mask</span>
+        <span class="k">return</span> <span class="n">warped_image</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.normalize_std_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.normalize_std_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_std_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">limit_to_mask</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Normalizes this image such that it&#39;s pixel values have zero mean and</span>
+<span class="sd">        unit variance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        mode: {&#39;all&#39;, &#39;per_channel&#39;}</span>
+<span class="sd">            If &#39;all&#39;, the normalization is over all channels. If</span>
+<span class="sd">            &#39;per_channel&#39;, each channel individually is mean centred and</span>
+<span class="sd">            normalized in variance.</span>
+
+<span class="sd">        limit_to_mask: Boolean</span>
+<span class="sd">            If True, the normalization is only performed wrt the masked</span>
+<span class="sd">            pixels.</span>
+<span class="sd">            If False, the normalization is wrt all pixels, regardless of</span>
+<span class="sd">            their masking value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_inplace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                                <span class="n">limit_to_mask</span><span class="o">=</span><span class="n">limit_to_mask</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.normalize_norm_inplace"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.normalize_norm_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">normalize_norm_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">limit_to_mask</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Normalizes this image such that it&#39;s pixel values have zero mean and</span>
+<span class="sd">        its norm equals 1.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        mode: {&#39;all&#39;, &#39;per_channel&#39;}</span>
+<span class="sd">            If &#39;all&#39;, the normalization is over all channels. If</span>
+<span class="sd">            &#39;per_channel&#39;, each channel individually is mean centred and</span>
+<span class="sd">            normalized in variance.</span>
+
+<span class="sd">        limit_to_mask: Boolean</span>
+<span class="sd">            If True, the normalization is only performed wrt the masked</span>
+<span class="sd">            pixels.</span>
+<span class="sd">            If False, the normalization is wrt all pixels, regardless of</span>
+<span class="sd">            their masking value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">scale_func</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_inplace</span><span class="p">(</span><span class="n">scale_func</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                                <span class="n">limit_to_mask</span><span class="o">=</span><span class="n">limit_to_mask</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_normalize_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_func</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">limit_to_mask</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">limit_to_mask</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_vector</span><span class="p">(</span><span class="n">keep_channels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_channels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">centered_pixels</span> <span class="o">=</span> <span class="n">pixels</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span>
+            <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">(</span><span class="n">centered_pixels</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;per_channel&#39;</span><span class="p">:</span>
+            <span class="n">centered_pixels</span> <span class="o">=</span> <span class="n">pixels</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">scale_func</span><span class="p">(</span><span class="n">centered_pixels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;mode has to be &#39;all&#39; or &#39;per_channel&#39; - &#39;{}&#39; &quot;</span>
+                             <span class="s">&quot;was provided instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">scale_factor</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Image has 0 variance - can&#39;t be &quot;</span>
+                             <span class="s">&quot;normalized&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">normalized_pixels</span> <span class="o">=</span> <span class="n">centered_pixels</span> <span class="o">/</span> <span class="n">scale_factor</span>
+
+        <span class="k">if</span> <span class="n">limit_to_mask</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="n">normalized_pixels</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Image</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                      <span class="n">normalized_pixels</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_build_warped_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">sampled_pixel_values</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Builds the warped image from the template mask and</span>
+<span class="sd">        sampled pixel values. Overridden for BooleanImage as we can&#39;t use</span>
+<span class="sd">        the usual from_vector_inplace method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MaskedImage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_build_warped_image</span><span class="p">(</span>
+            <span class="n">template_mask</span><span class="p">,</span> <span class="n">sampled_pixel_values</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">template_mask</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskedImage.gradient"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.gradient">[docs]</a>    <span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nullify_values_at_mask_boundaries</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a MaskedImage which is the gradient of this one. In the case</span>
+<span class="sd">        of multiple channels, it returns the gradient over each axis over</span>
+<span class="sd">        each channel as a flat list.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nullify_values_at_mask_boundaries : bool, optional</span>
+<span class="sd">            If ``True`` a one pixel boundary is set to 0 around the edge of</span>
+<span class="sd">            the ``True`` mask region. This is useful in situations where</span>
+<span class="sd">            there is absent data in the image which will cause erroneous</span>
+<span class="sd">            gradient settings.</span>
+
+<span class="sd">        Default: False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        gradient : :class:``MaskedImage``</span>
+<span class="sd">            The gradient over each axis over each channel. Therefore, the</span>
+<span class="sd">            gradient of a 2D, single channel image, will have length ``2``.</span>
+<span class="sd">            The length of a 2D, 3-channel image, will have length ``6``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">grad_image_pixels</span> <span class="o">=</span> <span class="n">fc</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="n">grad_image</span> <span class="o">=</span> <span class="n">MaskedImage</span><span class="p">(</span><span class="n">grad_image_pixels</span><span class="p">,</span>
+                                 <span class="n">mask</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">nullify_values_at_mask_boundaries</span><span class="p">:</span>
+            <span class="c"># Erode the edge of the mask in by one pixel</span>
+            <span class="n">eroded_mask</span> <span class="o">=</span> <span class="n">binary_erosion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># replace the eroded mask with the diff between the two</span>
+            <span class="c"># masks. This is only true in the region we want to nullify.</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">~</span><span class="n">eroded_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">eroded_mask</span><span class="p">)</span>
+            <span class="c"># nullify all the boundary values in the grad image</span>
+            <span class="n">grad_image</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">eroded_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">grad_image</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+        <span class="k">return</span> <span class="n">grad_image</span>
+
+    <span class="c"># TODO maybe we should be stricter about the trilist here, feels flakey</span></div>
+<div class="viewcode-block" id="MaskedImage.constrain_mask_to_landmarks"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.constrain_mask_to_landmarks">[docs]</a>    <span class="k">def</span> <span class="nf">constrain_mask_to_landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+                                    <span class="n">trilist</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Restricts this image&#39;s mask to be equal to the convex hull</span>
+<span class="sd">        around the landmarks chosen.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If no</span>
+<span class="sd">            label is passed, the convex hull of all landmarks is used.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        trilist: (t, 3) ndarray, Optional</span>
+<span class="sd">            Triangle list to be used on the landmarked points in selecting</span>
+<span class="sd">            the mask region. If None defaults to performing Delaunay</span>
+<span class="sd">            triangulation on the points.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">menpo.transform.piecewiseaffine</span> <span class="kn">import</span> <span class="n">PiecewiseAffine</span>
+        <span class="kn">from</span> <span class="nn">menpo.transform.piecewiseaffine</span> <span class="kn">import</span> <span class="n">TriangleContainmentError</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;can only constrain mask on 2D images.&quot;</span><span class="p">)</span>
+
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span>
+        <span class="k">if</span> <span class="n">trilist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">TriMesh</span>
+
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">TriMesh</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">trilist</span><span class="p">)</span>
+
+        <span class="n">pwa</span> <span class="o">=</span> <span class="n">PiecewiseAffine</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pwa</span><span class="o">.</span><span class="n">apply_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">all_indices</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TriangleContainmentError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="o">~</span><span class="n">e</span><span class="o">.</span><span class="n">points_outside_source_domain</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.rescale"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="o">=</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;A copy of this MaskedImage, rescaled by a given factor.</span>
+
+<span class="sd">        All image information (landmarks and mask) are rescaled appropriately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scale : float or tuple</span>
+<span class="sd">            The scale factor. If a tuple, the scale to apply to each dimension.</span>
+<span class="sd">            If a single float, the scale will be applied uniformly across</span>
+<span class="sd">            each dimension.</span>
+<span class="sd">        round: {&#39;ceil&#39;, &#39;floor&#39;, &#39;round&#39;}</span>
+<span class="sd">            Rounding function to be applied to floating point shapes.</span>
+
+<span class="sd">            Default: &#39;ceil&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rescaled_image : type(self)</span>
+<span class="sd">            A copy of this image, rescaled.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If less scales than dimensions are provided.</span>
+<span class="sd">            If any scale is less than or equal to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># just call normal Image version, passing the warp_mask=True flag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">MaskedImage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span>
+                                                <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                                                <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span>
+                                                <span class="n">warp_mask</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.build_mask_around_landmarks"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.build_mask_around_landmarks">[docs]</a>    <span class="k">def</span> <span class="nf">build_mask_around_landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Restricts this image&#39;s mask to be equal to the convex hull</span>
+<span class="sd">        around the landmarks chosen.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        patch_shape: tuple</span>
+<span class="sd">            The size of the patch. Any floating point values are rounded up</span>
+<span class="sd">            to the nearest integer.</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If</span>
+<span class="sd">            &#39;all&#39; all landmarks are used.</span>
+
+<span class="sd">            Default: &#39;all&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span>
+        <span class="n">patch_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">patch_half_size</span> <span class="o">=</span> <span class="n">patch_size</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">max_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">patch_half_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">finish</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">point</span> <span class="o">+</span> <span class="n">patch_half_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">finish</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">finish</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="c"># deal with boundary cases</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">max_x</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_x</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">max_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_y</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mask</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.gaussian_pyramid"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.gaussian_pyramid">[docs]</a>    <span class="k">def</span> <span class="nf">gaussian_pyramid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="n">mode</span><span class="o">=</span><span class="s">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the gaussian pyramid of this image. The first image of the</span>
+<span class="sd">        pyramid will be the original, unmodified, image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_levels : int</span>
+<span class="sd">            Number of levels in the pyramid. When set to -1 the maximum</span>
+<span class="sd">            number of levels will be build.</span>
+
+<span class="sd">            Default: 3</span>
+
+<span class="sd">        downscale : float, optional</span>
+<span class="sd">            Downscale factor.</span>
+
+<span class="sd">            Default: 2</span>
+
+<span class="sd">        sigma : float, optional</span>
+<span class="sd">            Sigma for gaussian filter. Default is `2 * downscale / 6.0` which</span>
+<span class="sd">            corresponds to a filter mask twice the size of the scale factor</span>
+<span class="sd">            that covers more than 99% of the gaussian distribution.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        order : int, optional</span>
+<span class="sd">            Order of splines used in interpolation of downsampling. See</span>
+<span class="sd">            `scipy.ndimage.map_coordinates` for detail.</span>
+
+<span class="sd">            Default: 1</span>
+
+<span class="sd">        mode :  {&#39;reflect&#39;, &#39;constant&#39;, &#39;nearest&#39;, &#39;mirror&#39;, &#39;wrap&#39;}, optional</span>
+<span class="sd">            The mode parameter determines how the array borders are handled,</span>
+<span class="sd">            where cval is the value when mode is equal to &#39;constant&#39;.</span>
+
+<span class="sd">            Default: &#39;reflect&#39;</span>
+
+<span class="sd">        cval : float, optional</span>
+<span class="sd">            Value to fill past edges of input if mode is &#39;constant&#39;.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_pyramid:</span>
+<span class="sd">            Generator yielding pyramid layers as menpo image objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image_pyramid</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">gaussian_pyramid</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="n">n_levels</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="n">downscale</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">cval</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">image_pyramid</span><span class="p">):</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">downscale</span><span class="o">**</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">image</span>
+</div>
+<div class="viewcode-block" id="MaskedImage.smoothing_pyramid"><a class="viewcode-back" href="../../../api/generated/menpo.image.masked.html#menpo.image.masked.MaskedImage.smoothing_pyramid">[docs]</a>    <span class="k">def</span> <span class="nf">smoothing_pyramid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                          <span class="n">mode</span><span class="o">=</span><span class="s">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the smoothing pyramid of this image. The first image of the</span>
+<span class="sd">        pyramid will be the original, unmodified, image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_levels : int</span>
+<span class="sd">            Number of levels in the pyramid. When set to -1 the maximum</span>
+<span class="sd">            number of levels will be build.</span>
+
+<span class="sd">            Default: 3</span>
+
+<span class="sd">        downscale : float, optional</span>
+<span class="sd">            Downscale factor.</span>
+
+<span class="sd">            Default: 2</span>
+
+<span class="sd">        sigma : float, optional</span>
+<span class="sd">            Sigma for gaussian filter. Default is `2 * downscale / 6.0` which</span>
+<span class="sd">            corresponds to a filter mask twice the size of the scale factor</span>
+<span class="sd">            that covers more than 99% of the gaussian distribution.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        mode :  {&#39;reflect&#39;, &#39;constant&#39;, &#39;nearest&#39;, &#39;mirror&#39;, &#39;wrap&#39;}, optional</span>
+<span class="sd">            The mode parameter determines how the array borders are handled,</span>
+<span class="sd">            where cval is the value when mode is equal to &#39;constant&#39;.</span>
+
+<span class="sd">            Default: &#39;reflect&#39;</span>
+
+<span class="sd">        cval : float, optional</span>
+<span class="sd">            Value to fill past edges of input if mode is &#39;constant&#39;.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_pyramid:</span>
+<span class="sd">            Generator yielding pyramid layers as menpo image objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image_pyramid</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">smoothing_pyramid</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="n">n_levels</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="n">downscale</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">cval</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">image_pyramid</span><span class="p">:</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+            <span class="k">yield</span> <span class="n">image</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

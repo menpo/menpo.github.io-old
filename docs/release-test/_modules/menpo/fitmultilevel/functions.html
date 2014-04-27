@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fitmultilevel.functions &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fitmultilevel.functions</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">Similarity</span><span class="p">,</span> <span class="n">AlignmentSimilarity</span>
+
+
+<span class="c"># TODO: document me</span>
+<div class="viewcode-block" id="build_sampling_grid"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.functions.html#menpo.fitmultilevel.functions.build_sampling_grid">[docs]</a><span class="k">def</span> <span class="nf">build_sampling_grid</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">patch_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grid_size</span><span class="p">)</span>
+    <span class="n">patch_half_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">patch_size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="o">-</span><span class="n">patch_half_size</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">patch_half_size</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">sampling_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">end</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">sampling_grid</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="extract_local_patches"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.functions.html#menpo.fitmultilevel.functions.extract_local_patches">[docs]</a><span class="k">def</span> <span class="nf">extract_local_patches</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">sampling_grid</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_x</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">max_y</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">shape</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+        <span class="n">patch_grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">sampling_grid</span> <span class="o">+</span>
+                      <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">patch_grid</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">patch_grid</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c"># deal with boundaries</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">max_x</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_x</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">max_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_y</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">patch_data</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">patch_img</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">__class__</span><span class="p">(</span><span class="n">patch_data</span><span class="p">)</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch_img</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">patches</span>
+
+</div>
+<div class="viewcode-block" id="mean_pointcloud"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.functions.html#menpo.fitmultilevel.functions.mean_pointcloud">[docs]</a><span class="k">def</span> <span class="nf">mean_pointcloud</span><span class="p">(</span><span class="n">pointclouds</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Compute the mean of a list of point cloud objects</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pointclouds: list of :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        List of point cloud objects from which we want to</span>
+<span class="sd">        compute the mean.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mean_pointcloud: class:`menpo.shape.PointCloud`</span>
+<span class="sd">        The mean point cloud.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">PointCloud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">pc</span><span class="o">.</span><span class="n">points</span> <span class="k">for</span> <span class="n">pc</span> <span class="ow">in</span> <span class="n">pointclouds</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+
+
+<span class="c"># TODO: Should this be a method on Similarity? AlignableTransforms?</span></div>
+<div class="viewcode-block" id="noisy_align"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.functions.html#menpo.fitmultilevel.functions.noisy_align">[docs]</a><span class="k">def</span> <span class="nf">noisy_align</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Constructs and perturbs the optimal similarity transform between source</span>
+<span class="sd">    to the target by adding white noise to its weights.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source: :class:`pybug.shape.PointCloud`</span>
+<span class="sd">        The source pointcloud instance used in the alignment</span>
+
+<span class="sd">    target: :class:`pybug.shape.PointCloud`</span>
+<span class="sd">        The target pointcloud instance used in the alignment</span>
+
+<span class="sd">    noise_std: float</span>
+<span class="sd">        The standard deviation of the white noise</span>
+
+<span class="sd">        Default: 0.04</span>
+<span class="sd">    rotation: boolean</span>
+<span class="sd">        If False the second parameter of the Similarity,</span>
+<span class="sd">        which captures captures inplane rotations, is set to 0.</span>
+
+<span class="sd">        Default:False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    noisy_transform : :class: `pybug.transform.Similarity`</span>
+<span class="sd">        The noisy Similarity Transform</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">AlignmentSimilarity</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+    <span class="n">parameter_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">parameters</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">target</span><span class="o">.</span><span class="n">range</span><span class="p">()))</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="p">(</span><span class="n">parameter_range</span> <span class="o">*</span> <span class="n">noise_std</span> <span class="o">*</span>
+             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">))</span>
+    <span class="n">parameters</span> <span class="o">+=</span> <span class="n">noise</span>
+    <span class="k">return</span> <span class="n">Similarity</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+
+<span class="c">#TODO: Document me</span></div>
+<div class="viewcode-block" id="compute_error"><a class="viewcode-back" href="../../../api/generated/menpo.fitmultilevel.functions.html#menpo.fitmultilevel.functions.compute_error">[docs]</a><span class="k">def</span> <span class="nf">compute_error</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me_norm&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_compute_me_norm</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_compute_me</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;rmse&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_compute_rmse</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown error_type string selected. Valid options &quot;</span>
+                         <span class="s">&quot;are: me_norm, me, rmse&#39;&quot;</span><span class="p">)</span>
+
+
+<span class="c">#TODO: Document me</span></div>
+<span class="k">def</span> <span class="nf">_compute_rmse</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">target</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">ground_truth</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<span class="c">#TODO: Document me</span>
+<span class="k">def</span> <span class="nf">_compute_me</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">target</span> <span class="o">-</span> <span class="n">ground_truth</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)))</span>
+
+
+<span class="c">#TODO: Document me</span>
+<span class="k">def</span> <span class="nf">_compute_me_norm</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">normalizer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span>
+                         <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_compute_me</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">)</span> <span class="o">/</span> <span class="n">normalizer</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

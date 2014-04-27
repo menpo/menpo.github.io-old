@@ -1,0 +1,28 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`landmark.base`
+============================
+.. automodule:: menpo.landmark.base
+
+.. currentmodule:: menpo.landmark.base
+
+3 Classes
+---------
+
+.. autoclass:: Landmarkable
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LandmarkManager
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LandmarkGroup
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

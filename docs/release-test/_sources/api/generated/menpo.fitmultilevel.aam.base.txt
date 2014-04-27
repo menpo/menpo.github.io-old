@@ -1,0 +1,22 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`fitmultilevel.aam.base`
+=====================================
+.. automodule:: menpo.fitmultilevel.aam.base
+
+.. currentmodule:: menpo.fitmultilevel.aam.base
+
+2 Classes
+---------
+
+.. autoclass:: AAMFitter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__
+
+.. autoclass:: LucasKanadeAAMFitter
+  :members:
+  :show-inheritance:
+
+  .. automethod:: __init__

@@ -1,0 +1,13 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+Module: :mod:`shape.groupops`
+=============================
+.. automodule:: menpo.shape.groupops
+
+.. currentmodule:: menpo.shape.groupops
+
+1 Function
+----------
+
+.. autofunction:: menpo.shape.groupops.mean_pointcloud
+

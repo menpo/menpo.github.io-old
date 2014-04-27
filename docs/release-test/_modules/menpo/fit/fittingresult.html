@@ -1,0 +1,930 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>menpo.fit.fittingresult &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for menpo.fit.fittingresult</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.shape.pointcloud</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+<span class="kn">from</span> <span class="nn">menpo.fitmultilevel.functions</span> <span class="kn">import</span> <span class="n">compute_error</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize.base</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Viewable</span><span class="p">,</span> <span class="n">GraphPlotter</span><span class="p">,</span> <span class="n">FittingViewer</span><span class="p">,</span>
+                                  <span class="n">MultipleImageViewer</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FittingResult"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult">[docs]</a><span class="k">class</span> <span class="nc">FittingResult</span><span class="p">(</span><span class="n">Viewable</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Object that holds the state of a Fitter object before, during</span>
+<span class="sd">    and after it has fitted a particular image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    image: :class:`menpo.image.masked.MaskedImage`</span>
+<span class="sd">        The fitted image.</span>
+
+<span class="sd">    fitter: :class:`menpo.fitter.base.Fitter`</span>
+<span class="sd">        The Fitter object used to fitter the image.</span>
+
+<span class="sd">    error_type: &#39;me_norm&#39;, &#39;me&#39; or &#39;rmse&#39;, optional.</span>
+<span class="sd">        Specifies the way in which the error between the fitted and</span>
+<span class="sd">        ground truth shapes is to be computed.</span>
+
+<span class="sd">        Default: &#39;me_norm&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FittingResult.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="c"># Initialize the error internal properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_error_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_text</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span> <span class="o">=</span> <span class="n">fitter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_type</span> <span class="o">=</span> <span class="n">error_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gt_shape</span> <span class="o">=</span> <span class="n">gt_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.algorithm"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the algorithm used by the Fitter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">algorithm</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.fitted"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.fitted">[docs]</a>    <span class="k">def</span> <span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        True iff the fitting procedure has been completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">error_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the type of error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_type</span>
+
+    <span class="nd">@error_type.setter</span>
+<div class="viewcode-block" id="FittingResult.error_type"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.error_type">[docs]</a>    <span class="k">def</span> <span class="nf">error_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_type</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Sets the error type according to a set of predefined options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me_norm&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_error_text</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Point-to-point error normalized by object &#39;</span>
+                                <span class="s">&#39;size&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me&#39;</span><span class="p">:</span>
+            <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;me not implemented yet&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;rmse&#39;</span><span class="p">:</span>
+            <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;rmse not implemented yet&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown error_type string selected. Valid&#39;</span>
+                             <span class="s">&#39;options are: me_norm, me, rmse&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_error_type</span> <span class="o">=</span> <span class="n">error_type</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="FittingResult.n_iters"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.n_iters">[docs]</a>    <span class="k">def</span> <span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of iterations used to fit the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="FittingResult.shapes"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.shapes">[docs]</a>    <span class="k">def</span> <span class="nf">shapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_points</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Generates a list containing the shapes obtained at each fitting</span>
+<span class="sd">        iteration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        as_points: boolean, optional</span>
+<span class="sd">            Whether the results is returned as a list of PointClouds or</span>
+<span class="sd">            ndarrays.</span>
+
+<span class="sd">            Default: False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        shapes: :class:`menpo.shape.PointCloud`s or ndarray list</span>
+<span class="sd">            A list containing the shapes obtained at each fitting iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.errors"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.errors">[docs]</a>    <span class="k">def</span> <span class="nf">errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list containing the error at each fitting iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">compute_error</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">error_type</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="p">(</span><span class="n">as_points</span><span class="o">=</span><span class="bp">True</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Ground truth has not been set, errors cannot &#39;</span>
+                             <span class="s">&#39;be computed&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="FittingResult.final_shape"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.final_shape">[docs]</a>    <span class="k">def</span> <span class="nf">final_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the final fitted shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@abc.abstractproperty</span>
+<div class="viewcode-block" id="FittingResult.initial_shape"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.initial_shape">[docs]</a>    <span class="k">def</span> <span class="nf">initial_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the initial shape from which the fitting started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.gt_shape"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.gt_shape">[docs]</a>    <span class="k">def</span> <span class="nf">gt_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the original ground truth shape associated to the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_shape</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.final_error"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.final_error">[docs]</a>    <span class="k">def</span> <span class="nf">final_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the final fitting error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">compute_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_shape</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">error_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Ground truth has not been set, final error &#39;</span>
+                             <span class="s">&#39;cannot be computed&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResult.initial_error"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.initial_error">[docs]</a>    <span class="k">def</span> <span class="nf">initial_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the initial fitting error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">compute_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_shape</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">error_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Ground truth has not been set, final error &#39;</span>
+                             <span class="s">&#39;cannot be computed&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResult.plot_error"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.plot_error">[docs]</a>    <span class="k">def</span> <span class="nf">plot_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Plots the error evolution throughout the fitting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">]</span>
+            <span class="n">x_label</span> <span class="o">=</span> <span class="s">&#39;Number of iterations&#39;</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_text</span>
+            <span class="k">return</span> <span class="n">GraphPlotter</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span>
+                                <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iters</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">],</span>
+                                <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span>
+                                <span class="n">y_label</span><span class="o">=</span><span class="n">y_label</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Ground truth has not been set, error &#39;</span>
+                             <span class="s">&#39;cannot be plotted&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResult.view_final_fitting"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.view_final_fitting">[docs]</a>    <span class="k">def</span> <span class="nf">view_final_fitting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the final fitting result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;fitting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_shape</span>
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;fitting&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResult.view_initialization"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.view_initialization">[docs]</a>    <span class="k">def</span> <span class="nf">view_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the initialization from which the fitting started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;fitting&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_shape</span>
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;fitting&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResult.view_ground_truth"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResult.view_ground_truth">[docs]</a>    <span class="k">def</span> <span class="nf">view_ground_truth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the ground truth annotation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;gt_shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gt_shape</span>
+            <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="s">&#39;gt_shape&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+                <span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Ground truth shape has not been set.&#39;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the whole fitting procedure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">pixels</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="p">(</span><span class="n">as_points</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FittingViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span>
+                             <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c"># TODO: document me</span></div>
+<div class="viewcode-block" id="NonParametricFittingResult"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult">[docs]</a><span class="k">class</span> <span class="nc">NonParametricFittingResult</span><span class="p">(</span><span class="n">FittingResult</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NonParametricFittingResult.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">costs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NonParametricFittingResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">image</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="n">gt_shape</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="n">error_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span> <span class="o">=</span> <span class="n">costs</span>
+</div>
+    <span class="nd">@FittingResult.fitted.setter</span>
+<div class="viewcode-block" id="NonParametricFittingResult.fitted"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.fitted">[docs]</a>    <span class="k">def</span> <span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Setter for the fitted property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="c"># and len(self.parameters) is not len(self.cost):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Lists containing weights and costs &quot;</span>
+                                 <span class="s">&quot;must have the same length&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fitted can only be set to True&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_iters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">shapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_points</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">as_points</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@FittingResult.gt_shape.setter</span>
+<div class="viewcode-block" id="NonParametricFittingResult.gt_shape"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.gt_shape">[docs]</a>    <span class="k">def</span> <span class="nf">gt_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Setter for the ground truth shape associated to the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PointCloud</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gt_shape</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Accepted values for gt_shape setter are &quot;</span>
+                             <span class="s">&quot;`menpo.shape.PointClouds`.&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="NonParametricFittingResult.final_cost"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.final_cost">[docs]</a>    <span class="k">def</span> <span class="nf">final_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the value of the cost function at the final iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="NonParametricFittingResult.initial_cost"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.initial_cost">[docs]</a>    <span class="k">def</span> <span class="nf">initial_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the value of the cost function at the first iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="NonParametricFittingResult.plot_cost"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.NonParametricFittingResult.plot_cost">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Plots the cost evolution throughout the fitting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">legend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span>
+        <span class="n">x_label</span> <span class="o">=</span> <span class="s">&#39;Number of iterations&#39;</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="s">&#39;Normalized cost&#39;</span>
+        <span class="k">return</span> <span class="n">GraphPlotter</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_iters</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+                            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">costs</span><span class="p">],</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span> <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span>
+                            <span class="n">y_label</span><span class="o">=</span><span class="n">y_label</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c">#TODO: Document me</span></div></div>
+<div class="viewcode-block" id="SemiParametricFittingResult"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult">[docs]</a><span class="k">class</span> <span class="nc">SemiParametricFittingResult</span><span class="p">(</span><span class="n">NonParametricFittingResult</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">costs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SemiParametricFittingResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">image</span><span class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="n">gt_shape</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="n">error_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span> <span class="o">=</span> <span class="n">costs</span>
+</div>
+    <span class="nd">@FittingResult.fitted.setter</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.fitted"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.fitted">[docs]</a>    <span class="k">def</span> <span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Setter for the fitted property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+               <span class="c"># and len(self.parameters) is not len(self.cost):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Lists containing weights and costs &quot;</span>
+                                 <span class="s">&quot;must have the same length&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fitted can only be set to True&quot;</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.residual"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.residual">[docs]</a>    <span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type of residual used by the basic fitter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">residual</span><span class="o">.</span><span class="n">type</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.transforms"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.transforms">[docs]</a>    <span class="k">def</span> <span class="nf">transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Generates a list containing the transforms obtained at each fitting</span>
+<span class="sd">        iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">shapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_points</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">as_points</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">points</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">target</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.final_transform"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.final_transform">[docs]</a>    <span class="k">def</span> <span class="nf">final_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the final transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.initial_transform"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.initial_transform">[docs]</a>    <span class="k">def</span> <span class="nf">initial_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the initial transform from which the fitting started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_transform</span><span class="o">.</span><span class="n">target</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_transform</span><span class="o">.</span><span class="n">target</span>
+
+    <span class="nd">@FittingResult.gt_shape.setter</span>
+<div class="viewcode-block" id="SemiParametricFittingResult.gt_shape"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.SemiParametricFittingResult.gt_shape">[docs]</a>    <span class="k">def</span> <span class="nf">gt_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Setter for the ground truth shape associated to the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="n">PointCloud</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gt_shape</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gt_shape</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">target</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Accepted values for gt_shape setter are &quot;</span>
+                             <span class="s">&quot;`menpo.shape.PointClouds` or float lists&quot;</span>
+                             <span class="s">&quot;specifying transform parameters.&quot;</span><span class="p">)</span>
+
+
+<span class="c">#TODO: Document me</span></div></div>
+<div class="viewcode-block" id="ParametricFittingResult"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult">[docs]</a><span class="k">class</span> <span class="nc">ParametricFittingResult</span><span class="p">(</span><span class="n">SemiParametricFittingResult</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Object that holds the state of a lucas-kanade object before, during</span>
+<span class="sd">    and after it has fitted a particular image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    image: :class:`menpo.image.masked.MaskedImage`</span>
+<span class="sd">        The fitted image.</span>
+
+<span class="sd">    lk: :class:`menpo.aam.fitter.BasicFitter`</span>
+<span class="sd">        The fitter object used to fitter the image.</span>
+
+<span class="sd">    weights: ndarray list</span>
+<span class="sd">        A list containing the weights of the lk object transform per</span>
+<span class="sd">        fitting iteration.</span>
+
+<span class="sd">        Default: None</span>
+
+<span class="sd">    weights: ndarray list</span>
+<span class="sd">        A list containing the weights of the lk appearance model</span>
+<span class="sd">        per fitting iteration. Note that, some lk objects do not explicitly</span>
+<span class="sd">        recover the weights of the appearance model; in this cases</span>
+<span class="sd">        weights is None.</span>
+
+<span class="sd">        Default: None</span>
+
+<span class="sd">    costs: ndarray list</span>
+<span class="sd">        A list containing the values of the cost function optimized by the</span>
+<span class="sd">        lk object per fitting iteration.</span>
+
+<span class="sd">        Default: None</span>
+
+<span class="sd">    error_type: &#39;me_norm&#39;, &#39;me&#39; or &#39;rmse&#39;, optional.</span>
+<span class="sd">        Specifies the way in which the error between the fitted and</span>
+<span class="sd">        ground truth shapes is to be computed.</span>
+
+<span class="sd">        Default: &#39;me_norm&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ParametricFittingResult.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">lk</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">costs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">gt_shape</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ParametricFittingResult</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">image</span><span class="p">,</span> <span class="n">lk</span><span class="p">,</span> <span class="n">gt_shape</span><span class="o">=</span><span class="n">gt_shape</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="n">error_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costs</span> <span class="o">=</span> <span class="n">costs</span>
+</div>
+    <span class="nd">@FittingResult.fitted.setter</span>
+<div class="viewcode-block" id="ParametricFittingResult.fitted"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.fitted">[docs]</a>    <span class="k">def</span> <span class="nf">fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Setter for the fitted property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> \
+               <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">):</span> <span class="c">#is not len(self.cost):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Lists containing weights and costs &quot;</span>
+                                 <span class="s">&quot;must have the same length&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="ow">and</span> \
+               <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Lists containing weights, costs and &quot;</span>
+                                 <span class="s">&quot;weights must have the same length&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Fitted can only be set to True&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ParametricFittingResult.warped_images"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.warped_images">[docs]</a>    <span class="k">def</span> <span class="nf">warped_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_pixels</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Generates a list containing the warped images obtained at each fitting</span>
+<span class="sd">        iteration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        as_pixels: boolean, optional</span>
+<span class="sd">            Whether the result is returned as a list of Images or ndarrays.</span>
+
+<span class="sd">            Default: False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        warped_images: :class:`menpo.image.masked.MaskedImage` or ndarray list</span>
+<span class="sd">            A list containing the warped images obtained at each fitting</span>
+<span class="sd">            iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">transform</span>
+        <span class="n">interpolator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">interpolator</span>
+        <span class="k">if</span> <span class="n">as_pixels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
+                                       <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span><span class="o">.</span><span class="n">pixels</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">transform</span><span class="o">.</span><span class="n">from_vector</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
+                                       <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="ParametricFittingResult.appearance_reconstructions"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.appearance_reconstructions">[docs]</a>    <span class="k">def</span> <span class="nf">appearance_reconstructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_pixels</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Generates a list containing the appearance reconstruction obtained at</span>
+<span class="sd">        each fitting iteration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        as_pixels: boolean, optional</span>
+<span class="sd">            Whether the result is returned as a list of Images or ndarrays.</span>
+
+<span class="sd">            Default: False</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        appearance_reconstructions: :class:`menpo.image.masked.MaskedImage`</span>
+<span class="sd">                                    or ndarray list</span>
+<span class="sd">            A list containing the appearance reconstructions obtained at each</span>
+<span class="sd">            fitting iteration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">as_pixels</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">appearance_model</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">pixels</span>
+                        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">appearance_model</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">as_pixels</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">template</span><span class="o">.</span><span class="n">pixels</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fitter</span><span class="o">.</span><span class="n">template</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="ParametricFittingResult.view_warped_images"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.view_warped_images">[docs]</a>    <span class="k">def</span> <span class="nf">view_warped_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                           <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the warped images.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pixels_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warped_images</span><span class="p">(</span><span class="n">as_pixels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MultipleImageViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">pixels_list</span><span class="p">,</span>
+                                   <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ParametricFittingResult.view_appearance_reconstructions"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.view_appearance_reconstructions">[docs]</a>    <span class="k">def</span> <span class="nf">view_appearance_reconstructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                        <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the appearance recontructions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pixels_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appearance_reconstructions</span><span class="p">(</span><span class="n">as_pixels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MultipleImageViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">pixels_list</span><span class="p">,</span>
+                                   <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ParametricFittingResult.view_error_images"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.ParametricFittingResult.view_error_images">[docs]</a>    <span class="k">def</span> <span class="nf">view_error_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                          <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the error images.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warped_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warped_images</span><span class="p">(</span><span class="n">as_pixels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">appearances</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">appearance_reconstructions</span><span class="p">(</span><span class="n">as_pixels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">pixels_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="o">-</span> <span class="n">i</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">appearances</span><span class="p">,</span> <span class="n">warped_images</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">MultipleImageViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">pixels_list</span><span class="p">,</span>
+                                   <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="FittingResultList"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList">[docs]</a><span class="k">class</span> <span class="nc">FittingResultList</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">Viewable</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Enhanced list of :class:`menpo.fitter.fitting.FittingResults` objects. It</span>
+<span class="sd">    implements a series of methods that facilitate the generation of global</span>
+<span class="sd">    fitting results.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    fittings: :class:`menpo.fitter.fitting.FittingResults`</span>
+<span class="sd">        A list of FittingResult objects.</span>
+
+<span class="sd">    error_type: &#39;me_norm&#39;, &#39;me&#39; or &#39;rmse&#39;, optional.</span>
+<span class="sd">        Specifies the way in which the error between the fitted and</span>
+<span class="sd">        ground truth shapes is to be computed.</span>
+
+<span class="sd">        Default: &#39;me_norm&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FittingResultList.__init__"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fittings</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s">&#39;me_norm&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FittingResultList</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">fittings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_type</span> <span class="o">=</span> <span class="n">error_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_final_error</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_error</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.algorithm"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.algorithm">[docs]</a>    <span class="k">def</span> <span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the fitting algorithm used by the fitter object</span>
+<span class="sd">        associated to the fitting objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO: ensure that all basic_fitting algorithms are the same?</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">algorithm</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">error_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the type of error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_type</span>
+
+    <span class="nd">@error_type.setter</span>
+<div class="viewcode-block" id="FittingResultList.error_type"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.error_type">[docs]</a>    <span class="k">def</span> <span class="nf">error_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_type</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Sets the error type according to a set of predefined options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me_norm&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">error_type</span> <span class="o">=</span> <span class="n">error_type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_error_stop</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_error_step</span> <span class="o">=</span> <span class="mf">0.001</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_error_text</span> <span class="o">=</span> <span class="s">&#39;Point-to-point error normalized by object &#39;</span> \
+                               <span class="s">&#39;size&#39;</span>
+        <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;me&#39;</span><span class="p">:</span>
+            <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;me not implemented yet&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">error_type</span> <span class="ow">is</span> <span class="s">&#39;rmse&#39;</span><span class="p">:</span>
+            <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;rmse not implemented yet&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Unknown error_type string selected. Valid&#39;</span>
+                             <span class="s">&#39;options are: &quot;me_norm&quot;, &quot;me&quot;, &quot;rmse&quot;.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_error_type</span> <span class="o">=</span> <span class="n">error_type</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.n_fittings"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.n_fittings">[docs]</a>    <span class="k">def</span> <span class="nf">n_fittings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the total number of fitting, i.e. the length of the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.final_error"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.final_error">[docs]</a>    <span class="k">def</span> <span class="nf">final_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a ndarray containing the final error of each fitting object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_error</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_final_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">final_error</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_error</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.initial_error"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.initial_error">[docs]</a>    <span class="k">def</span> <span class="nf">initial_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a ndarray containing the initial error of each fitting object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_error</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">initial_error</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_error</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_mean_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_mean_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_std_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_std_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_var_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_var_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_median_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_median_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.convergence"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.convergence">[docs]</a>    <span class="k">def</span> <span class="nf">convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the percentage of fitting objects that converged. A fitting</span>
+<span class="sd">        object is considered to have converged if the final fitting error is</span>
+<span class="sd">        smaller than the initial one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_error</span><span class="p">)</span> <span class="o">/</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_fittings</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.final_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.final_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">final_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Computes the final error distribution among all fitting objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ed: ndarray</span>
+<span class="sd">            The final error distribution among all fitting objects within</span>
+<span class="sd">            the interval [0, self._error_stop]</span>
+<span class="sd">        x_axis: ndarray</span>
+<span class="sd">            The interval [0, self._error_stop]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">final_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_error</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_dist</span><span class="p">(</span><span class="n">final_error</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.initial_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.initial_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">initial_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Computes the initial error distribution among all fitting objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ed: ndarray</span>
+<span class="sd">            The initial error distribution among all fitting objects within</span>
+<span class="sd">            the interval [0, self._error_stop]</span>
+<span class="sd">        x_axis: ndarray</span>
+<span class="sd">            The interval [0, self._error_stop]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">initial_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_error</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_dist</span><span class="p">(</span><span class="n">initial_error</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="n">n_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">x_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_step</span><span class="p">)</span>
+        <span class="n">ed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">((</span><span class="n">limit</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_error_step</span><span class="p">)</span> <span class="o">&lt;=</span>
+                                        <span class="n">error</span><span class="p">[</span><span class="n">error</span> <span class="o">&lt;=</span> <span class="n">limit</span><span class="p">])</span>
+                       <span class="k">for</span> <span class="n">limit</span> <span class="ow">in</span> <span class="n">x_axis</span><span class="p">])</span> <span class="o">/</span> <span class="n">n_errors</span>
+        <span class="k">return</span> <span class="n">ed</span><span class="p">,</span> <span class="n">x_axis</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.final_cumulative_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.final_cumulative_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">final_cumulative_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Computes the final cumulative error distribution among all fitting</span>
+<span class="sd">        objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ced: ndarray</span>
+<span class="sd">            The final cumulative error distribution among all fitting objects</span>
+<span class="sd">            within the interval [0, self._error_stop]</span>
+<span class="sd">        x_axis: ndarray</span>
+<span class="sd">            The interval [0, self._error_stop]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ed</span><span class="p">,</span> <span class="n">x_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_error_dist</span>
+        <span class="n">ced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cumulative_error_dist</span><span class="p">(</span><span class="n">ed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ced</span><span class="p">,</span> <span class="n">x_axis</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="FittingResultList.initial_cumulative_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.initial_cumulative_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">initial_cumulative_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Computes the initial cumulative error distribution among all fitting</span>
+<span class="sd">        objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ced: ndarray</span>
+<span class="sd">            The initial cumulative error distribution among all fitting</span>
+<span class="sd">            objects within the interval [0, self._error_stop]</span>
+<span class="sd">        x_axis: ndarray</span>
+<span class="sd">            The interval [0, self._error_stop]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ed</span><span class="p">,</span> <span class="n">x_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_error_dist</span>
+        <span class="n">ced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cumulative_error_dist</span><span class="p">(</span><span class="n">ed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ced</span><span class="p">,</span> <span class="n">x_axis</span>
+</div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_cumulative_error_dist</span><span class="p">(</span><span class="n">error_dist</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">error_dist</span><span class="p">[:</span><span class="n">j</span><span class="p">])</span>
+                         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">error_dist</span><span class="p">)])</span>
+
+<div class="viewcode-block" id="FittingResultList.plot_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.plot_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">plot_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Plots the final and initial error distributions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">&#39;Error Distribution&#39;</span>
+        <span class="n">ed</span><span class="p">,</span> <span class="n">x_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_error_dist</span>
+        <span class="n">ed</span> <span class="o">=</span> <span class="p">[</span><span class="n">ed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_error_dist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_dist</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span>
+                               <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span> <span class="n">y_limit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ed</span><span class="p">),</span>
+                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResultList.plot_cumulative_error_dist"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.plot_cumulative_error_dist">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cumulative_error_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Plots the final and initial cumulative error distributions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">&#39;Cumulative Error Distribution&#39;</span>
+        <span class="n">ced</span><span class="p">,</span> <span class="n">x_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_cumulative_error_dist</span>
+        <span class="n">ced</span> <span class="o">=</span> <span class="p">[</span><span class="n">ced</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_cumulative_error_dist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_dist</span><span class="p">(</span><span class="n">x_axis</span><span class="p">,</span> <span class="n">ced</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span>
+                               <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_plot_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="n">y_axis</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                   <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">y_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">+</span>
+                  <span class="s">&#39;</span><span class="se">\n</span><span class="s">mean: {0:.4f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_mean_error</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="s">&#39;std: {0:.4f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_std_error</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="s">&#39;median: {0:.4f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_median_error</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="s">&#39;convergence: {0:.2f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">convergence</span><span class="p">),</span>
+                  <span class="s">&#39;Initialization&#39;</span> <span class="o">+</span>
+                  <span class="s">&#39;</span><span class="se">\n</span><span class="s">mean: {0:.4f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_mean_error</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="s">&#39;std: {0:.4f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_std_error</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="s">&#39;median: {0:.4f}, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_median_error</span><span class="p">)]</span>
+        <span class="n">x_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_text</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="s">&#39;Proportion of images&#39;</span>
+        <span class="n">axis_limits</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_stop</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y_limit</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">GraphPlotter</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="n">y_axis</span><span class="p">,</span>
+                            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span>
+                            <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span> <span class="n">y_label</span><span class="o">=</span><span class="n">y_label</span><span class="p">,</span>
+                            <span class="n">axis_limits</span><span class="o">=</span><span class="n">axis_limits</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FittingResultList.view_final_fitting"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.view_final_fitting">[docs]</a>    <span class="k">def</span> <span class="nf">view_final_fitting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the final fitting result obtained by each fitting object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FittingResultList.view_initialization"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.FittingResultList.view_initialization">[docs]</a>    <span class="k">def</span> <span class="nf">view_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the initialization used by each fitting object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the the whole fitting procedure for each fitting object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TrackingResultList"><a class="viewcode-back" href="../../../api/generated/menpo.fit.fittingresult.html#menpo.fit.fittingresult.TrackingResultList">[docs]</a><span class="k">class</span> <span class="nc">TrackingResultList</span><span class="p">(</span><span class="n">FittingResultList</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Displays the final tracking result for the whole sequence.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Not implemented yet&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

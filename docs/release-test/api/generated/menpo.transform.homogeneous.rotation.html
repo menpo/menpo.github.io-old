@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module: transform.homogeneous.rotation &mdash; Menpo 0.2.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Menpo 0.2.1 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-menpo.transform.homogeneous.rotation">
+<span id="module-transform-homogeneous-rotation"></span><h1>Module: <tt class="xref py py-mod docutils literal"><span class="pre">transform.homogeneous.rotation</span></tt><a class="headerlink" href="#module-menpo.transform.homogeneous.rotation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="classes">
+<h2>2 Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.rotation.Rotation">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.rotation.</tt><tt class="descname">Rotation</tt><big>(</big><em>rotation_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.affine.html#menpo.transform.homogeneous.affine.DiscreteAffine" title="menpo.transform.homogeneous.affine.DiscreteAffine"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.affine.DiscreteAffine</span></tt></a>, <a class="reference internal" href="menpo.transform.homogeneous.similarity.html#menpo.transform.homogeneous.similarity.Similarity" title="menpo.transform.homogeneous.similarity.Similarity"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.similarity.Similarity</span></tt></a></p>
+<p>Abstract <tt class="docutils literal"><span class="pre">n_dims</span></tt> rotation transform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>rotation_matrix</strong> : (D, D) ndarray</p>
+<blockquote class="last">
+<div><p>A valid, square rotation matrix</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>rotation_matrix</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.as_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters of the transform as a 1D array. These parameters
+are parametrised as deltas from the identity warp. The parameters
+are output in the order [theta].</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">parameter</th>
+<th class="head">definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>theta</td>
+<td>The angle of rotation around <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">1]</span></tt></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>theta</strong> : double</p>
+<blockquote class="last">
+<div><p>Angle of rotation around axis. Right-handed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.axis_and_angle_of_rotation">
+<tt class="descname">axis_and_angle_of_rotation</tt><big>(</big><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.axis_and_angle_of_rotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.axis_and_angle_of_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for computing the axis and angle of rotation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>axis</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The unit vector representing the axis of rotation</p>
+</div></blockquote>
+<p><strong>angle_of_rotation</strong> : double</p>
+<blockquote class="last">
+<div><p>The angle in radians of the rotation about the axis. The angle is
+signed in a right handed sense.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>p</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.from_vector_inplace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the transform from the given parameters,
+expected to be in Fortran ordering.</p>
+<p>Supports rebuilding from 2D parameter sets.</p>
+<p>2D Rotation: 1 parameter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">theta</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p</strong> : (1,) ndarray</p>
+<blockquote>
+<div><p>The array of parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Rotation2D</span></tt></p>
+<blockquote class="last">
+<div><p>The transform initialised to the given parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.pseudoinverse">
+<tt class="descname">pseudoinverse</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.pseudoinverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.pseudoinverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inverse rotation matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D, D) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.Rotation.rotation_matrix">
+<tt class="descname">rotation_matrix</tt><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#Rotation.rotation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.Rotation.rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The rotation matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D, D) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.rotation.</tt><tt class="descname">AlignmentRotation</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#AlignmentRotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="menpo.transform.homogeneous.base.html#menpo.transform.homogeneous.base.HomogFamilyAlignment" title="menpo.transform.homogeneous.base.HomogFamilyAlignment"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.base.HomogFamilyAlignment</span></tt></a>, <a class="reference internal" href="#menpo.transform.homogeneous.rotation.Rotation" title="menpo.transform.homogeneous.rotation.Rotation"><tt class="xref py py-class docutils literal"><span class="pre">menpo.transform.homogeneous.rotation.Rotation</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#AlignmentRotation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="function">
+<h2>1 Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="menpo.transform.homogeneous.rotation.optimal_rotation_matrix">
+<tt class="descclassname">menpo.transform.homogeneous.rotation.</tt><tt class="descname">optimal_rotation_matrix</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../_modules/menpo/transform/homogeneous/rotation.html#optimal_rotation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.optimal_rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs an SVD on the corrolation matrix to find an optimal rotation
+between source and target</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>source: :class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The source points to be aligned</p>
+</div></blockquote>
+<p><strong>target: :class:`menpo.shape.PointCloud`</strong> :</p>
+<blockquote>
+<div><p>The target points to be aligned</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The optimal square rotation matrix</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module: <tt class="docutils literal"><span class="pre">transform.homogeneous.rotation</span></tt></a><ul>
+<li><a class="reference internal" href="#classes">2 Classes</a></li>
+<li><a class="reference internal" href="#function">1 Function</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/generated/menpo.transform.homogeneous.rotation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Menpo 0.2.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Patrick Snape, James Booth.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

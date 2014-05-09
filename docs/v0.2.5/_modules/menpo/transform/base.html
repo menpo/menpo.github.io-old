@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.transform.base &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>menpo.transform.base</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.transform.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+
+<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    An abstract representation of any spatial transform.</span>
+<span class="sd">    Provides a unified interface to apply the transform with</span>
+<span class="sd">    :meth:`apply_inplace` and :meth:`apply`.</span>
+
+<span class="sd">    All Transforms support basic composition to form a :class:`TransformChain`.</span>
+
+<span class="sd">    There are two useful forms of composition. Firstly, the mathematical</span>
+<span class="sd">    composition symbol `o` has the definition:</span>
+
+<span class="sd">        let a(x) and b(x) be two transforms on x.</span>
+<span class="sd">        (a o b)(x) == a(b(x))</span>
+
+<span class="sd">    This functionality is provided by the compose_after() family of methods.</span>
+
+<span class="sd">        (a.compose_after(b)).apply(x) == a.apply(b.apply(x))</span>
+
+<span class="sd">    Equally useful is an inversion the order of composition - so that over</span>
+<span class="sd">    time a large chain of transforms can be built to do a useful job,</span>
+<span class="sd">    and composing on this chain adds another transform to the end (after all</span>
+<span class="sd">    other preceding transforms have been performed).</span>
+
+<span class="sd">    For instance, let&#39;s say we want to rescale a</span>
+<span class="sd">    :class:`menpo.shape.PointCloud` p around it&#39;s mean, and then translate</span>
+<span class="sd">    it some place else. It would be nice to be able to do something like</span>
+
+<span class="sd">        t = Translation(-p.centre)  # translate to centre</span>
+<span class="sd">        s = Scale(2.0)  # rescale</span>
+<span class="sd">        move = Translate([10, 0 ,0]) # budge along the x axis</span>
+
+<span class="sd">        t.compose(s).compose(-t).compose(move)</span>
+
+<span class="sd">    in Menpo, this functionality is provided by the compose_before() family</span>
+<span class="sd">    of methods.</span>
+
+<span class="sd">        (a.compose_before(b)).apply(x) == b.apply(a.apply(x))</span>
+
+<span class="sd">    For native composition, see the :class:`ComposableTransform` subclass and</span>
+<span class="sd">    the :class:`VComposition` mix-in.</span>
+<span class="sd">    For inversion, see the :class:`Invertable` and :class:`VInvertable` mix-ins.</span>
+<span class="sd">    For alignment, see the :class:`Alignment` mix in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Transform.n_dims"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.n_dims">[docs]</a>    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The dimensionality of the data the transform operates on.</span>
+<span class="sd">        None if the transform is not dimension specific.</span>
+
+<span class="sd">        :type: int or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Transform.n_dims_output"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.n_dims_output">[docs]</a>    <span class="k">def</span> <span class="nf">n_dims_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The output of the data from the transform. None if the output</span>
+<span class="sd">        of the transform is not dimension specific.</span>
+
+<span class="sd">        :type: int or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># most Transforms don&#39;t change the dimensionality of their input.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span>
+</div>
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Applies the transform to the array ``x``, returning the result.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (N, D) ndarray</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : (N, D) ndarray</span>
+<span class="sd">            Transformed array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Transform.apply_inplace"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.apply_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">apply_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Applies this transform to ``x``. If ``x`` is :class:`Transformable`,</span>
+<span class="sd">        ``x`` will be handed this transform object to transform itself</span>
+<span class="sd">        inplace. If not, ``x`` is assumed to be a numpy array. The</span>
+<span class="sd">        transformation will be non destructive, returning the transformed</span>
+<span class="sd">        version. Any ``kwargs`` will be passed to the specific transform</span>
+<span class="sd">        :meth:`_apply` methods.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (N, D) ndarray or an object that implements :class:`Transformable`</span>
+<span class="sd">            The array or object to be transformed.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to :meth:`_apply`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : same as ``x``</span>
+<span class="sd">            The transformed array or object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="n">x_</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Local closure which calls the ``_apply`` method with the ``kwargs``</span>
+<span class="sd">            attached.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">_transform_inplace</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Transform.apply"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Applies this transform to ``x``. If ``x`` is :class:`Transformable`,</span>
+<span class="sd">        ``x`` will be handed this transform object to transform itself</span>
+<span class="sd">        non-destructively (a transformed copy of the object will be</span>
+<span class="sd">        returned).</span>
+<span class="sd">        If not, ``x`` is assumed to be a numpy array. The transformation</span>
+<span class="sd">        will be non destructive, returning the transformed version. Any</span>
+<span class="sd">        ``kwargs`` will be passed to the specific transform</span>
+<span class="sd">        :meth:`_apply` methods.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : (N, D) ndarray or an object that implements :class:`Transformable`</span>
+<span class="sd">            The array or object to be transformed.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to :meth:`_apply`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : same as ``x``</span>
+<span class="sd">            The transformed array or object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="n">x_</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Local closure which calls the ``_apply`` method with the ``kwargs``</span>
+<span class="sd">            attached.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Transform.compose_before"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.compose_before">[docs]</a>    <span class="k">def</span> <span class="nf">compose_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        c = a.compose_before(b)</span>
+<span class="sd">        c.apply(p) == b.apply(a.apply(p))</span>
+
+<span class="sd">        a and b are left unchanged.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : :class:`Transform`</span>
+<span class="sd">            Transform to be applied **after** self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : :class:`TransformChain`</span>
+<span class="sd">            The resulting transform chain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">TransformChain</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="Transform.compose_after"><a class="viewcode-back" href="../../../api/menpo/transform/Transform.html#menpo.transform.base.Transform.compose_after">[docs]</a>    <span class="k">def</span> <span class="nf">compose_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        c = a.compose_after(b)</span>
+<span class="sd">        c.apply(p) == a.apply(b.apply(p))</span>
+
+<span class="sd">        a and b are left unchanged.</span>
+
+<span class="sd">        This corresponds to the usual mathematical formalism for the compose</span>
+<span class="sd">        operator, `o`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : :class:`Transform`</span>
+<span class="sd">            Transform to be applied **before** self</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        --------</span>
+<span class="sd">        transform : :class:`TransformChain`</span>
+<span class="sd">            The resulting transform chain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">TransformChain</span><span class="p">([</span><span class="n">transform</span><span class="p">,</span> <span class="bp">self</span><span class="p">])</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">Transformable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Interface for transformable objects. When :meth:`apply_inplace` is called</span>
+<span class="sd">    on an object, if the object has the method :meth:`_transform_inplace`,</span>
+<span class="sd">    the method is called, passing in the transforms :meth:`apply_inplace`</span>
+<span class="sd">    method.</span>
+<span class="sd">    This allows for the object to define how it should transform itself.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_transform_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Apply the transform given to the Transformable object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : func</span>
+<span class="sd">            Function that applies a transformation to the transformable object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : :class:`Transformable`</span>
+<span class="sd">            The transformed object. Transformed in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Apply the transform given in a non destructive manner - returning the</span>
+<span class="sd">        transformed object and leaving this object as it was.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transform : func</span>
+<span class="sd">            Function that applies a transformation to the transformable object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        transformed : :class:`Transformable`</span>
+<span class="sd">            A copy of the object, transformed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copy_of_self</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># transform the copy destructively</span>
+        <span class="n">copy_of_self</span><span class="o">.</span><span class="n">_transform_inplace</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">copy_of_self</span>
+
+
+<span class="kn">from</span> <span class="nn">.alignment</span> <span class="kn">import</span> <span class="n">Alignment</span>
+<span class="kn">from</span> <span class="nn">.composable</span> <span class="kn">import</span> <span class="n">TransformChain</span><span class="p">,</span> <span class="n">ComposableTransform</span><span class="p">,</span> <span class="n">VComposable</span>
+<span class="kn">from</span> <span class="nn">.invertable</span> <span class="kn">import</span> <span class="n">Invertible</span><span class="p">,</span> <span class="n">VInvertible</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

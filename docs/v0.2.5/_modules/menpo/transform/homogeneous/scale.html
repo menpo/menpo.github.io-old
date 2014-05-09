@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.transform.homogeneous.scale &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../../index.html"/>
+        <link rel="up" title="menpo.transform.homogeneous" href="../homogeneous.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../homogeneous.html">menpo.transform.homogeneous</a> &raquo;</li>
+      
+    <li>menpo.transform.homogeneous.scale</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.transform.homogeneous.scale</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">HomogFamilyAlignment</span>
+<span class="kn">from</span> <span class="nn">.affine</span> <span class="kn">import</span> <span class="n">DiscreteAffine</span><span class="p">,</span> <span class="n">Affine</span>
+<span class="kn">from</span> <span class="nn">.similarity</span> <span class="kn">import</span> <span class="n">Similarity</span>
+
+
+<div class="viewcode-block" id="Scale"><a class="viewcode-back" href="../../../../api/menpo/transform/Scale.html#menpo.transform.homogeneous.scale.Scale">[docs]</a><span class="k">def</span> <span class="nf">Scale</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">n_dims</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Factory function for producing Scale transforms. Zero scale factors are not</span>
+<span class="sd">    permitted.</span>
+
+<span class="sd">    A :class:`UniformScale` will be produced if:</span>
+
+<span class="sd">        - A float ``scale_factor`` and a ``n_dims`` kwarg are provided</span>
+<span class="sd">        - A ndarray scale_factor with shape (``n_dims``, ) is provided with all</span>
+<span class="sd">          elements being the same</span>
+
+<span class="sd">    A :class:`NonUniformScale` will be provided if:</span>
+
+<span class="sd">        - A ndarray ``scale_factor`` with shape (``n_dims``, ) is provided with</span>
+<span class="sd">          at least two differing scale factors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale_factor: double or (D,) ndarray</span>
+<span class="sd">        Scale for each axis.</span>
+<span class="sd">    n_dims: int</span>
+<span class="sd">        The dimensionality of the output transform.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scale : :class:`UniformScale` or :class:`NonUniformScale`</span>
+<span class="sd">        The correct type of scale</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If any of the scale factors is zero</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+        <span class="c"># some array like thing - make it a numpy array for sure</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Having a zero in one of the scales is invalid&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n_dims</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># scale_factor better be a numpy array then</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="n">UniformScale</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale_factor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># interpret as a scalar then</span>
+        <span class="k">return</span> <span class="n">UniformScale</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="NonUniformScale"><a class="viewcode-back" href="../../../../api/menpo/transform/NonUniformScale.html#menpo.transform.homogeneous.scale.NonUniformScale">[docs]</a><span class="k">class</span> <span class="nc">NonUniformScale</span><span class="p">(</span><span class="n">DiscreteAffine</span><span class="p">,</span> <span class="n">Affine</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    An ``n_dims`` scale transform, with a scale component for each dimension.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale : (D,) ndarray</span>
+<span class="sd">        A scale for each axis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">h_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">scale</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">h_matrix</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+        <span class="n">h_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">Affine</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_matrix</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_dims</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;The h_matrix cannot &quot;</span>
+                                  <span class="s">&quot;be set on a NonUniformScale.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="NonUniformScale.scale"><a class="viewcode-back" href="../../../../api/menpo/transform/NonUniformScale.html#menpo.transform.homogeneous.scale.NonUniformScale.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The scale vector.</span>
+
+<span class="sd">        :type: (D,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">_transform_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;NonUniformScale by {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="NonUniformScale.n_parameters"><a class="viewcode-back" href="../../../../api/menpo/transform/NonUniformScale.html#menpo.transform.homogeneous.scale.NonUniformScale.n_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">n_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of parameters: ``n_dims``.</span>
+
+<span class="sd">        :type: int</span>
+
+<span class="sd">        ``n_dims`` parameters - ``[scale_x, scale_y, ....]`` - The scalar values</span>
+<span class="sd">        representing the scale across each axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">size</span>
+</div>
+<div class="viewcode-block" id="NonUniformScale.as_vector"><a class="viewcode-back" href="../../../../api/menpo/transform/NonUniformScale.html#menpo.transform.homogeneous.scale.NonUniformScale.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the parameters of the transform as a 1D array. These parameters</span>
+<span class="sd">        are parametrised as deltas from the identity warp. The parameters</span>
+<span class="sd">        are output in the order [s0, s1, ...].</span>
+
+<span class="sd">        +----------+--------------------------------------------+</span>
+<span class="sd">        |parameter | definition                                 |</span>
+<span class="sd">        +==========+============================================+</span>
+<span class="sd">        |s0        | The scale across the first axis            |</span>
+<span class="sd">        +----------+--------------------------------------------+</span>
+<span class="sd">        |s1        | The scale across the second axis           |</span>
+<span class="sd">        +----------+--------------------------------------------+</span>
+<span class="sd">        |...       | ...                                        |</span>
+<span class="sd">        +----------+--------------------------------------------+</span>
+<span class="sd">        |sn        | The scale across the nth axis              |</span>
+<span class="sd">        +----------+--------------------------------------------+</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : (D,) ndarray</span>
+<span class="sd">            The scale across each axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+</div>
+<div class="viewcode-block" id="NonUniformScale.from_vector_inplace"><a class="viewcode-back" href="../../../../api/menpo/transform/NonUniformScale.html#menpo.transform.homogeneous.scale.NonUniformScale.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Updates the NonUniformScale inplace.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : (D,) ndarray</span>
+<span class="sd">            The array of parameters.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">composes_inplace_with</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">NonUniformScale</span><span class="p">,</span> <span class="n">UniformScale</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The inverse scale.</span>
+
+<span class="sd">        :type: :class:`NonUniformScale`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UniformScale"><a class="viewcode-back" href="../../../../api/menpo/transform/UniformScale.html#menpo.transform.homogeneous.scale.UniformScale">[docs]</a><span class="k">class</span> <span class="nc">UniformScale</span><span class="p">(</span><span class="n">DiscreteAffine</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    An abstract similarity scale transform, with a single scale component</span>
+<span class="sd">    applied to all dimensions. This is abstracted out to remove unnecessary</span>
+<span class="sd">    code duplication.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">):</span>
+        <span class="n">h_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dims</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">h_matrix</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+        <span class="n">h_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">Similarity</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_matrix</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UniformScale</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="UniformScale.scale"><a class="viewcode-back" href="../../../../api/menpo/transform/UniformScale.html#menpo.transform.homogeneous.scale.UniformScale.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The single scale value.</span>
+
+<span class="sd">        :type: double</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</div>
+    <span class="k">def</span> <span class="nf">_transform_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&#39;UniformScale by {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="UniformScale.n_parameters"><a class="viewcode-back" href="../../../../api/menpo/transform/UniformScale.html#menpo.transform.homogeneous.scale.UniformScale.n_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">n_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of parameters: 1</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="UniformScale.as_vector"><a class="viewcode-back" href="../../../../api/menpo/transform/UniformScale.html#menpo.transform.homogeneous.scale.UniformScale.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the parameters of the transform as a 1D array. These parameters</span>
+<span class="sd">        are parametrised as deltas from the identity warp. The parameters</span>
+<span class="sd">        are output in the order [s].</span>
+
+<span class="sd">        +----------+--------------------------------+</span>
+<span class="sd">        |parameter | definition                     |</span>
+<span class="sd">        +==========+================================+</span>
+<span class="sd">        |s         | The scale across each axis     |</span>
+<span class="sd">        +----------+--------------------------------+</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        s : double</span>
+<span class="sd">            The scale across each axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+</div>
+    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">composes_inplace_with</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UniformScale</span>
+
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The inverse scale.</span>
+
+<span class="sd">        :type: type(self)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="AlignmentUniformScale"><a class="viewcode-back" href="../../../../api/menpo/transform/AlignmentUniformScale.html#menpo.transform.homogeneous.scale.AlignmentUniformScale">[docs]</a><span class="k">class</span> <span class="nc">AlignmentUniformScale</span><span class="p">(</span><span class="n">HomogFamilyAlignment</span><span class="p">,</span> <span class="n">UniformScale</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">HomogFamilyAlignment</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">UniformScale</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">norm</span><span class="p">(),</span>
+                              <span class="n">source</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">UniformScale</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_target_from_state</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">,</span> <span class="n">new_scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">copy_without_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UniformScale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

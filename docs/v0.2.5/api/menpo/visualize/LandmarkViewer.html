@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LandmarkViewer &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.visualize" href="index.html"/>
+        <link rel="next" title="ImageViewer2d" href="ImageViewer2d.html"/>
+        <link rel="prev" title="LandmarkViewer2d" href="LandmarkViewer2d.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.visualize</span></tt></a> &raquo;</li>
+      
+    <li>LandmarkViewer</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/visualize/LandmarkViewer.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="landmarkviewer">
+<span id="menpo-visualize-landmarkviewer"></span><h1>LandmarkViewer<a class="headerlink" href="#landmarkviewer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="menpo.visualize.base.LandmarkViewer">
+<em class="property">class </em><tt class="descclassname">menpo.visualize.base.</tt><tt class="descname">LandmarkViewer</tt><big>(</big><em>figure_id</em>, <em>new_figure</em>, <em>group_label</em>, <em>pointcloud</em>, <em>labels_to_masks</em>, <em>target</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/visualize/base.html#LandmarkViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.visualize.base.LandmarkViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base Landmark viewer that abstracts away dimensionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>figure_id</strong> : object</p>
+<blockquote>
+<div><p>A figure id. Could be any valid object that identifies
+a figure in a given framework (string, int, etc)</p>
+</div></blockquote>
+<p><strong>new_figure</strong> : bool</p>
+<blockquote>
+<div><p>Whether the rendering engine should create a new figure.</p>
+</div></blockquote>
+<p><strong>group_label</strong> : string</p>
+<blockquote>
+<div><p>The main label of the landmark set.</p>
+</div></blockquote>
+<p><strong>pointcloud</strong> : <a class="reference internal" href="../shape/PointCloud.html#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+<blockquote>
+<div><p>The pointclouds representing the landmarks.</p>
+</div></blockquote>
+<p><strong>labels_to_masks</strong> : dict(string, ndarray)</p>
+<blockquote>
+<div><p>A dictionary of labels to masks into the pointcloud that represent
+which points belong to the given label.</p>
+</div></blockquote>
+<p><strong>target</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Landmarkable</span></tt></p>
+<blockquote class="last">
+<div><p>The parent shape that we are drawing the landmarks for.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.visualize.base.LandmarkViewer.render">
+<tt class="descname">render</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/visualize/base.html#LandmarkViewer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.visualize.base.LandmarkViewer.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the correct type of landmark viewer for the given parent shape.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to landmark viewer.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote>
+<div><p>The rendering object.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p>Only 2D and 3D viewers are supported.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ImageViewer2d.html" class="btn btn-neutral float-right" title="ImageViewer2d"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="LandmarkViewer2d.html" class="btn btn-neutral" title="LandmarkViewer2d"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

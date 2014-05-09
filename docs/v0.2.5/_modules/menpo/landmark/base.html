@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.landmark.base &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>menpo.landmark.base</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.landmark.base</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">menpo.transform.base</span> <span class="kn">import</span> <span class="n">Transformable</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize</span> <span class="kn">import</span> <span class="n">LandmarkViewer</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize.base</span> <span class="kn">import</span> <span class="n">Viewable</span>
+
+
+<div class="viewcode-block" id="Landmarkable"><a class="viewcode-back" href="../../../api/menpo/landmark/Landmarkable.html#menpo.landmark.base.Landmarkable">[docs]</a><span class="k">class</span> <span class="nc">Landmarkable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract interface for object that can have landmarks attached to them.</span>
+<span class="sd">    Landmarkable objects have a public dictionary of landmarks which are</span>
+<span class="sd">    managed by a :class:`menpo.landmark.base.LandmarkManager`. This means that</span>
+<span class="sd">    different sets of landmarks can be attached to the same object.</span>
+<span class="sd">    Landmarks can be N-dimensional and are expected to be some</span>
+<span class="sd">    subclass of :class:`menpo.shape.pointcloud.Pointcloud`. These landmarks</span>
+<span class="sd">    are wrapped inside a :class:`LandmarkGroup` object that performs</span>
+<span class="sd">    useful tasks like label filtering and viewing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Landmarkable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmarks</span> <span class="o">=</span> <span class="n">LandmarkManager</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmarks</span>
+
+    <span class="nd">@landmarks.setter</span>
+    <span class="k">def</span> <span class="nf">landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmarks</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="bp">self</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Landmarkable.n_landmark_groups"><a class="viewcode-back" href="../../../api/menpo/landmark/Landmarkable.html#menpo.landmark.base.Landmarkable.n_landmark_groups">[docs]</a>    <span class="k">def</span> <span class="nf">n_landmark_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of landmark groups on this object.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="o">.</span><span class="n">n_groups</span>
+
+</div></div>
+<div class="viewcode-block" id="LandmarkManager"><a class="viewcode-back" href="../../../api/menpo/landmark/LandmarkManager.html#menpo.landmark.base.LandmarkManager">[docs]</a><span class="k">class</span> <span class="nc">LandmarkManager</span><span class="p">(</span><span class="n">Transformable</span><span class="p">,</span> <span class="n">Viewable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for storing and manipulating Landmarks associated with an object.</span>
+<span class="sd">    This involves managing the internal dictionary, as well as providing</span>
+<span class="sd">    convenience functions for operations like viewing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : :class:`menpo.landmarks.base.Landmarkable`</span>
+<span class="sd">        The parent object that owns these landmarks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LandmarkManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate over the internal landmark group dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets a new landmark group for the given label. This can be set using</span>
+<span class="sd">        an existing landmark group, or using a PointCloud. Existing landmark</span>
+<span class="sd">        groups will have their target reset. If a PointCloud is provided then</span>
+<span class="sd">        all landmarks belong to a single label `all`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group_label : String</span>
+<span class="sd">            Label of new group.</span>
+<span class="sd">        value : LandmarkGroup or PointCloud</span>
+<span class="sd">            The new landmark group to set.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            If the landmarks and the shape are not of the same dimensionality.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">PointCloud</span>
+        <span class="c"># firstly, make sure the dim is correct</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Trying to set {}D landmarks on a &quot;</span>
+                <span class="s">&quot;{}D shape&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PointCloud</span><span class="p">):</span>
+            <span class="n">lmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+                <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
+                <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">LandmarkGroup</span><span class="p">):</span>
+            <span class="n">lmark_group</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Valid types are PointCloud or LandmarkGroup&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">lmark_group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span><span class="o">.</span><span class="n">_group_label</span> <span class="o">=</span> <span class="n">group_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_label</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the group for the provided label.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        group_label : String, optional</span>
+<span class="sd">            The label of the group. If None is provided, and if there is only</span>
+<span class="sd">            one group, the unambiguous group will be returned.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        lmark_group : :class:`LandmarkGroup`</span>
+<span class="sd">            The matching landmark group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">group_label</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">group_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Cannot use None as a key as there are {} &quot;</span>
+                                 <span class="s">&quot;landmark groups&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">[</span><span class="n">group_label</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__target</span>
+
+    <span class="nd">@_target.setter</span>
+    <span class="k">def</span> <span class="nf">_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__target</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LandmarkManager.n_groups"><a class="viewcode-back" href="../../../api/menpo/landmark/LandmarkManager.html#menpo.landmark.base.LandmarkManager.n_groups">[docs]</a>    <span class="k">def</span> <span class="nf">n_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Total number of labels.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LandmarkManager.has_landmarks"><a class="viewcode-back" href="../../../api/menpo/landmark/LandmarkManager.html#menpo.landmark.base.LandmarkManager.has_landmarks">[docs]</a>    <span class="k">def</span> <span class="nf">has_landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether the object has landmarks or not</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span> <span class="o">!=</span> <span class="mi">0</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="LandmarkManager.group_labels"><a class="viewcode-back" href="../../../api/menpo/landmark/LandmarkManager.html#menpo.landmark.base.LandmarkManager.group_labels">[docs]</a>    <span class="k">def</span> <span class="nf">group_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        All the labels for the landmark set.</span>
+
+<span class="sd">        :type: List of strings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LandmarkManager.update"><a class="viewcode-back" href="../../../api/menpo/landmark/LandmarkManager.html#menpo.landmark.base.LandmarkManager.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">landmark_manager</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the manager with the groups from another manager. This performs</span>
+<span class="sd">        a deep copy on the other landmark manager and resets it&#39;s target.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        landmark_manager : :class:`LandmarkManager`</span>
+<span class="sd">            The landmark manager to copy from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_landmark_manager</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_manager</span><span class="p">)</span>
+        <span class="n">new_landmark_manager</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_landmark_manager</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_transform_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">_transform_inplace</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View all landmarks groups on the current manager.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        include_labels : bool, optional</span>
+<span class="sd">            If ``True``, also render the label names next to the landmarks.</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            Passed through to the viewer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_landmark_groups</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">_view</span><span class="p">(</span><span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">out_string</span> <span class="o">=</span> <span class="s">&#39;{}: n_groups: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">n_groups</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_landmarks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">out_string</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+                <span class="n">out_string</span> <span class="o">+=</span> <span class="s">&#39;({}): {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">out_string</span>
+
+</div>
+<span class="k">class</span> <span class="nc">LandmarkGroup</span><span class="p">(</span><span class="n">Viewable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An immutable object that holds a PointCloud (or a subclass) and stores</span>
+<span class="sd">    labels for each point. These labels are defined via masks on the</span>
+<span class="sd">    pointcloud. For this reason, the pointcloud is considered to be immutable.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target : :class:`menpo.landmarks.base.Landmarkable`</span>
+<span class="sd">        The parent object of this landmark group.</span>
+<span class="sd">    group_label : String</span>
+<span class="sd">        The label of the group.</span>
+<span class="sd">    pointcloud : :class:`menpo.shape.pointcloud.PointCloud`</span>
+<span class="sd">        The pointcloud representing the landmarks.</span>
+<span class="sd">    labels_to_masks : dict of string to boolean ndarrays</span>
+<span class="sd">        For each label, the mask that specifies the indices in to the</span>
+<span class="sd">        pointcloud that belong to the label.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">pointcloud</span><span class="p">,</span> <span class="n">labels_to_masks</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LandmarkGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">labels_to_masks</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Landmark groups are designed for their internal &#39;</span>
+                             <span class="s">&#39;state, other than owernship, to be immutable. &#39;</span>
+                             <span class="s">&#39;Empty label sets are not permitted.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">labels_to_masks</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pointcloud</span><span class="o">.</span><span class="n">n_points</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Each mask must have the same number of points &#39;</span>
+                             <span class="s">&#39;as the landmark pointcloud.&#39;</span><span class="p">)</span>
+
+        <span class="n">unlabelled_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">labels_to_masks</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">unlabelled_points</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Every point in the landmark pointcloud must be &#39;</span>
+                             <span class="s">&#39;labelled. Points {0} were unlabelled.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">unlabelled_points</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_label</span> <span class="o">=</span> <span class="n">group_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span> <span class="o">=</span> <span class="n">pointcloud</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span> <span class="o">=</span> <span class="n">labels_to_masks</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate over the internal label dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new label to the landmark group by adding a new set of indices</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : String</span>
+<span class="sd">            Label of landmark.</span>
+<span class="sd">        indices : (K,) ndarray</span>
+<span class="sd">            Array of indices in to the pointcloud. Each index implies</span>
+<span class="sd">            membership to the label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new landmark group that contains ONLY the specified label.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : String</span>
+<span class="sd">            Label to filter on.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        landmark_group : :class:`LandmarkGroup`</span>
+<span class="sd">            A new landmark group with a single label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_labels</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">group_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The label of this landmark group.</span>
+
+<span class="sd">        :type: String</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_label</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of labels that belong to this group.</span>
+
+<span class="sd">        :type: [strings]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of labels in the group.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The pointcloud representing all the landmarks in the group.</span>
+
+<span class="sd">        :type: :class:`menpo.shape.pointcloud.Pointcloud`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The total number of landmarks in the group.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The dimensionality of these landmarks.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span><span class="o">.</span><span class="n">n_dims</span>
+
+    <span class="k">def</span> <span class="nf">with_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new landmark group that contains only the given labels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : String or List of strings, optional</span>
+<span class="sd">            Labels that should be kept in the returned landmark group. If</span>
+<span class="sd">            None is passed, and if there is only one label on this group,</span>
+<span class="sd">            the label will be substituted automatically.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        landmark_group : :class:`LandmarkGroup`</span>
+<span class="sd">            A new landmark group with the same group label but containing only</span>
+<span class="sd">            the given label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># make it easier by allowing None when there is only one label</span>
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_labels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Cannot use None as there are &quot;</span>
+                                 <span class="s">&quot;{} labels&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_labels</span><span class="p">))</span>
+            <span class="c"># Make it easier to use by accepting a single string as well as a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_group_with_only_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">without_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new landmark group that contains all labels EXCEPT the given</span>
+<span class="sd">        label.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : String</span>
+<span class="sd">            Label to exclude.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        landmark_group : :class:`LandmarkGroup`</span>
+<span class="sd">            A new landmark group with the same group label but containing all</span>
+<span class="sd">            labels except the given label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Make it easier to use by accepting a single string as well as a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
+        <span class="n">labels_to_keep</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_group_with_only_labels</span><span class="p">(</span><span class="n">labels_to_keep</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_new_group_with_only_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deal with changing indices when you add and remove points. In this case</span>
+<span class="sd">        we only deal with building a new dataset that keeps masks.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels : [String]</span>
+<span class="sd">            List of strings of the labels to keep</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        lmark_group : :class:`LandmarkGroup`</span>
+<span class="sd">            The new landmark group with only the requested labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">set_difference</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">set_difference</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Labels {0} do not exist in the landmark &#39;</span>
+                             <span class="s">&#39;group. Available labels are: {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">set_difference</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">))</span>
+
+        <span class="n">masks_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span>
+                         <span class="k">if</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="p">]</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">masks_to_keep</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">masks_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="n">overlap</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">masks_to_keep</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">LandmarkGroup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span><span class="o">.</span><span class="n">from_mask</span><span class="p">(</span><span class="n">overlap</span><span class="p">),</span>
+                             <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">masks_to_keep</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">include_labels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View all landmarks on the current shape, using the default</span>
+<span class="sd">        shape view method. Kwargs passed in here will be passed through</span>
+<span class="sd">        to the shapes view method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        include_labels : bool, optional</span>
+<span class="sd">            If ``True``, also render the label names next to the landmarks.</span>
+<span class="sd">        kwargs : dict, optional</span>
+<span class="sd">            Passed through to the viewer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_viewer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span>
+                                          <span class="n">new_figure</span><span class="o">=</span><span class="n">new_figure</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">landmark_viewer</span> <span class="o">=</span> <span class="n">LandmarkViewer</span><span class="p">(</span><span class="n">target_viewer</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pointcloud</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">_labels_to_masks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">landmark_viewer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">include_labels</span><span class="o">=</span><span class="n">include_labels</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;{}: label: {}, n_labels: {}, n_points: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_labels</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_landmarks</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

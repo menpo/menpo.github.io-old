@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AlignmentRotation &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.transform" href="index.html"/>
+        <link rel="next" title="Translation" href="Translation.html"/>
+        <link rel="prev" title="Rotation" href="Rotation.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.transform</span></tt></a> &raquo;</li>
+      
+    <li>AlignmentRotation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/transform/AlignmentRotation.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="alignmentrotation">
+<span id="menpo-transform-alignmentrotation"></span><h1>AlignmentRotation<a class="headerlink" href="#alignmentrotation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.rotation.</tt><tt class="descname">AlignmentRotation</tt><big>(</big><em>source</em>, <em>target</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/transform/homogeneous/rotation.html#AlignmentRotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">HomogFamilyAlignment</span></tt>, <a class="reference internal" href="Rotation.html#menpo.transform.homogeneous.rotation.Rotation" title="menpo.transform.homogeneous.rotation.Rotation"><tt class="xref py py-class docutils literal"><span class="pre">Rotation</span></tt></a></p>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.apply">
+<tt class="descname">apply</tt><big>(</big><em>x</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies this transform to <tt class="docutils literal"><span class="pre">x</span></tt>. If <tt class="docutils literal"><span class="pre">x</span></tt> is <tt class="xref py py-class docutils literal"><span class="pre">Transformable</span></tt>,
+<tt class="docutils literal"><span class="pre">x</span></tt> will be handed this transform object to transform itself
+non-destructively (a transformed copy of the object will be
+returned).
+If not, <tt class="docutils literal"><span class="pre">x</span></tt> is assumed to be a numpy array. The transformation
+will be non destructive, returning the transformed version. Any
+<tt class="docutils literal"><span class="pre">kwargs</span></tt> will be passed to the specific transform
+<tt class="xref py py-meth docutils literal"><span class="pre">_apply()</span></tt> methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray or an object that implements <tt class="xref py py-class docutils literal"><span class="pre">Transformable</span></tt></p>
+<blockquote>
+<div><p>The array or object to be transformed.</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to <tt class="xref py py-meth docutils literal"><span class="pre">_apply()</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transformed</strong> : same as <tt class="docutils literal"><span class="pre">x</span></tt></p>
+<blockquote class="last">
+<div><p>The transformed array or object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.apply_inplace">
+<tt class="descname">apply_inplace</tt><big>(</big><em>x</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.apply_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies this transform to <tt class="docutils literal"><span class="pre">x</span></tt>. If <tt class="docutils literal"><span class="pre">x</span></tt> is <tt class="xref py py-class docutils literal"><span class="pre">Transformable</span></tt>,
+<tt class="docutils literal"><span class="pre">x</span></tt> will be handed this transform object to transform itself
+inplace. If not, <tt class="docutils literal"><span class="pre">x</span></tt> is assumed to be a numpy array. The
+transformation will be non destructive, returning the transformed
+version. Any <tt class="docutils literal"><span class="pre">kwargs</span></tt> will be passed to the specific transform
+<tt class="xref py py-meth docutils literal"><span class="pre">_apply()</span></tt> methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : (N, D) ndarray or an object that implements <tt class="xref py py-class docutils literal"><span class="pre">Transformable</span></tt></p>
+<blockquote>
+<div><p>The array or object to be transformed.</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to <tt class="xref py py-meth docutils literal"><span class="pre">_apply()</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transformed</strong> : same as <tt class="docutils literal"><span class="pre">x</span></tt></p>
+<blockquote class="last">
+<div><p>The transformed array or object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the parameters of the transform as a 1D array. These parameters
+are parametrised as deltas from the identity warp. The parameters
+are output in the order [theta].</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">parameter</th>
+<th class="head">definition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>theta</td>
+<td>The angle of rotation around <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">1]</span></tt></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>theta</strong> : double</p>
+<blockquote class="last">
+<div><p>Angle of rotation around axis. Right-handed.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.axis_and_angle_of_rotation">
+<tt class="descname">axis_and_angle_of_rotation</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.axis_and_angle_of_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for computing the axis and angle of rotation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>axis</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The unit vector representing the axis of rotation</p>
+</div></blockquote>
+<p><strong>angle_of_rotation</strong> : double</p>
+<blockquote class="last">
+<div><p>The angle in radians of the rotation about the axis. The angle is
+signed in a right handed sense.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.compose_after">
+<tt class="descname">compose_after</tt><big>(</big><em>b) c.apply(p) == a.apply(b.apply(p)</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.compose_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>a and b are left unchanged.</p>
+<p>This corresponds to the usual mathematical formalism for the compose
+operator, <cite>o</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote>
+<div><p>Transform to be applied <strong>before</strong> self</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote class="last">
+<div><p>The resulting transform.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.compose_after_inplace">
+<tt class="descname">compose_after_inplace</tt><big>(</big><em>a) a.compose_after_inplace(b) a.apply(p) == a_orig.apply(b.apply(p)</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.compose_after_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>a is permanently altered to be the result of the composition. b is
+left unchanged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote>
+<div><p>Transform to be applied <strong>before</strong> self</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : self</p>
+<blockquote>
+<div><p>self, updated to the result of the composition</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError: If this transform cannot be composed inplace with the</strong> :</p>
+<p class="last"><strong>provided transform</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.compose_before">
+<tt class="descname">compose_before</tt><big>(</big><em>b) c.apply(p) == b.apply(a.apply(p)</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.compose_before" title="Permalink to this definition">¶</a></dt>
+<dd><p>a and b are left unchanged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote>
+<div><p>Transform to be applied <strong>after</strong> self</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote class="last">
+<div><p>The resulting transform.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.compose_before_inplace">
+<tt class="descname">compose_before_inplace</tt><big>(</big><em>a) a.compose_before_inplace(b) a.apply(p) == b.apply(a_orig.apply(p)</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.compose_before_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>a is permanently altered to be the result of the composition. b is
+left unchanged.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Composable</span></tt></p>
+<blockquote>
+<div><p>Transform to be applied <strong>after</strong> self</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : self</p>
+<blockquote>
+<div><p>self, updated to the result of the composition</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError: If this transform cannot be composed inplace with the</strong> :</p>
+<p class="last"><strong>provided transform</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.decompose">
+<tt class="descname">decompose</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.decompose" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <tt class="xref py py-class docutils literal"><span class="pre">DiscreteAffine</span></tt> is already maximally decomposed -
+return a copy of self in a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">DiscreteAffine</span></tt></p>
+<blockquote class="last">
+<div><p>Deep copy of <tt class="docutils literal"><span class="pre">self</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>vector</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a new instance of the object from it&#8217;s vectorized state.</p>
+<p><tt class="docutils literal"><span class="pre">self</span></tt> is used to fill out the missing state required to
+rebuild a full object from it&#8217;s standardized flattened state. This
+is the default implementation, which is which is a
+<tt class="docutils literal"><span class="pre">deepcopy</span></tt> of the object followed by a call to
+<a class="reference internal" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector_inplace" title="menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector_inplace"><tt class="xref py py-meth docutils literal"><span class="pre">from_vector_inplace()</span></tt></a>. This method can be overridden for a
+performance benefit if desired.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>Flattened representation of the object.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>object</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Vectorizable</span></tt></p>
+<blockquote class="last">
+<div><p>An instance of the class.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of the transform from the given parameters,
+expected to be in Fortran ordering.</p>
+<p>Supports rebuilding from 2D parameter sets.</p>
+<p>2D Rotation: 1 parameter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">theta</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>p</strong> : (1,) ndarray</p>
+<blockquote>
+<div><p>The array of parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Rotation2D</span></tt></p>
+<blockquote class="last">
+<div><p>The transform initialised to the given parameters.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.jacobian">
+<tt class="descname">jacobian</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Jacobian of the transform w.r.t the parameters.</p>
+<p>The Jacobian generated (for 2D) is of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre>x -y 1 0
+y  x 0 1
+</pre></div>
+</div>
+<p>This maintains a parameter order of:</p>
+<div class="highlight-python"><div class="highlight"><pre>W(x;p) = [1 + a  -b   ] [x] + tx
+         [b      1 + a] [y] + ty
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>The points to calculate the jacobian over</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW_dp</strong> : (N, P, D) ndarray</p>
+<blockquote>
+<div><p>A (<tt class="docutils literal"><span class="pre">n_points</span></tt>, <tt class="docutils literal"><span class="pre">n_params</span></tt>, <tt class="docutils literal"><span class="pre">n_dims</span></tt>) array representing
+the Jacobian of the transform.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p><tt class="docutils literal"><span class="pre">points.n_dims</span> <span class="pre">!=</span> <span class="pre">self.n_dims</span></tt> or transform is not 2D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.jacobian_points">
+<tt class="descname">jacobian_points</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.jacobian_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Jacobian of the transform wrt the points to which
+the transform is applied to. This is constant for affine transforms.</p>
+<p>The Jacobian for a given point (for 2D) is of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Jx</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">),</span>     <span class="o">-</span><span class="n">b</span>  <span class="p">]</span>
+<span class="n">Jy</span> <span class="o">=</span> <span class="p">[</span>   <span class="n">b</span><span class="p">,</span>     <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">)]</span>
+<span class="n">J</span> <span class="o">=</span>  <span class="p">[</span><span class="n">Jx</span><span class="p">,</span> <span class="n">Jy</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">),</span> <span class="o">-</span><span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span><span class="p">)]]</span>
+</pre></div>
+</div>
+<p>where a and b come from:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>W(x;p) = [1 + a   -b      tx] [x]</dt>
+<dd><dl class="first last docutils">
+<dt>[b       1 + a   ty] [y]</dt>
+<dd>[1]</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dW/dx: dW/dx: (N, D, D) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The Jacobian of the transform wrt the points to which the
+transform is applied to.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.pseudoinverse_vector">
+<tt class="descname">pseudoinverse_vector</tt><big>(</big><em>vector</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.pseudoinverse_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>The vectorized pseudoinverse of a provided vector instance.</p>
+<p>Syntactic sugar for</p>
+<p>self.from_vector(vector).pseudoinverse.as_vector()</p>
+<p>Can be much faster than the explict call as object creation can be
+entirely avoided in some cases.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> :  (P,) ndarray</p>
+<blockquote>
+<div><p>A vectorized version of self</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pseudoinverse_vector</strong> : (N,) ndarray</p>
+<blockquote class="last">
+<div><p>The pseudoinverse of the vector provided</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.set_target">
+<tt class="descname">set_target</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.set_target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates this alignment transform to point to a new target.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.view">
+<tt class="descname">view</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object using the default rendering engine figure handling.
+For example, the default behaviour for Matplotlib is that all draw
+commands are applied to the same <tt class="docutils literal"><span class="pre">figure</span></tt> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.view_new">
+<tt class="descname">view_new</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.view_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a new figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.view_on">
+<tt class="descname">view_on</tt><big>(</big><em>figure_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.view_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a a specific figure specified by the given id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>figure_id</strong> : object</p>
+<blockquote>
+<div><p>A unique identifier for a figure.</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.alignment_error">
+<tt class="descname">alignment_error</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.alignment_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Frobenius Norm of the difference between the target and
+the aligned source.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.composes_with">
+<tt class="descname">composes_with</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.composes_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any Homogeneous can compose with any other Homogeneous.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.linear_component">
+<tt class="descname">linear_component</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.linear_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns just the linear transform component of this affine
+transform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D, D) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.pseudoinverse">
+<tt class="descname">pseudoinverse</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.pseudoinverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inverse rotation matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D, D) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.rotation_matrix">
+<tt class="descname">rotation_matrix</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The rotation matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D, D) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.transform.homogeneous.rotation.AlignmentRotation.translation_component">
+<tt class="descname">translation_component</tt><a class="headerlink" href="#menpo.transform.homogeneous.rotation.AlignmentRotation.translation_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns just the translation component.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D,) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Translation.html" class="btn btn-neutral float-right" title="Translation"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Rotation.html" class="btn btn-neutral" title="Rotation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

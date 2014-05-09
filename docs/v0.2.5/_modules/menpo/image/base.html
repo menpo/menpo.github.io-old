@@ -1,0 +1,1358 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.image.base &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>menpo.image.base</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.image.base</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">imrotate</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span>
+<span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="kn">as</span> <span class="nn">PILImage</span>
+<span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">pyramid_gaussian</span>
+<span class="kn">from</span> <span class="nn">skimage.transform.pyramids</span> <span class="kn">import</span> <span class="n">_smooth</span>
+
+<span class="kn">from</span> <span class="nn">menpo.base</span> <span class="kn">import</span> <span class="n">Vectorizable</span>
+<span class="kn">from</span> <span class="nn">menpo.landmark</span> <span class="kn">import</span> <span class="n">Landmarkable</span>
+<span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Translation</span><span class="p">,</span> <span class="n">NonUniformScale</span><span class="p">,</span> <span class="n">UniformScale</span><span class="p">,</span>
+                             <span class="n">AlignmentUniformScale</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize.base</span> <span class="kn">import</span> <span class="n">Viewable</span><span class="p">,</span> <span class="n">ImageViewer</span>
+
+<span class="kn">from</span> <span class="nn">.feature</span> <span class="kn">import</span> <span class="n">ImageFeatures</span>
+<span class="kn">from</span> <span class="nn">.interpolation</span> <span class="kn">import</span> <span class="n">scipy_interpolation</span>
+
+
+<div class="viewcode-block" id="ImageBoundaryError"><a class="viewcode-back" href="../../../api/menpo/image/ImageBoundaryError.html#menpo.image.base.ImageBoundaryError">[docs]</a><span class="k">class</span> <span class="nc">ImageBoundaryError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Exception that is thrown when an attempt is made to crop an image beyond</span>
+<span class="sd">    the edge of it&#39;s boundary.</span>
+
+<span class="sd">    requested_min : (d,) ndarray</span>
+<span class="sd">        The per-dimension minimum index requested for the crop</span>
+<span class="sd">    requested_max : (d,) ndarray</span>
+<span class="sd">        The per-dimension maximum index requested for the crop</span>
+<span class="sd">    snapped_min : (d,) ndarray</span>
+<span class="sd">        The per-dimension minimum index that could be used if the crop was</span>
+<span class="sd">        constrained to the image boundaries.</span>
+<span class="sd">    requested_max : (d,) ndarray</span>
+<span class="sd">        The per-dimension maximum index that could be used if the crop was</span>
+<span class="sd">        constrained to the image boundaries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requested_min</span><span class="p">,</span> <span class="n">requested_max</span><span class="p">,</span> <span class="n">snapped_min</span><span class="p">,</span>
+                 <span class="n">snapped_max</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ImageBoundaryError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requested_min</span> <span class="o">=</span> <span class="n">requested_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requested_max</span> <span class="o">=</span> <span class="n">requested_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapped_min</span> <span class="o">=</span> <span class="n">snapped_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapped_max</span> <span class="o">=</span> <span class="n">snapped_max</span>
+
+</div>
+<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image">[docs]</a><span class="k">class</span> <span class="nc">Image</span><span class="p">(</span><span class="n">Vectorizable</span><span class="p">,</span> <span class="n">Landmarkable</span><span class="p">,</span> <span class="n">Viewable</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    An n-dimensional image.</span>
+
+<span class="sd">    Images are n-dimensional homogeneous regular arrays of data. Each</span>
+<span class="sd">    spatially distinct location in the array is referred to as a `pixel`.</span>
+<span class="sd">    At a pixel, ``k`` distinct pieces of information can be stored. Each</span>
+<span class="sd">    datum at a pixel is refereed to as being in a `channel`. All pixels in</span>
+<span class="sd">    the image have the  same number of channels, and all channels have the</span>
+<span class="sd">    same data-type (float).</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    image_data: (M, N ..., Q, C) ndarray</span>
+<span class="sd">        Array representing the image pixels, with the last axis being</span>
+<span class="sd">        channels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_data</span><span class="p">):</span>
+        <span class="n">Landmarkable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">image_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_data</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;C&#39;</span><span class="p">)</span>
+        <span class="c"># This is the degenerate case whereby we can just put the extra axis</span>
+        <span class="c"># on ourselves</span>
+        <span class="k">if</span> <span class="n">image_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="n">image_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">image_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Pixel array has to be 2D (2D shape, implicitly &quot;</span>
+                             <span class="s">&quot;1 channel) or 3D+ (2D+ shape, n_channels) &quot;</span>
+                             <span class="s">&quot; - a {}D array &quot;</span>
+                             <span class="s">&quot;was provided&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_data</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">image_data</span>
+        <span class="c"># add FeatureExtraction functionality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">ImageFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_init_with_channel</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">image_data_with_channel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Constructor that always requires the image has a</span>
+<span class="sd">        channel on the last axis. Only used by from_vector. By default,</span>
+<span class="sd">        just calls the constructor. Subclasses with constructors that don&#39;t</span>
+<span class="sd">        require channel axes need to overwrite this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">image_data_with_channel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Image.blank"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.blank">[docs]</a>    <span class="k">def</span> <span class="nf">blank</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a blank image</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : tuple or list</span>
+<span class="sd">            The shape of the image. Any floating point values are rounded up</span>
+<span class="sd">            to the nearest integer.</span>
+
+<span class="sd">        n_channels: int, optional</span>
+<span class="sd">            The number of channels to create the image with</span>
+
+<span class="sd">            Default: 1</span>
+<span class="sd">        fill : int, optional</span>
+<span class="sd">            The value to fill all pixels with</span>
+
+<span class="sd">            Default: 0</span>
+<span class="sd">        dtype: numpy datatype, optional</span>
+<span class="sd">            The datatype of the image.</span>
+
+<span class="sd">            Default: np.float</span>
+<span class="sd">        mask: (M, N) boolean ndarray or :class:`BooleanImage`</span>
+<span class="sd">            An optional mask that can be applied to the image. Has to have a</span>
+<span class="sd">             shape equal to that of the image.</span>
+
+<span class="sd">             Default: all True :class:`BooleanImage`</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Subclasses of `Image` need to overwrite this method and</span>
+<span class="sd">        explicitly call this superclass method:</span>
+
+<span class="sd">            super(SubClass, cls).blank(shape,**kwargs)</span>
+
+<span class="sd">        in order to appropriately propagate the SubClass type to cls.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        blank_image : :class:`Image`</span>
+<span class="sd">            A new image of the requested size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Ensure that the &#39;+&#39; operator means concatenate tuples</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">fill</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_channels</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_channels</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="o">*</span> <span class="n">fill</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="o">.</span><span class="n">_init_with_channel</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.n_dims"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.n_dims">[docs]</a>    <span class="k">def</span> <span class="nf">n_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The number of dimensions in the image. The minimum possible n_dims is</span>
+<span class="sd">        2.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.n_pixels"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.n_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">n_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Total number of pixels in the image (``prod(shape)``)</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.n_elements"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.n_elements">[docs]</a>    <span class="k">def</span> <span class="nf">n_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Total number of data points in the image (``prod(shape) x</span>
+<span class="sd">        n_channels``)</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">size</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.n_channels"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.n_channels">[docs]</a>    <span class="k">def</span> <span class="nf">n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of channels on each pixel in the image.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.width"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The width of the image.</span>
+
+<span class="sd">        This is the width according to image semantics, and is thus the size</span>
+<span class="sd">        of the **second** dimension.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.height"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The height of the image.</span>
+
+<span class="sd">        This is the height according to image semantics, and is thus the size</span>
+<span class="sd">        of the **first** dimension.</span>
+
+<span class="sd">        :type: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.shape"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.shape">[docs]</a>    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The shape of the image</span>
+<span class="sd">        (with ``n_channel`` values at each point).</span>
+
+<span class="sd">        :type: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.centre"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.centre">[docs]</a>    <span class="k">def</span> <span class="nf">centre</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The geometric centre of the Image - the subpixel that is in the</span>
+<span class="sd">        middle.</span>
+
+<span class="sd">        Useful for aligning shapes and images.</span>
+
+<span class="sd">        :type: (n_dims,) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># noinspection PyUnresolvedReferences</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_str_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39; x &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;{}W x {}H&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Image.as_vector"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_channels</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        The vectorized form of this image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keep_channels : bool, optional</span>
+
+<span class="sd">            ========== =================================</span>
+<span class="sd">            Value      Return shape</span>
+<span class="sd">            ========== =================================</span>
+<span class="sd">            ``False``  (``n_pixels``  x ``n_channels``,)</span>
+<span class="sd">            ``True``   (``n_pixels``, ``n_channels``)</span>
+<span class="sd">            ========== =================================</span>
+
+<span class="sd">            Default: ``False``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (shape given by keep_channels) ndarray</span>
+<span class="sd">            Flattened representation of this image, containing all pixel</span>
+<span class="sd">            and channel information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keep_channels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Image.as_histogram"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.as_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">as_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_channels</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s">&#39;unique&#39;</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Histogram binning of the values of this image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keep_channels : bool, optional</span>
+<span class="sd">            If set to ``False``, it returns a single histogram for all the</span>
+<span class="sd">            channels of the image. If set to ``True``, it returns a list of</span>
+<span class="sd">            histograms, one for each channel.</span>
+
+<span class="sd">            Default: ``True``</span>
+<span class="sd">        bins : &#39;unique&#39;, positive int or sequence of scalars, optional</span>
+<span class="sd">            If set equal to &#39;unique&#39;, the bins of the histograms are centered</span>
+<span class="sd">            on the unique values of each channel. If set equal to a positive</span>
+<span class="sd">            integer, then this is the number of bins. If set equal to a</span>
+<span class="sd">            sequence of scalars, these will be used as bins centres.</span>
+
+<span class="sd">            Default: &#39;unique&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        hist : array or list with n_channels arrays</span>
+<span class="sd">            The histogram(s). If keep_channels=False, then hist is an array. If</span>
+<span class="sd">            keep_channels=True, then hist is a list with len(hist)=n_channels.</span>
+<span class="sd">        bin_edges : array or list with n_channels arrays</span>
+<span class="sd">            An array or a list of arrays corresponding to the above histograms</span>
+<span class="sd">            that store the bins&#39; edges.</span>
+<span class="sd">            The result in the case of list of arrays can be visualized as:</span>
+
+<span class="sd">                for k in range(len(hist)):</span>
+<span class="sd">                    plt.subplot(1,len(hist),k)</span>
+<span class="sd">                    width = 0.7 * (bin_edges[k][1] - bin_edges[k][0])</span>
+<span class="sd">                    center = (bin_edges[k][:-1] + bin_edges[k][1:]) / 2</span>
+<span class="sd">                    plt.bar(center, hist[k], align=&#39;center&#39;, width=width)</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Bins can be either &#39;unique&#39;, positive int or a sequence of scalars.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># parse options</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="s">&#39;unique&#39;</span><span class="p">:</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Bins can be either &#39;unique&#39;, positive int or&quot;</span>
+                                 <span class="s">&quot;a sequence of scalars.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Bins can be either &#39;unique&#39;, positive int or a &quot;</span>
+                             <span class="s">&quot;sequence of scalars.&quot;</span><span class="p">)</span>
+        <span class="c"># compute histogram</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_vector</span><span class="p">(</span><span class="n">keep_channels</span><span class="o">=</span><span class="n">keep_channels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+            <span class="n">hist</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">bin_edges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">num_bins</span> <span class="o">=</span> <span class="n">bins</span>
+            <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">num_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">vec</span><span class="p">[:,</span> <span class="n">ch</span><span class="p">])</span>
+                <span class="n">h_tmp</span><span class="p">,</span> <span class="n">c_tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">vec</span><span class="p">[:,</span> <span class="n">ch</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">num_bins</span><span class="p">)</span>
+                <span class="n">hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h_tmp</span><span class="p">)</span>
+                <span class="n">bin_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_tmp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">bin_edges</span>
+</div>
+<div class="viewcode-block" id="Image.from_vector_inplace"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Takes a flattened vector and update this image by</span>
+<span class="sd">        reshaping the vector to the correct dimensions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : (``n_pixels``,) np.bool ndarray</span>
+<span class="sd">            A vector vector of all the pixels of a BooleanImage.</span>
+
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        For BooleanImage&#39;s this is rebuilding a boolean image **itself**</span>
+<span class="sd">        from boolean values. The mask is in no way interpreted in performing</span>
+<span class="sd">        the operation, in contrast to MaskedImage, where only the masked</span>
+<span class="sd">        region is used in from_vector{_inplace}() and as_vector().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        View the image using the default image viewer. Currently only</span>
+<span class="sd">        supports the rendering of 2D images.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_viewer : :class:`menpo.visualize.viewimage.ViewerImage`</span>
+<span class="sd">            The viewer the image is being shown within</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            If Image is not 2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pixels_to_view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span>
+        <span class="k">return</span> <span class="n">ImageViewer</span><span class="p">(</span><span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span>
+                           <span class="n">pixels_to_view</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Image.glyph"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.glyph">[docs]</a>    <span class="k">def</span> <span class="nf">glyph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vectors_block_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">use_negative</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Create glyph of a feature image. If feature_data has negative values,</span>
+<span class="sd">        the use_negative flag controls whether there will be created a glyph of</span>
+<span class="sd">        both positive and negative values concatenated the one on top of the</span>
+<span class="sd">        other.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vectors_block_size: int</span>
+<span class="sd">            Defines the size of each block with vectors of the glyph image.</span>
+<span class="sd">        use_negative: bool</span>
+<span class="sd">            Defines whether to take into account possible negative values of</span>
+<span class="sd">            feature_data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># first, choose the appropriate channels</span>
+        <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">channels</span> <span class="o">!=</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span>
+        <span class="c"># compute the glyph</span>
+        <span class="n">negative_weights</span> <span class="o">=</span> <span class="o">-</span><span class="n">pixels</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">pixels</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">negative_weights</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">_create_feature_glyph</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">vectors_block_size</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="n">scale</span>
+        <span class="n">glyph_image</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="k">if</span> <span class="n">use_negative</span> <span class="ow">and</span> <span class="n">pixels</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">neg</span> <span class="o">=</span> <span class="n">_create_feature_glyph</span><span class="p">(</span><span class="n">negative_weights</span><span class="p">,</span> <span class="n">vectors_block_size</span><span class="p">)</span>
+            <span class="n">neg</span> <span class="o">=</span> <span class="n">neg</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="n">scale</span>
+            <span class="n">glyph_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">neg</span><span class="p">))</span>
+        <span class="n">glyph</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">glyph_image</span><span class="p">)</span>
+        <span class="c"># correct landmarks</span>
+        <span class="kn">from</span> <span class="nn">menpo.transform</span> <span class="kn">import</span> <span class="n">NonUniformScale</span>
+        <span class="n">image_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="n">glyph_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">glyph</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="n">nus</span> <span class="o">=</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="n">glyph_shape</span> <span class="o">/</span> <span class="n">image_shape</span><span class="p">)</span>
+        <span class="n">glyph</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+        <span class="n">nus</span><span class="o">.</span><span class="n">apply_inplace</span><span class="p">(</span><span class="n">glyph</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">glyph</span>
+</div>
+<div class="viewcode-block" id="Image.crop"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.crop">[docs]</a>    <span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+             <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Crops this image using the given minimum and maximum indices.</span>
+<span class="sd">        Landmarks are correctly adjusted so they maintain their position</span>
+<span class="sd">        relative to the newly cropped image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        min_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The minimum index over each dimension</span>
+
+<span class="sd">        max_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The maximum index over each dimension</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If True the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If False, an ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cropped_image : :class:`type(self)`</span>
+<span class="sd">            This image, but cropped.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            min_indices and max_indices both have to be of length n_dims.</span>
+<span class="sd">            All max_indices must be greater than min_indices.</span>
+
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is False, and an attempt is made</span>
+<span class="sd">            to crop the image in a way that violates the image bounds.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">min_indices</span><span class="p">)</span>
+        <span class="n">max_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">max_indices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">min_indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">max_indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Both min and max indices should be 1D numpy arrays of&quot;</span>
+                <span class="s">&quot; length n_dims ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">max_indices</span> <span class="o">&gt;</span> <span class="n">min_indices</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;All max indices must be greater that the min &quot;</span>
+                             <span class="s">&quot;indices&quot;</span><span class="p">)</span>
+        <span class="n">min_bounded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_points_to_bounds</span><span class="p">(</span><span class="n">min_indices</span><span class="p">)</span>
+        <span class="n">max_bounded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_points_to_bounds</span><span class="p">(</span><span class="n">max_indices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">constrain_to_boundary</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">min_bounded</span> <span class="o">==</span> <span class="n">min_indices</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">max_bounded</span> <span class="o">==</span> <span class="n">max_indices</span><span class="p">)):</span>
+            <span class="c"># points have been constrained and the user didn&#39;t want this -</span>
+            <span class="k">raise</span> <span class="n">ImageBoundaryError</span><span class="p">(</span><span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                                     <span class="n">min_bounded</span><span class="p">,</span> <span class="n">max_bounded</span><span class="p">)</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">min_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_i</span><span class="p">))</span>
+                  <span class="k">for</span> <span class="n">min_i</span><span class="p">,</span> <span class="n">max_i</span> <span class="ow">in</span>
+                  <span class="nb">zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">min_bounded</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">max_bounded</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c"># update all our landmarks</span>
+        <span class="n">lm_translation</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">(</span><span class="o">-</span><span class="n">min_bounded</span><span class="p">)</span>
+        <span class="n">lm_translation</span><span class="o">.</span><span class="n">apply_inplace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Image.cropped_copy"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.cropped_copy">[docs]</a>    <span class="k">def</span> <span class="nf">cropped_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                     <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a cropped copy of this image using the given minimum and</span>
+<span class="sd">        maximum indices. Landmarks are correctly adjusted so they maintain</span>
+<span class="sd">        their position relative to the newly cropped image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        min_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The minimum index over each dimension</span>
+
+<span class="sd">        max_indices: (n_dims, ) ndarray</span>
+<span class="sd">            The maximum index over each dimension</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If True the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If False, an ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cropped_image : :class:`type(self)`</span>
+<span class="sd">            A new instance of self, but cropped.</span>
+
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            min_indices and max_indices both have to be of length n_dims.</span>
+<span class="sd">            All max_indices must be greater than min_indices.</span>
+
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is False, and an attempt is made</span>
+<span class="sd">            to crop the image in a way that violates the image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cropped_image</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cropped_image</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                                  <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.crop_to_landmarks"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.crop_to_landmarks">[docs]</a>    <span class="k">def</span> <span class="nf">crop_to_landmarks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                          <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Crop this image to be bounded around a set of landmarks with an</span>
+<span class="sd">        optional n_pixel boundary</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If</span>
+<span class="sd">            &#39;all&#39; all landmarks in the group are used.</span>
+
+<span class="sd">            Default: &#39;all&#39;</span>
+
+<span class="sd">        boundary: int, Optional</span>
+<span class="sd">            An extra padding to be added all around the landmarks bounds.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If True the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If False, an ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is False, and an attempt is made</span>
+<span class="sd">            to crop the image in a way that violates the image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span>
+        <span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">bounds</span><span class="p">(</span><span class="n">boundary</span><span class="o">=</span><span class="n">boundary</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">min_indices</span><span class="p">,</span> <span class="n">max_indices</span><span class="p">,</span>
+                  <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.crop_to_landmarks_proportion"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.crop_to_landmarks_proportion">[docs]</a>    <span class="k">def</span> <span class="nf">crop_to_landmarks_proportion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary_proportion</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                     <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                     <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Crop this image to be bounded around a set of landmarks with a</span>
+<span class="sd">        border proportional to the landmark spread or range.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        boundary_proportion: float</span>
+<span class="sd">            Additional padding to be added all around the landmarks</span>
+<span class="sd">            bounds defined as a proportion of the landmarks&#39; range. See</span>
+<span class="sd">            minimum for a definition of how the range is calculated.</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If</span>
+<span class="sd">            &#39;all&#39; all landmarks in the group are used.</span>
+
+<span class="sd">            Default: &#39;all&#39;</span>
+
+<span class="sd">        minimum: bool, Optional</span>
+<span class="sd">            If True the specified proportion is relative to the minimum</span>
+<span class="sd">            value of the landmarks&#39; per-dimension range; if False wrt the</span>
+<span class="sd">            maximum value of the landmarks&#39; per-dimension range.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        constrain_to_boundary: boolean, optional</span>
+<span class="sd">            If True the crop will be snapped to not go beyond this images</span>
+<span class="sd">            boundary. If False, an ImageBoundaryError will be raised if an</span>
+<span class="sd">            attempt is made to go beyond the edge of the image.</span>
+
+<span class="sd">            Default: True</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ImageBoundaryError</span>
+<span class="sd">            Raised if constrain_to_boundary is False, and an attempt is made</span>
+<span class="sd">            to crop the image in a way that violates the image bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span>
+        <span class="k">if</span> <span class="n">minimum</span><span class="p">:</span>
+            <span class="n">boundary</span> <span class="o">=</span> <span class="n">boundary_proportion</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">range</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundary</span> <span class="o">=</span> <span class="n">boundary_proportion</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">range</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_to_landmarks</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="n">boundary</span><span class="p">,</span>
+                               <span class="n">constrain_to_boundary</span><span class="o">=</span><span class="n">constrain_to_boundary</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.constrain_points_to_bounds"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.constrain_points_to_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">constrain_points_to_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Constrains the points provided to be within the bounds of this</span>
+<span class="sd">        image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        points: (d,) ndarray</span>
+<span class="sd">            points to be snapped to the image boundaries</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        bounded_points: (d,) ndarray</span>
+<span class="sd">            points snapped to not stray outside the image edges</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bounded_points</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c"># check we don&#39;t stray under any edges</span>
+        <span class="n">bounded_points</span><span class="p">[</span><span class="n">bounded_points</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c"># check we don&#39;t stray over any edges</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">over_image</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span> <span class="o">-</span> <span class="n">bounded_points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="n">bounded_points</span><span class="p">[</span><span class="n">over_image</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">over_image</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">bounded_points</span>
+</div>
+<div class="viewcode-block" id="Image.warp_to"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.warp_to">[docs]</a>    <span class="k">def</span> <span class="nf">warp_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">warp_landmarks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this image warped into a different reference space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        template_mask : :class:`menpo.image.boolean.BooleanImage`</span>
+<span class="sd">            Defines the shape of the result, and what pixels should be</span>
+<span class="sd">            sampled.</span>
+<span class="sd">        transform : :class:`menpo.transform.base.Transform`</span>
+<span class="sd">            Transform **from the template space back to this image**.</span>
+<span class="sd">            Defines, for each True pixel location on the template, which pixel</span>
+<span class="sd">            location should be sampled from on this image.</span>
+<span class="sd">        warp_landmarks : bool, optional</span>
+<span class="sd">            If ``True``, warped_image will have the same landmark dictionary</span>
+<span class="sd">            as self, but with each landmark updated to the warped position.</span>
+
+<span class="sd">            Default: ``False``</span>
+<span class="sd">        interpolator : &#39;scipy&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">            Default: &#39;scipy&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        warped_image : type(self)</span>
+<span class="sd">            A copy of this image, warped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># configure the interpolator we are going to use for the warp</span>
+        <span class="c"># currently only scipy is supported but in the future we may have CUDA</span>
+        <span class="k">if</span> <span class="n">interpolator</span> <span class="o">==</span> <span class="s">&#39;scipy&#39;</span><span class="p">:</span>
+            <span class="n">_interpolator</span> <span class="o">=</span> <span class="n">scipy_interpolation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Don&#39;t understand interpolator &#39;{}&#39;: needs to &quot;</span>
+                             <span class="s">&quot;be &#39;scipy&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">interpolator</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="n">transform</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;Trying to warp a {}D image with a {}D transform &quot;</span>
+                <span class="s">&quot;(they must match)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">transform</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+
+        <span class="n">template_points</span> <span class="o">=</span> <span class="n">template_mask</span><span class="o">.</span><span class="n">true_indices</span>
+        <span class="n">points_to_sample</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">template_points</span><span class="p">)</span>
+        <span class="c"># we want to sample each channel in turn, returning a vector of sampled</span>
+        <span class="c"># pixels. Store those in a (n_pixels, n_channels) array.</span>
+        <span class="n">sampled_pixel_values</span> <span class="o">=</span> <span class="n">_interpolator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="n">points_to_sample</span><span class="p">,</span>
+                                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># set any nan values to 0</span>
+        <span class="n">sampled_pixel_values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">sampled_pixel_values</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c"># build a warped version of the image</span>
+        <span class="n">warped_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_warped_image</span><span class="p">(</span><span class="n">template_mask</span><span class="p">,</span>
+                                                <span class="n">sampled_pixel_values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">warp_landmarks</span><span class="p">:</span>
+            <span class="n">warped_image</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+            <span class="n">transform</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="o">.</span><span class="n">apply_inplace</span><span class="p">(</span><span class="n">warped_image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">warped_image</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_warped_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_mask</span><span class="p">,</span> <span class="n">sampled_pixel_values</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Builds the warped image from the template mask and</span>
+<span class="sd">        sampled pixel values. Overridden for BooleanImage as we can&#39;t use</span>
+<span class="sd">        the usual from_vector_inplace method. All other Image classes share</span>
+<span class="sd">        the Image implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warped_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">template_mask</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                  <span class="n">n_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">warped_image</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="n">sampled_pixel_values</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">warped_image</span>
+
+<div class="viewcode-block" id="Image.rescale"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="o">=</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this image, rescaled by a given factor.</span>
+<span class="sd">        All image information (landmarks) are rescaled appropriately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scale : float or tuple</span>
+<span class="sd">            The scale factor. If a tuple, the scale to apply to each dimension.</span>
+<span class="sd">            If a single float, the scale will be applied uniformly across</span>
+<span class="sd">            each dimension.</span>
+<span class="sd">        interpolator : &#39;scipy&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">            Default: &#39;scipy&#39;</span>
+<span class="sd">        round: {&#39;ceil&#39;, &#39;floor&#39;, &#39;round&#39;}</span>
+<span class="sd">            Rounding function to be applied to floating point shapes.</span>
+
+<span class="sd">            Default: &#39;ceil&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details. Note that mode is set to nearest to avoid numerical</span>
+<span class="sd">            issues, and cannot be changed here by the user.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rescaled_image : type(self)</span>
+<span class="sd">            A copy of this image, rescaled.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If less scales than dimensions are provided.</span>
+<span class="sd">            If any scale is less than or equal to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Pythonic way of converting to list if we are passed a single float</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&#39;Must provide a scale per dimension.&#39;</span>
+                    <span class="s">&#39;{} scales were provided, {} were expected.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">scale</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c"># Thrown when len() is called on a float</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">scale</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span>
+
+        <span class="c"># Make sure we have a numpy array</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scale</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Scales must be positive floats.&#39;</span><span class="p">)</span>
+
+        <span class="n">transform</span> <span class="o">=</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">menpo.image.boolean</span> <span class="kn">import</span> <span class="n">BooleanImage</span>
+        <span class="c"># use the scale factor to make the template mask bigger</span>
+        <span class="n">template_mask</span> <span class="o">=</span> <span class="n">BooleanImage</span><span class="o">.</span><span class="n">blank</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+                                           <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">)</span>
+        <span class="c"># due to image indexing, we can&#39;t just apply the pseduoinverse</span>
+        <span class="c"># transform to achieve the scaling we want though!</span>
+        <span class="c"># Consider a 3x rescale on a 2x4 image. Looking at each dimension:</span>
+        <span class="c">#    H 2 -&gt; 6 so [0-1] -&gt; [0-5] = 5/1 = 5x</span>
+        <span class="c">#    W 4 -&gt; 12 [0-3] -&gt; [0-11] = 11/3 = 3.67x</span>
+        <span class="c"># =&gt; need to make the correct scale per dimension!</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="c"># scale factors = max_index_after / current_max_index</span>
+        <span class="c"># (note that max_index = length - 1, as 0 based)</span>
+        <span class="n">scale_factors</span> <span class="o">=</span> <span class="p">(</span><span class="n">scale</span> <span class="o">*</span> <span class="n">shape</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">shape</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">inverse_transform</span> <span class="o">=</span> <span class="n">NonUniformScale</span><span class="p">(</span><span class="n">scale_factors</span><span class="p">)</span><span class="o">.</span><span class="n">pseudoinverse</span>
+        <span class="c"># for rescaling we enforce that mode is nearest to avoid num. errors</span>
+        <span class="k">if</span> <span class="s">&#39;mode&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Cannot set &#39;mode&#39; kwarg on rescale - set to &quot;</span>
+                             <span class="s">&quot;&#39;nearest&#39; to avoid numerical errors&quot;</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;nearest&#39;</span>
+        <span class="c"># Note here we pass warp_mask to warp_to. In the case of</span>
+        <span class="c"># Images that aren&#39;t MaskedImages this kwarg will</span>
+        <span class="c"># harmlessly fall through so we are fine.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">warp_to</span><span class="p">(</span><span class="n">template_mask</span><span class="p">,</span> <span class="n">inverse_transform</span><span class="p">,</span>
+                            <span class="n">warp_landmarks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                            <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.rescale_to_reference_shape"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.rescale_to_reference_shape">[docs]</a>    <span class="k">def</span> <span class="nf">rescale_to_reference_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference_shape</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                       <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                                       <span class="nb">round</span><span class="o">=</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this image, rescaled so that the scale of a</span>
+<span class="sd">        particular group of landmarks matches the scale of the passed</span>
+<span class="sd">        reference landmarks.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reference_shape: :class:`menpo.shape.pointcloud`</span>
+<span class="sd">            The reference shape to which the landmarks scale will be matched</span>
+<span class="sd">            against.</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If</span>
+<span class="sd">            &#39;all&#39; all landmarks in the group are used.</span>
+
+<span class="sd">            Default: &#39;all&#39;</span>
+<span class="sd">        interpolator : &#39;scipy&#39; or &#39;c&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">        round: {&#39;ceil&#39;, &#39;floor&#39;, &#39;round&#39;}</span>
+<span class="sd">            Rounding function to be applied to floating point shapes.</span>
+
+<span class="sd">            Default: &#39;ceil&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rescaled_image : type(self)</span>
+<span class="sd">            A copy of this image, rescaled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">AlignmentUniformScale</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">reference_shape</span><span class="p">)</span><span class="o">.</span><span class="n">as_vector</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                            <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.rescale_landmarks_to_diagonal_range"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.rescale_landmarks_to_diagonal_range">[docs]</a>    <span class="k">def</span> <span class="nf">rescale_landmarks_to_diagonal_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diagonal_range</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                            <span class="n">label</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span>
+                                            <span class="nb">round</span><span class="o">=</span><span class="s">&#39;ceil&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this image, rescaled so that the diagonal_range of the</span>
+<span class="sd">        bounding box containing its landmarks matches the specified diagonal_range</span>
+<span class="sd">        range.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        diagonal_range: :class:`menpo.shape.pointcloud`</span>
+<span class="sd">            The diagonal_range range that we want the landmarks of the returned</span>
+<span class="sd">            image to have.</span>
+<span class="sd">        group : string, Optional</span>
+<span class="sd">            The key of the landmark set that should be used. If None,</span>
+<span class="sd">            and if there is only one set of landmarks, this set will be used.</span>
+
+<span class="sd">            Default: None</span>
+<span class="sd">        label: string, Optional</span>
+<span class="sd">            The label of of the landmark manager that you wish to use. If</span>
+<span class="sd">            &#39;all&#39; all landmarks in the group are used.</span>
+
+<span class="sd">            Default: &#39;all&#39;</span>
+<span class="sd">        interpolator : &#39;scipy&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">        round: {&#39;ceil&#39;, &#39;floor&#39;, &#39;round&#39;}</span>
+<span class="sd">            Rounding function to be applied to floating point shapes.</span>
+
+<span class="sd">            Default: &#39;ceil&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rescaled_image : type(self)</span>
+<span class="sd">            A copy of this image, rescaled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">range</span><span class="p">()</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">diagonal_range</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                            <span class="nb">round</span><span class="o">=</span><span class="nb">round</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.resize"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="s">&#39;scipy&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of this image, resized to a particular shape.</span>
+<span class="sd">        All image information (landmarks, the mask in the case of</span>
+<span class="sd">        :class:`MaskedImage`) is resized appropriately.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        shape : tuple</span>
+<span class="sd">            The new shape to resize to.</span>
+<span class="sd">        interpolator : &#39;scipy&#39; or &#39;c&#39;, optional</span>
+<span class="sd">            The interpolator that should be used to perform the warp.</span>
+
+<span class="sd">            Default: &#39;scipy&#39;</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to the interpolator. See `menpo.interpolation`</span>
+<span class="sd">            for details.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        resized_image : type(self)</span>
+<span class="sd">            A copy of this image, resized.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If the number of dimensions of the new shape does not match</span>
+<span class="sd">            the number of dimensions of the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&#39;Dimensions must match.&#39;</span>
+                <span class="s">&#39;{} dimensions provided, {} were expected.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">shape</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="n">scales</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c"># Have to round the shape when scaling to deal with floating point</span>
+        <span class="c"># errors. For example, if we want (250, 250), we need to ensure that</span>
+        <span class="c"># we get (250, 250) even if the number we obtain is 250 to some</span>
+        <span class="c"># floating point inaccuracy.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">(</span><span class="n">scales</span><span class="p">,</span> <span class="n">interpolator</span><span class="o">=</span><span class="n">interpolator</span><span class="p">,</span>
+                            <span class="nb">round</span><span class="o">=</span><span class="s">&#39;round&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Image.gaussian_pyramid"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.gaussian_pyramid">[docs]</a>    <span class="k">def</span> <span class="nf">gaussian_pyramid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the gaussian pyramid of this image. The first image of the</span>
+<span class="sd">        pyramid will be the original, unmodified, image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_levels : int</span>
+<span class="sd">            Number of levels in the pyramid. When set to -1 the maximum</span>
+<span class="sd">            number of levels will be build.</span>
+
+<span class="sd">            Default: 3</span>
+
+<span class="sd">        downscale : float, optional</span>
+<span class="sd">            Downscale factor.</span>
+
+<span class="sd">            Default: 2</span>
+
+<span class="sd">        sigma : float, optional</span>
+<span class="sd">            Sigma for gaussian filter. Default is `2 * downscale / 6.0` which</span>
+<span class="sd">            corresponds to a filter mask twice the size of the scale factor</span>
+<span class="sd">            that covers more than 99% of the gaussian distribution.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        order : int, optional</span>
+<span class="sd">            Order of splines used in interpolation of downsampling. See</span>
+<span class="sd">            `scipy.ndimage.map_coordinates` for detail.</span>
+
+<span class="sd">            Default: 1</span>
+
+<span class="sd">        mode :  {&#39;reflect&#39;, &#39;constant&#39;, &#39;nearest&#39;, &#39;mirror&#39;, &#39;wrap&#39;}, optional</span>
+<span class="sd">            The mode parameter determines how the array borders are handled,</span>
+<span class="sd">            where cval is the value when mode is equal to &#39;constant&#39;.</span>
+
+<span class="sd">            Default: &#39;reflect&#39;</span>
+
+<span class="sd">        cval : float, optional</span>
+<span class="sd">            Value to fill past edges of input if mode is &#39;constant&#39;.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_pyramid:</span>
+<span class="sd">            Generator yielding pyramid layers as menpo image objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_layer</span> <span class="o">=</span> <span class="n">n_levels</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">pyramid</span> <span class="o">=</span> <span class="n">pyramid_gaussian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="n">max_layer</span><span class="o">=</span><span class="n">max_layer</span><span class="p">,</span>
+                                   <span class="n">downscale</span><span class="o">=</span><span class="n">downscale</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
+                                   <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">cval</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">image_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pyramid</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+
+            <span class="c"># rescale and reassign existent landmark</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">UniformScale</span><span class="p">(</span><span class="n">downscale</span> <span class="o">**</span> <span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+            <span class="n">transform</span><span class="o">.</span><span class="n">pseudoinverse</span><span class="o">.</span><span class="n">apply_inplace</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">image</span>
+</div>
+<div class="viewcode-block" id="Image.smoothing_pyramid"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.smoothing_pyramid">[docs]</a>    <span class="k">def</span> <span class="nf">smoothing_pyramid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">downscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                          <span class="n">mode</span><span class="o">=</span><span class="s">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the smoothing pyramid of this image. The first image of the</span>
+<span class="sd">        pyramid will be the original, unmodified, image.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_levels : int</span>
+<span class="sd">            Number of levels in the pyramid. When set to -1 the maximum</span>
+<span class="sd">            number of levels will be build.</span>
+
+<span class="sd">            Default: 3</span>
+
+<span class="sd">        downscale : float, optional</span>
+<span class="sd">            Downscale factor.</span>
+
+<span class="sd">            Default: 2</span>
+
+<span class="sd">        sigma : float, optional</span>
+<span class="sd">            Sigma for gaussian filter. Default is `2 * downscale / 6.0` which</span>
+<span class="sd">            corresponds to a filter mask twice the size of the scale factor</span>
+<span class="sd">            that covers more than 99% of the gaussian distribution.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        mode :  {&#39;reflect&#39;, &#39;constant&#39;, &#39;nearest&#39;, &#39;mirror&#39;, &#39;wrap&#39;}, optional</span>
+<span class="sd">            The mode parameter determines how the array borders are handled,</span>
+<span class="sd">            where cval is the value when mode is equal to &#39;constant&#39;.</span>
+
+<span class="sd">            Default: &#39;reflect&#39;</span>
+
+<span class="sd">        cval : float, optional</span>
+<span class="sd">            Value to fill past edges of input if mode is &#39;constant&#39;.</span>
+
+<span class="sd">            Default: 0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        image_pyramid:</span>
+<span class="sd">            Generator yielding pyramid layers as menpo image objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_levels</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">sigma_aux</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">downscale</span><span class="o">**</span><span class="n">j</span> <span class="o">/</span> <span class="mf">6.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sigma_aux</span> <span class="o">=</span> <span class="n">sigma</span>
+
+                <span class="n">image_data</span> <span class="o">=</span> <span class="n">_smooth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_aux</span><span class="p">,</span>
+                                     <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="n">cval</span><span class="p">)</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span>
+
+                <span class="c"># rescale and reassign existent landmark</span>
+                <span class="n">image</span><span class="o">.</span><span class="n">landmarks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span>
+                <span class="k">yield</span> <span class="n">image</span>
+</div>
+<div class="viewcode-block" id="Image.as_greyscale"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.as_greyscale">[docs]</a>    <span class="k">def</span> <span class="nf">as_greyscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;luminosity&#39;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns a greyscale version of the image. If the image does *not*</span>
+<span class="sd">        represent a 2D RGB image, then the &#39;luminosity&#39; mode will fail.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : {&#39;average&#39;, &#39;luminosity&#39;, &#39;channel&#39;}</span>
+<span class="sd">            &#39;luminosity&#39; - Calculates the luminance using the CCIR 601 formula</span>
+
+<span class="sd">                ``Y&#39; = 0.2989 R&#39; + 0.5870 G&#39; + 0.1140 B&#39;``</span>
+
+<span class="sd">            &#39;average&#39; - intensity is an equal average of all three channels</span>
+<span class="sd">            &#39;channel&#39; - a specific channel is used</span>
+
+<span class="sd">            Default &#39;luminosity&#39;</span>
+
+<span class="sd">        channel: int, optional</span>
+<span class="sd">            The channel to be taken. Only used if mode is &#39;channel&#39;.</span>
+
+<span class="sd">            Default: None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        greyscale_image: :class:`MaskedImage`</span>
+<span class="sd">            A copy of this image in greyscale.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">greyscale</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;luminosity&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The &#39;luminosity&#39; mode only works on 2D RGB&quot;</span>
+                                 <span class="s">&quot;images. {} dimensions found, &quot;</span>
+                                 <span class="s">&quot;2 expected.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The &#39;luminosity&#39; mode only works on RGB&quot;</span>
+                                 <span class="s">&quot;images. {} channels found, &quot;</span>
+                                 <span class="s">&quot;3 expected.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">))</span>
+
+            <span class="c"># Invert the transformation matrix to get more precise values</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.956</span><span class="p">,</span> <span class="mf">0.621</span><span class="p">],</span>
+                                           <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.272</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.647</span><span class="p">],</span>
+                                           <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.106</span><span class="p">,</span> <span class="mf">1.703</span><span class="p">]]))</span>
+            <span class="n">coef</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">greyscale</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="n">coef</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;average&#39;</span><span class="p">:</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">greyscale</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;channel&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;For the &#39;channel&#39; mode you have to provide&quot;</span>
+                                 <span class="s">&quot; a channel index&quot;</span><span class="p">)</span>
+            <span class="n">pixels</span> <span class="o">=</span> <span class="n">greyscale</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown mode {} - expected &#39;luminosity&#39;, &quot;</span>
+                             <span class="s">&quot;&#39;average&#39; or &#39;channel&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+
+        <span class="n">greyscale</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">greyscale</span>
+</div>
+<div class="viewcode-block" id="Image.as_PILImage"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.as_PILImage">[docs]</a>    <span class="k">def</span> <span class="nf">as_PILImage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return a PIL copy of the image. Scales the image by ``255`` and</span>
+<span class="sd">        converts to ``np.uint8``. Image must only have 1 or 3 channels and</span>
+<span class="sd">        be two dimensional.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pil_image : ``PILImage``</span>
+<span class="sd">            PIL copy of image as ``np.uint8``</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError if image is not 2D and 1 channel or 3 channels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Can only convert greyscale or RGB 2D images. &#39;</span>
+                             <span class="s">&#39;Received a {} channel {}D image.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndims</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">PILImage</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;{} {}D Image with {} channels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_str_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Image.has_landmarks_outside_bounds"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.has_landmarks_outside_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">has_landmarks_outside_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicates whether there are landmarks located outside the image bounds.</span>
+
+<span class="sd">        :type: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="o">.</span><span class="n">has_landmarks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">l_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">:</span>
+                <span class="n">pc</span> <span class="o">=</span> <span class="n">l_group</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">points</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">-</span> <span class="n">pc</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pc</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="Image.constrain_landmarks_to_bounds"><a class="viewcode-back" href="../../../api/menpo/image/Image.html#menpo.image.base.Image.constrain_landmarks_to_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">constrain_landmarks_to_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Move landmarks that are located outside the image bounds on the bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_landmarks_outside_bounds</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">l_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">l_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">points</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span>
+                    <span class="n">tmp</span><span class="p">[</span><span class="n">tmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">tmp</span><span class="p">[</span><span class="n">tmp</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">l</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">points</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">l_group</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">l</span>
+
+</div></div>
+<span class="k">def</span> <span class="nf">_create_feature_glyph</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">vbs</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Create glyph of feature pixels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    feature_type : (N, D) ndarray</span>
+<span class="sd">        The feature pixels to use.</span>
+<span class="sd">    vbs: int</span>
+<span class="sd">        Defines the size of each block with vectors of the glyph image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># vbs = Vector block size</span>
+    <span class="n">num_bins</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c"># construct a &quot;glyph&quot; for each orientation</span>
+    <span class="n">block_image_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">vbs</span><span class="p">,</span> <span class="n">vbs</span><span class="p">))</span>
+    <span class="c"># Create a vertical line of ones, to be the first vector</span>
+    <span class="n">block_image_temp</span><span class="p">[:,</span> <span class="nb">round</span><span class="p">(</span><span class="n">vbs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span><span class="nb">round</span><span class="p">(</span><span class="n">vbs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">block_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">block_image_temp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="n">block_image_temp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                         <span class="n">num_bins</span><span class="p">))</span>
+    <span class="c"># First vector as calculated above</span>
+    <span class="n">block_im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">block_image_temp</span>
+    <span class="c"># Number of bins rotations to create an &#39;asterisk&#39; shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bins</span><span class="p">):</span>
+        <span class="n">block_im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">imrotate</span><span class="p">(</span><span class="n">block_image_temp</span><span class="p">,</span> <span class="o">-</span><span class="n">i</span> <span class="o">*</span> <span class="n">vbs</span><span class="p">)</span>
+
+    <span class="c"># make pictures of positive feature_data by adding up weighted glyphs</span>
+    <span class="n">features</span><span class="p">[</span><span class="n">features</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">glyph_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">block_im</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span>
+                      <span class="n">features</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">glyph_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bmat</span><span class="p">(</span><span class="n">glyph_im</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">glyph_im</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>log_gabor &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.math" href="index.html"/>
+        <link rel="next" title="eigenvalue_decomposition" href="eigenvalue_decomposition.html"/>
+        <link rel="prev" title="circle_fit" href="circle_fit.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.math</span></tt></a> &raquo;</li>
+      
+    <li>log_gabor</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/math/log_gabor.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="log-gabor">
+<span id="menpo-math-log-gabor"></span><h1>log_gabor<a class="headerlink" href="#log-gabor" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="menpo.math.convolution.log_gabor">
+<tt class="descclassname">menpo.math.convolution.</tt><tt class="descname">log_gabor</tt><big>(</big><em>image</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/math/convolution.html#log_gabor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.math.convolution.log_gabor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a log-gabor filter bank, including smoothing the images via a
+low-pass filter at the edges.</p>
+<p>To create a 2D filter bank, simply specify
+the number of phi orientations (orientations in the xy-plane).</p>
+<p>To create a 3D filter bank, you must specify both the number of
+phi (azimuth) and theta (elevation) orientations.</p>
+<p>This algorithm is directly derived from work by Peter Kovesi.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>image</strong> : (M, N, ...) ndarray</p>
+<blockquote>
+<div><p>Image to be convolved</p>
+</div></blockquote>
+<p><strong>num_scales</strong> : int, optional</p>
+<blockquote>
+<div><p>Number of wavelet scales.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="83%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>4</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>num_phi_orientations</strong> : int, optional</p>
+<blockquote>
+<div><p>Number of filter orientations in the xy-plane</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="83%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>6</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>num_theta_orientations</strong> : int, optional</p>
+<blockquote>
+<div><p><strong>Only required for 3D</strong>. Number of filter orientations in the z-plane</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="77%" />
+<col width="23%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>min_wavelength</strong> : int, optional</p>
+<blockquote>
+<div><p>Wavelength of smallest scale filter.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="83%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>3</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>scaling_constant</strong> : int, optional</p>
+<blockquote>
+<div><p>Scaling factor between successive filters.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="83%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>2</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>center_sigma</strong> : double, optional</p>
+<blockquote>
+<div><p>Ratio of the standard deviation of the Gaussian describing the Log
+Gabor filter&#8217;s transfer function in the frequency domain to the filter
+center frequency.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="71%" />
+<col width="29%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>0.65</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>0.65</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>d_phi_sigma</strong> : double, optional</p>
+<blockquote>
+<div><p>Angular bandwidth in xy-plane</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="77%" />
+<col width="23%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>1.3</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>d_theta_sigma</strong> : double, optional</p>
+<blockquote>
+<div><p><strong>Only required for 3D</strong>. Angular bandwidth in z-plane</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="77%" />
+<col width="23%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Default 2D</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>Default 3D</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>complex_conv</strong> : (num_scales x num_orientations x image.shape) ndarray</p>
+<blockquote>
+<div><p>Complex valued convolution results. The real part is the
+result of convolving with the even symmetric filter, the
+imaginary part is the result from convolution with the
+odd symmetric filter.</p>
+</div></blockquote>
+<p><strong>bandpass</strong> : (num_scales x image.shape) ndarray</p>
+<blockquote>
+<div><p>Bandpass images corresponding to each scale <tt class="docutils literal"><span class="pre">s</span></tt></p>
+</div></blockquote>
+<p><strong>S: (image.shape) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>Convolved image</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[R10]</a></td><td>D. J. Field, &#8220;Relations Between the Statistics of Natural Images
+and the Response Properties of Cortical Cells&#8221;,
+Journal of The Optical Society of America A, Vol 4, No. 12,
+December 1987. pp 2379-2394</td></tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Return the magnitude of the convolution over the image at
+scale <tt class="docutils literal"><span class="pre">s</span></tt> and orientation <tt class="docutils literal"><span class="pre">o</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">complex_conv</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+</pre></div>
+</div>
+<p>Return the phase angles:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">complex_conv</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="eigenvalue_decomposition.html" class="btn btn-neutral float-right" title="eigenvalue_decomposition"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="circle_fit.html" class="btn btn-neutral" title="circle_fit"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

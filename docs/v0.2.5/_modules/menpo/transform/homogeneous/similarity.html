@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.transform.homogeneous.similarity &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../../index.html"/>
+        <link rel="up" title="menpo.transform.homogeneous" href="../homogeneous.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../homogeneous.html">menpo.transform.homogeneous</a> &raquo;</li>
+      
+    <li>menpo.transform.homogeneous.similarity</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.transform.homogeneous.similarity</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">HomogFamilyAlignment</span>
+<span class="kn">from</span> <span class="nn">.affine</span> <span class="kn">import</span> <span class="n">Affine</span>
+
+
+<div class="viewcode-block" id="Similarity"><a class="viewcode-back" href="../../../../api/menpo/transform/Similarity.html#menpo.transform.homogeneous.similarity.Similarity">[docs]</a><span class="k">class</span> <span class="nc">Similarity</span><span class="p">(</span><span class="n">Affine</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Specialist version of an :class:`Affine` that is guaranteed to be</span>
+<span class="sd">    a Similarity transform.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    h_matrix : (D + 1, D + 1) ndarray</span>
+<span class="sd">        The homogeneous matrix of the similarity transform.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_matrix</span><span class="p">):</span>
+        <span class="n">Affine</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h_matrix</span><span class="p">)</span>
+        <span class="c">#TODO check that I am a similarity transform</span>
+
+    <span class="k">def</span> <span class="nf">_transform_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        A string representation explaining what this similarity transform does.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str : string</span>
+<span class="sd">            String representation of transform.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s">&#39;Similarity decomposing into:&#39;</span>
+        <span class="n">list_str</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">_transform_str</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decompose</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">header</span> <span class="o">+</span> <span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;  &#39;</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="n">list_str</span><span class="p">,</span> <span class="s">&#39;  &#39;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">n_dims</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Similarity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dims</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;h_matrix cannot be set on a &quot;</span>
+                                  <span class="s">&quot;Similarity transform&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Similarity.n_parameters"><a class="viewcode-back" href="../../../../api/menpo/transform/Similarity.html#menpo.transform.homogeneous.similarity.Similarity.n_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">n_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        2D Similarity: 4 parameters::</span>
+
+<span class="sd">            [(1 + a), -b,      tx]</span>
+<span class="sd">            [b,       (1 + a), ty]</span>
+
+<span class="sd">        3D Similarity: Currently not supported</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        4</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError, NotImplementedError</span>
+<span class="sd">            Only 2D transforms are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;3D similarity transforms cannot be &quot;</span>
+                                      <span class="s">&quot;vectorized yet.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D Similarity transforms &quot;</span>
+                             <span class="s">&quot;are currently supported.&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Similarity.as_vector"><a class="viewcode-back" href="../../../../api/menpo/transform/Similarity.html#menpo.transform.homogeneous.similarity.Similarity.as_vector">[docs]</a>    <span class="k">def</span> <span class="nf">as_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the parameters of the transform as a 1D array. These parameters</span>
+<span class="sd">        are parametrised as deltas from the identity warp. The parameters</span>
+<span class="sd">        are output in the order ``[a, b, tx, ty]``, given that</span>
+<span class="sd">        ``a = k cos(theta) - 1`` and ``b = k sin(theta)`` where ``k`` is a</span>
+<span class="sd">        uniform scale and ``theta`` is a clockwise rotation in radians.</span>
+
+<span class="sd">        **2D**</span>
+
+<span class="sd">        ========= ===========================================</span>
+<span class="sd">        parameter definition</span>
+<span class="sd">        ========= ===========================================</span>
+<span class="sd">        a         ``a = k cos(theta) - 1``</span>
+<span class="sd">        b         ``b = k sin(theta)``</span>
+<span class="sd">        tx        Translation in ``x``</span>
+<span class="sd">        ty        Translation in ``y``</span>
+<span class="sd">        ========= ===========================================</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Only 2D transforms are currently supported.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        params : (P,) ndarray</span>
+<span class="sd">            The values that parameterise the transform.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError, NotImplementedError</span>
+<span class="sd">            If the transform is not 2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span>
+        <span class="k">if</span> <span class="n">n_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_dims</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c"># Pick off a, b, tx, ty</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">[:</span><span class="n">n_dims</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s">&#39;F&#39;</span><span class="p">)</span>
+            <span class="c"># Pick out a, b, tx, ty</span>
+            <span class="k">return</span> <span class="n">params</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">n_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;3D similarity transforms cannot be &quot;</span>
+                                      <span class="s">&quot;vectorized yet.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D Similarity transforms &quot;</span>
+                             <span class="s">&quot;are currently supported.&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Similarity.from_vector_inplace"><a class="viewcode-back" href="../../../../api/menpo/transform/Similarity.html#menpo.transform.homogeneous.similarity.Similarity.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns an instance of the transform from the given parameters,</span>
+<span class="sd">        expected to be in Fortran ordering.</span>
+
+<span class="sd">        Supports rebuilding from 2D parameter sets.</span>
+
+<span class="sd">        2D Similarity: 4 parameters::</span>
+
+<span class="sd">            [a, b, tx, ty]</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p : (P,) ndarray</span>
+<span class="sd">            The array of parameters.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError, NotImplementedError</span>
+<span class="sd">            Only 2D transforms are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">homog</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">homog</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">homog</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">homog</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">homog</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">homog</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="n">Affine</span><span class="o">.</span><span class="n">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">homog</span><span class="p">)</span>  <span class="c"># use the Affine setter cheekily</span>
+        <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;3D similarity transforms cannot be &quot;</span>
+                                      <span class="s">&quot;vectorized yet.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D Similarity transforms &quot;</span>
+                             <span class="s">&quot;are currently supported.&quot;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_build_pseudoinverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Similarity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Similarity.jacobian"><a class="viewcode-back" href="../../../../api/menpo/transform/Similarity.html#menpo.transform.homogeneous.similarity.Similarity.jacobian">[docs]</a>    <span class="k">def</span> <span class="nf">jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Jacobian of the transform w.r.t the parameters.</span>
+
+<span class="sd">        The Jacobian generated (for 2D) is of the form::</span>
+
+<span class="sd">            x -y 1 0</span>
+<span class="sd">            y  x 0 1</span>
+
+<span class="sd">        This maintains a parameter order of::</span>
+
+<span class="sd">          W(x;p) = [1 + a  -b   ] [x] + tx</span>
+<span class="sd">                   [b      1 + a] [y] + ty</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        points : (N, D) ndarray</span>
+<span class="sd">            The points to calculate the jacobian over</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dW_dp : (N, P, D) ndarray</span>
+<span class="sd">            A (``n_points``, ``n_params``, ``n_dims``) array representing</span>
+<span class="sd">            the Jacobian of the transform.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            ``points.n_dims != self.n_dims`` or transform is not 2D</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_points</span><span class="p">,</span> <span class="n">points_n_dim</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">points_n_dim</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Trying to sample jacobian in incorrect &#39;</span>
+                             <span class="s">&#39;dimensions (transform is {0}D, sampling &#39;</span>
+                             <span class="s">&#39;at {1}D)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">,</span> <span class="n">points_n_dim</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c"># TODO: implement 3D Jacobian</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only the Jacobian of a 2D similarity &quot;</span>
+                             <span class="s">&quot;transform is currently supported.&quot;</span><span class="p">)</span>
+
+        <span class="c"># prealloc the jacobian</span>
+        <span class="n">jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">))</span>
+        <span class="n">ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="c"># Build a mask and apply it to the points to build the jacobian</span>
+        <span class="c"># Do this for each parameter - [a, b, tx, ty] respectively</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_jacobian_mask</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_jacobian_mask</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">points</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_jacobian_mask</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ones</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_jacobian_mask</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">ones</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jac</span>
+</div>
+    <span class="k">def</span> <span class="nf">_apply_jacobian_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">param_mask</span><span class="p">,</span> <span class="n">row_index</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="c"># make a mask for a single points jacobian</span>
+        <span class="n">full_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="c"># fill the mask in for the ith axis</span>
+        <span class="n">full_mask</span><span class="p">[</span><span class="n">row_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">]</span>
+        <span class="c"># assign the ith axis points to this mask, broadcasting over all</span>
+        <span class="c"># points</span>
+        <span class="n">jac</span><span class="p">[:,</span> <span class="n">full_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">points</span> <span class="o">*</span> <span class="n">param_mask</span>
+
+</div>
+<div class="viewcode-block" id="AlignmentSimilarity"><a class="viewcode-back" href="../../../../api/menpo/transform/AlignmentSimilarity.html#menpo.transform.homogeneous.similarity.AlignmentSimilarity">[docs]</a><span class="k">class</span> <span class="nc">AlignmentSimilarity</span><span class="p">(</span><span class="n">HomogFamilyAlignment</span><span class="p">,</span> <span class="n">Similarity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infers the similarity transform relating two vectors with the same</span>
+<span class="sd">    dimensionality. This is simply the procrustes alignment of the</span>
+<span class="sd">    source to the target.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    source: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        The source pointcloud instance used in the alignment</span>
+
+<span class="sd">    target: :class:`menpo.shape.PointCloud`</span>
+<span class="sd">        The target pointcloud instance used in the alignment</span>
+
+<span class="sd">    rotation: boolean, optional</span>
+<span class="sd">        If False, the rotation component of the similarity transform is not</span>
+<span class="sd">        inferred.</span>
+
+<span class="sd">        Default: True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">HomogFamilyAlignment</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_procrustes_alignment</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
+        <span class="n">Similarity</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_procrustes_alignment</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns the similarity transform that aligns the source to the target.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.rotation</span> <span class="kn">import</span> <span class="n">Rotation</span><span class="p">,</span> <span class="n">optimal_rotation_matrix</span>
+        <span class="kn">from</span> <span class="nn">.translation</span> <span class="kn">import</span> <span class="n">Translation</span>
+        <span class="kn">from</span> <span class="nn">.scale</span> <span class="kn">import</span> <span class="n">UniformScale</span>
+        <span class="n">target_translation</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">(</span><span class="o">-</span><span class="n">target</span><span class="o">.</span><span class="n">centre</span><span class="p">)</span>
+        <span class="n">centred_target</span> <span class="o">=</span> <span class="n">target_translation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="c"># now translate the source to the origin</span>
+        <span class="n">translation</span> <span class="o">=</span> <span class="n">Translation</span><span class="p">(</span><span class="o">-</span><span class="n">source</span><span class="o">.</span><span class="n">centre</span><span class="p">)</span>
+        <span class="c"># apply the translation to the source</span>
+        <span class="n">aligned_source</span> <span class="o">=</span> <span class="n">translation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">UniformScale</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">norm</span><span class="p">()</span> <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">norm</span><span class="p">(),</span> <span class="n">source</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+        <span class="n">scaled_aligned_source</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">aligned_source</span><span class="p">)</span>
+        <span class="c"># compute the target&#39;s inverse translation</span>
+        <span class="n">inv_target_translation</span> <span class="o">=</span> <span class="n">target_translation</span><span class="o">.</span><span class="n">pseudoinverse</span>
+        <span class="k">if</span> <span class="n">rotation</span><span class="p">:</span>
+            <span class="n">rotation</span> <span class="o">=</span> <span class="n">Rotation</span><span class="p">(</span><span class="n">optimal_rotation_matrix</span><span class="p">(</span><span class="n">scaled_aligned_source</span><span class="p">,</span>
+                                                        <span class="n">centred_target</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">translation</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span>
+                <span class="n">rotation</span><span class="p">)</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">inv_target_translation</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">translation</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span><span class="o">.</span><span class="n">compose_before</span><span class="p">(</span>
+                <span class="n">inv_target_translation</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sync_state_from_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">similarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_procrustes_alignment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+        <span class="c"># use Affine&#39;s h_matrix setter.</span>
+        <span class="n">Affine</span><span class="o">.</span><span class="n">set_h_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similarity</span><span class="o">.</span><span class="n">h_matrix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">copy_without_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Similarity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+<div class="viewcode-block" id="AlignmentSimilarity.from_vector_inplace"><a class="viewcode-back" href="../../../../api/menpo/transform/AlignmentSimilarity.html#menpo.transform.homogeneous.similarity.AlignmentSimilarity.from_vector_inplace">[docs]</a>    <span class="k">def</span> <span class="nf">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Returns an instance of the transform from the given parameters,</span>
+<span class="sd">        expected to be in Fortran ordering.</span>
+
+<span class="sd">        Supports rebuilding from 2D parameter sets.</span>
+
+<span class="sd">        2D Similarity: 4 parameters::</span>
+
+<span class="sd">            [a, b, tx, ty]</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        p : (P,) ndarray</span>
+<span class="sd">            The array of parameters.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError, NotImplementedError</span>
+<span class="sd">            Only 2D transforms are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Similarity</span><span class="o">.</span><span class="n">from_vector_inplace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_target_from_state</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

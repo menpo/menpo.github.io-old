@@ -1,0 +1,699 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.landmark.labels &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>menpo.landmark.labels</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.landmark.labels</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">menpo.landmark.base</span> <span class="kn">import</span> <span class="n">LandmarkGroup</span>
+<span class="kn">from</span> <span class="nn">menpo.landmark.exceptions</span> <span class="kn">import</span> <span class="n">LabellingError</span>
+
+
+<div class="viewcode-block" id="imm_58_points"><a class="viewcode-back" href="../../../api/menpo/landmark/imm_58_points.html#menpo.landmark.labels.imm_58_points">[docs]</a><span class="k">def</span> <span class="nf">imm_58_points</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the 58 point semantic labels from the</span>
+<span class="sd">    IMM dataset to the landmarks in the given landmark group.</span>
+
+<span class="sd">    The label applied to this new manager will be &#39;imm_58_points&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - chin</span>
+<span class="sd">      - leye</span>
+<span class="sd">      - reye</span>
+<span class="sd">      - leyebrow</span>
+<span class="sd">      - reyebrow</span>
+<span class="sd">      - mouth</span>
+<span class="sd">      - nose</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with group label &#39;imm_58_points&#39;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 58 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+<span class="sd">    .. [1] http://www2.imm.dtu.dk/~aam/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;imm_58_points&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">n_points</span> <span class="o">!=</span> <span class="mi">58</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 58 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">),</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;chin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">29</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">29</span><span class="p">,</span> <span class="mi">34</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="mi">39</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">39</span><span class="p">,</span> <span class="mi">47</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">58</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_68_points"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_68_points.html#menpo.landmark.labels.ibug_68_points">[docs]</a><span class="k">def</span> <span class="nf">ibug_68_points</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 68 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE) to the landmark group.</span>
+
+<span class="sd">    The group label will be &#39;ibug_68_points&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - chin</span>
+<span class="sd">      - leye</span>
+<span class="sd">      - reye</span>
+<span class="sd">      - leyebrow</span>
+<span class="sd">      - reyebrow</span>
+<span class="sd">      - mouth</span>
+<span class="sd">      - nose</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with group label &#39;ibug_68_points&#39;. The pointcloud</span>
+<span class="sd">        is also copied.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO: This should probably be some sort of graph that maintains the</span>
+    <span class="c"># connectivity defined by ibug (and thus not a PointCloud)</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_68_points&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">),</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;chin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">68</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="mi">36</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_68_contour"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_68_contour.html#menpo.landmark.labels.ibug_68_contour">[docs]</a><span class="k">def</span> <span class="nf">ibug_68_contour</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 68 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE) to the landmarks in</span>
+<span class="sd">    the given landmark manager.</span>
+
+<span class="sd">    The label applied to this new group will be &#39;ibug_68_contour&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - contour</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with label &#39;ibug_68_contour&#39;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark set contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO: This should probably be some sort of graph that maintains the</span>
+    <span class="c"># connectivity defined by ibug (and thus not a PointCloud)</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_68_contour&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="n">new_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">26</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">new_landmarks</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">new_landmarks</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_68_trimesh"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_68_trimesh.html#menpo.landmark.labels.ibug_68_trimesh">[docs]</a><span class="k">def</span> <span class="nf">ibug_68_trimesh</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 68 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE) to the landmarks in</span>
+<span class="sd">    the given landmark group.</span>
+
+<span class="sd">    The label applied to this new group will be &#39;ibug_68_trimesh&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - tri</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark manager with label &#39;ibug_68_trimesh&#39;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">menpo.shape</span> <span class="kn">import</span> <span class="n">TriMesh</span>
+
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_68_trimesh&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="n">tri_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">47</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span> <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span> <span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span> <span class="p">[</span><span class="mi">47</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span><span class="mi">42</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">49</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">37</span><span class="p">],</span> <span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">39</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">39</span><span class="p">],</span> <span class="p">[</span><span class="mi">36</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> 	<span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">48</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span>  <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">49</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">48</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">67</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span> <span class="p">[</span><span class="mi">61</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">62</span><span class="p">],</span> <span class="p">[</span><span class="mi">57</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">7</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">52</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">33</span><span class="p">],</span> <span class="p">[</span><span class="mi">61</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">52</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">51</span><span class="p">],</span> <span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">57</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">29</span><span class="p">],</span> <span class="p">[</span><span class="mi">53</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">37</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span> <span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">39</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">37</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">39</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">31</span><span class="p">],</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">33</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">34</span><span class="p">],</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">29</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">36</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">17</span><span class="p">],</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">41</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span>  <span class="mi">2</span><span class="p">],</span> <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">48</span><span class="p">],</span> <span class="p">[</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">48</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">48</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">59</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">58</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">66</span><span class="p">],</span>
+                        <span class="p">[</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">58</span><span class="p">],</span> <span class="p">[</span><span class="mi">58</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">67</span><span class="p">],</span> <span class="p">[</span> <span class="mi">7</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="mi">58</span><span class="p">],</span> <span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">58</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="mi">53</span><span class="p">],</span> <span class="p">[</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">58</span><span class="p">,</span> <span class="mi">57</span><span class="p">],</span> <span class="p">[</span> <span class="mi">6</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span> <span class="mi">58</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">49</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">62</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">61</span><span class="p">],</span> <span class="p">[</span><span class="mi">31</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">49</span><span class="p">],</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">34</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">33</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">34</span><span class="p">],</span> <span class="p">[</span><span class="mi">53</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">52</span><span class="p">],</span> <span class="p">[</span><span class="mi">62</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">65</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">62</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">63</span><span class="p">],</span> <span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">56</span><span class="p">],</span> <span class="p">[</span><span class="mi">63</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="p">[</span><span class="mi">62</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">67</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">62</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">66</span><span class="p">],</span> <span class="p">[</span><span class="mi">57</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span>  <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span>  <span class="mi">9</span><span class="p">],</span>
+                        <span class="p">[</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">56</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">55</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">54</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">54</span><span class="p">],</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">39</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">28</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">47</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">29</span><span class="p">],</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">46</span><span class="p">],</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">35</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">43</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">23</span><span class="p">],</span> <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">43</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">43</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span> <span class="p">[</span><span class="mi">46</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">47</span><span class="p">],</span> <span class="p">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span> <span class="p">[</span><span class="mi">46</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">26</span><span class="p">],</span>
+                        <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">61</span><span class="p">],</span> <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">42</span><span class="p">]])</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span>
+        <span class="n">TriMesh</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">tri_list</span><span class="p">),</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+<span class="c"># TODO: ibug_68_all? imports points, contour and trimesh?</span>
+
+</div>
+<div class="viewcode-block" id="ibug_68_closed_mouth"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_68_closed_mouth.html#menpo.landmark.labels.ibug_68_closed_mouth">[docs]</a><span class="k">def</span> <span class="nf">ibug_68_closed_mouth</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 68 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE) to the landmarks in</span>
+<span class="sd">    the given landmark group - but ignore the 3 points that are coincident for</span>
+<span class="sd">    a closed mouth. Therefore, there only 65 points are returned.</span>
+
+<span class="sd">    The label applied to this new group will be &#39;ibug_68_closed_mouth&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - tri</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark manager with label &#39;ibug_68_closed_mouth&#39;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 65 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_68_closed_mouth&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="c"># Ignore the 3 coincident points (the last 3 points)</span>
+    <span class="n">new_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+    <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">new_landmarks</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">new_landmarks</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;chin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">65</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="mi">36</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_66_points"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_66_points.html#menpo.landmark.labels.ibug_66_points">[docs]</a><span class="k">def</span> <span class="nf">ibug_66_points</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 66 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE but ignoring the 2 points</span>
+<span class="sd">    describing the inner mouth corners) to the landmark group.</span>
+
+<span class="sd">    The group label will be &#39;ibug_66_points&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - chin</span>
+<span class="sd">      - leye</span>
+<span class="sd">      - reye</span>
+<span class="sd">      - leyebrow</span>
+<span class="sd">      - reyebrow</span>
+<span class="sd">      - mouth</span>
+<span class="sd">      - nose</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with group label &#39;ibug_66_points&#39;. The pointcloud</span>
+<span class="sd">        is also copied.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_66_points&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="c"># Ignore the 2 inner mouth corners</span>
+    <span class="n">new_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">61</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">65</span><span class="p">,</span> <span class="mi">68</span><span class="p">)))</span>
+    <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">new_landmarks</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">new_landmarks</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;chin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">66</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="mi">36</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_51_points"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_51_points.html#menpo.landmark.labels.ibug_51_points">[docs]</a><span class="k">def</span> <span class="nf">ibug_51_points</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 51 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE but removing the annotations</span>
+<span class="sd">    corresponding to the chin region) to the landmark group.</span>
+
+<span class="sd">    The group label will be &#39;ibug_51_points&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - leye</span>
+<span class="sd">      - reye</span>
+<span class="sd">      - leyebrow</span>
+<span class="sd">      - reyebrow</span>
+<span class="sd">      - mouth</span>
+<span class="sd">      - nose</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with group label &#39;ibug_51_points&#39;. The pointcloud</span>
+<span class="sd">        is also copied.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_51_points&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="c"># Ignore the chin region</span>
+    <span class="n">new_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">68</span><span class="p">)</span>
+    <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">new_landmarks</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">new_landmarks</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">51</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="ibug_49_points"><a class="viewcode-back" href="../../../api/menpo/landmark/ibug_49_points.html#menpo.landmark.labels.ibug_49_points">[docs]</a><span class="k">def</span> <span class="nf">ibug_49_points</span><span class="p">(</span><span class="n">landmark_group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply the ibug&#39;s &quot;standard&quot; 49 point semantic labels (based on the</span>
+<span class="sd">    original semantic labels of multiPIE but removing the annotations</span>
+<span class="sd">    corresponding to the chin region and the 2 describing the inner mouth</span>
+<span class="sd">    corners) to the landmark group.</span>
+
+<span class="sd">    The group label will be &#39;ibug_49_points&#39;.</span>
+
+<span class="sd">    The semantic labels applied are as follows:</span>
+
+<span class="sd">      - leye</span>
+<span class="sd">      - reye</span>
+<span class="sd">      - leyebrow</span>
+<span class="sd">      - reyebrow</span>
+<span class="sd">      - mouth</span>
+<span class="sd">      - nose</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmark_group: :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        The landmark group to apply semantic labels to.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmark_group : :class:`menpo.landmark.base.LandmarkGroup`</span>
+<span class="sd">        New landmark group with group label &#39;ibug_49_points&#39;. The pointcloud</span>
+<span class="sd">        is also copied.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`menpo.landmark.exceptions.LabellingError`</span>
+<span class="sd">        If the given landmark group contains less than 68 points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://www.multipie.org/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group_label</span> <span class="o">=</span> <span class="s">&#39;ibug_49_points&#39;</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span>
+
+    <span class="k">if</span> <span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="o">.</span><span class="n">n_points</span> <span class="o">!=</span> <span class="mi">68</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LabellingError</span><span class="p">(</span><span class="s">&quot;{0} mark-up expects exactly 68 &quot;</span>
+                             <span class="s">&quot;points. However, the given landmark group only &quot;</span>
+                             <span class="s">&quot;has {1} points&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_label</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+
+    <span class="c"># Ignore the chin region and the 2 inner mouth corners</span>
+    <span class="n">new_landmarks</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">landmark_group</span><span class="o">.</span><span class="n">lms</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">61</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">65</span><span class="p">,</span> <span class="mi">68</span><span class="p">)))</span>
+    <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">new_landmarks</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="n">new_landmark_group</span> <span class="o">=</span> <span class="n">LandmarkGroup</span><span class="p">(</span>
+        <span class="n">landmark_group</span><span class="o">.</span><span class="n">_target</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">new_landmarks</span><span class="p">,</span>
+        <span class="p">{</span><span class="s">&#39;all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">new_landmarks</span><span class="o">.</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)})</span>
+
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;leyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;reyebrow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;mouth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">49</span><span class="p">)</span>
+    <span class="n">new_landmark_group</span><span class="p">[</span><span class="s">&#39;nose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_landmark_group</span>
+
+</div>
+<div class="viewcode-block" id="labeller"><a class="viewcode-back" href="../../../api/menpo/landmark/labeller.html#menpo.landmark.labels.labeller">[docs]</a><span class="k">def</span> <span class="nf">labeller</span><span class="p">(</span><span class="n">landmarkable</span><span class="p">,</span> <span class="n">group_label</span><span class="p">,</span> <span class="n">label_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes a landmarkable object and a group label indicating which</span>
+<span class="sd">    set of landmarks should have semantic meaning attached to them.</span>
+<span class="sd">    The labelling function will add a new landmark group to each object that</span>
+<span class="sd">    have been semantically annotated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    landmarkable: :class:`menpo.landmark.base.Landmarkable`</span>
+<span class="sd">        Landmarkable object</span>
+<span class="sd">    group_label: string</span>
+<span class="sd">        The group label of the landmark group to apply semantic labels to.</span>
+<span class="sd">    label_func: func</span>
+<span class="sd">        A labelling function taken from this module. ``func`` should take a</span>
+<span class="sd">        :class:`menpo.landmark.base.LandmarkGroup` and</span>
+<span class="sd">        return a new LandmarkGroup with semantic labels applied.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmarkable : :class:`menpo.landmark.base.Landmarkable`</span>
+<span class="sd">        landmarkable with label (this is just for convenience,</span>
+<span class="sd">        the object will actually be modified in place)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">label_func</span><span class="p">(</span><span class="n">landmarkable</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group_label</span><span class="p">])</span>
+    <span class="n">landmarkable</span><span class="o">.</span><span class="n">landmarks</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">group_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span>
+    <span class="k">return</span> <span class="n">landmarkable</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

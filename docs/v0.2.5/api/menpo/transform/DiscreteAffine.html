@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DiscreteAffine &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+    <li>DiscreteAffine</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/transform/DiscreteAffine.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="discreteaffine">
+<span id="menpo-transform-discreteaffine"></span><h1>DiscreteAffine<a class="headerlink" href="#discreteaffine" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="menpo.transform.homogeneous.affine.DiscreteAffine">
+<em class="property">class </em><tt class="descclassname">menpo.transform.homogeneous.affine.</tt><tt class="descname">DiscreteAffine</tt><a class="reference internal" href="../../../_modules/menpo/transform/homogeneous/affine.html#DiscreteAffine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.affine.DiscreteAffine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A discrete Affine transform operation (such as a <tt class="xref py py-meth docutils literal"><span class="pre">Scale()</span></tt>,
+<tt class="xref py py-class docutils literal"><span class="pre">Translation</span></tt> or <tt class="xref py py-meth docutils literal"><span class="pre">Rotation()</span></tt>). Has to be able to invertable.
+Make sure you inherit from <a class="reference internal" href="#menpo.transform.homogeneous.affine.DiscreteAffine" title="menpo.transform.homogeneous.affine.DiscreteAffine"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteAffine</span></tt></a> first,
+for optimal <tt class="docutils literal"><span class="pre">decompose()</span></tt> behavior.</p>
+<dl class="method">
+<dt id="menpo.transform.homogeneous.affine.DiscreteAffine.decompose">
+<tt class="descname">decompose</tt><big>(</big><big>)</big><a class="reference internal" href="../../../_modules/menpo/transform/homogeneous/affine.html#DiscreteAffine.decompose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.transform.homogeneous.affine.DiscreteAffine.decompose" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#menpo.transform.homogeneous.affine.DiscreteAffine" title="menpo.transform.homogeneous.affine.DiscreteAffine"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteAffine</span></tt></a> is already maximally decomposed -
+return a copy of self in a list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>transform</strong> : <a class="reference internal" href="#menpo.transform.homogeneous.affine.DiscreteAffine" title="menpo.transform.homogeneous.affine.DiscreteAffine"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteAffine</span></tt></a></p>
+<blockquote class="last">
+<div><p>Deep copy of <tt class="docutils literal"><span class="pre">self</span></tt>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

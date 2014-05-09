@@ -1,0 +1,1522 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>BooleanImage &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.image" href="index.html"/>
+        <link rel="next" title="MaskedImage" href="MaskedImage.html"/>
+        <link rel="prev" title="Image" href="Image.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.image</span></tt></a> &raquo;</li>
+      
+    <li>BooleanImage</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/image/BooleanImage.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="booleanimage">
+<span id="menpo-image-booleanimage"></span><h1>BooleanImage<a class="headerlink" href="#booleanimage" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="menpo.image.boolean.BooleanImage">
+<em class="property">class </em><tt class="descclassname">menpo.image.boolean.</tt><tt class="descname">BooleanImage</tt><big>(</big><em>mask_data</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="Image.html#menpo.image.base.Image" title="menpo.image.base.Image"><tt class="xref py py-class docutils literal"><span class="pre">Image</span></tt></a></p>
+<p>A mask image made from binary pixels. The region of the image that is
+left exposed by the mask is referred to as the &#8216;masked region&#8217;. The
+set of &#8216;masked&#8217; pixels is those pixels corresponding to a True value in
+the mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask_data</strong> : (M, N, ..., L) ndarray</p>
+<blockquote class="last">
+<div><p>The binary mask data. Note that there is no channel axis - a 2D Mask
+Image is built from just a 2D numpy array of mask_data.
+Automatically coerced in to boolean values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.as_PILImage">
+<tt class="descname">as_PILImage</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.as_PILImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a PIL copy of the image. Scales the image by <tt class="docutils literal"><span class="pre">255</span></tt> and
+converts to <tt class="docutils literal"><span class="pre">np.uint8</span></tt>. Image must only have 1 or 3 channels and
+be two dimensional.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pil_image</strong> : <tt class="docutils literal"><span class="pre">PILImage</span></tt></p>
+<blockquote>
+<div><p>PIL copy of image as <tt class="docutils literal"><span class="pre">np.uint8</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>ValueError if image is not 2D and 1 channel or 3 channels.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.as_greyscale">
+<tt class="descname">as_greyscale</tt><big>(</big><em>mode='luminosity'</em>, <em>channel=None</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.as_greyscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a greyscale version of the image. If the image does <em>not</em>
+represent a 2D RGB image, then the &#8216;luminosity&#8217; mode will fail.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mode</strong> : {&#8216;average&#8217;, &#8216;luminosity&#8217;, &#8216;channel&#8217;}</p>
+<blockquote>
+<div><p>&#8216;luminosity&#8217; - Calculates the luminance using the CCIR 601 formula</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">Y'</span> <span class="pre">=</span> <span class="pre">0.2989</span> <span class="pre">R'</span> <span class="pre">+</span> <span class="pre">0.5870</span> <span class="pre">G'</span> <span class="pre">+</span> <span class="pre">0.1140</span> <span class="pre">B'</span></tt></p>
+</div></blockquote>
+<p>&#8216;average&#8217; - intensity is an equal average of all three channels
+&#8216;channel&#8217; - a specific channel is used</p>
+<p>Default &#8216;luminosity&#8217;</p>
+</div></blockquote>
+<p><strong>channel: int, optional</strong> :</p>
+<blockquote>
+<div><p>The channel to be taken. Only used if mode is &#8216;channel&#8217;.</p>
+<p>Default: None</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>greyscale_image: :class:`MaskedImage`</strong> :</p>
+<blockquote class="last">
+<div><p>A copy of this image in greyscale.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.as_histogram">
+<tt class="descname">as_histogram</tt><big>(</big><em>keep_channels=True</em>, <em>bins='unique'</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.as_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Histogram binning of the values of this image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>keep_channels</strong> : bool, optional</p>
+<blockquote>
+<div><p>If set to <tt class="docutils literal"><span class="pre">False</span></tt>, it returns a single histogram for all the
+channels of the image. If set to <tt class="docutils literal"><span class="pre">True</span></tt>, it returns a list of
+histograms, one for each channel.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">True</span></tt></p>
+</div></blockquote>
+<p><strong>bins</strong> : &#8216;unique&#8217;, positive int or sequence of scalars, optional</p>
+<blockquote>
+<div><p>If set equal to &#8216;unique&#8217;, the bins of the histograms are centered
+on the unique values of each channel. If set equal to a positive
+integer, then this is the number of bins. If set equal to a
+sequence of scalars, these will be used as bins centres.</p>
+<p>Default: &#8216;unique&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>hist</strong> : array or list with n_channels arrays</p>
+<blockquote>
+<div><p>The histogram(s). If keep_channels=False, then hist is an array. If
+keep_channels=True, then hist is a list with len(hist)=n_channels.</p>
+</div></blockquote>
+<p><strong>bin_edges</strong> : array or list with n_channels arrays</p>
+<blockquote>
+<div><p>An array or a list of arrays corresponding to the above histograms
+that store the bins&#8217; edges.
+The result in the case of list of arrays can be visualized as:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>for k in range(len(hist)):</dt>
+<dd><p class="first last">plt.subplot(1,len(hist),k)
+width = 0.7 * (bin_edges[k][1] - bin_edges[k][0])
+center = (bin_edges[k][:-1] + bin_edges[k][1:]) / 2
+plt.bar(center, hist[k], align=&#8217;center&#8217;, width=width)</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote class="last">
+<div><p>Bins can be either &#8216;unique&#8217;, positive int or a sequence of scalars.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><em>keep_channels=False</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>The vectorized form of this image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>keep_channels</strong> : bool, optional</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Value</th>
+<th class="head">Return shape</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">False</span></tt></td>
+<td>(<tt class="docutils literal"><span class="pre">n_pixels</span></tt>  x <tt class="docutils literal"><span class="pre">n_channels</span></tt>,)</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">True</span></tt></td>
+<td>(<tt class="docutils literal"><span class="pre">n_pixels</span></tt>, <tt class="docutils literal"><span class="pre">n_channels</span></tt>)</td>
+</tr>
+</tbody>
+</table>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(shape given by keep_channels) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>Flattened representation of this image, containing all pixel
+and channel information</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="menpo.image.boolean.BooleanImage.blank">
+<em class="property">classmethod </em><tt class="descname">blank</tt><big>(</big><em>shape</em>, <em>fill=True</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a blank <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a> of the requested shape</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple or list</p>
+<blockquote>
+<div><p>The shape of the image. Any floating point values are rounded
+according to the <tt class="docutils literal"><span class="pre">round</span></tt> kwarg.</p>
+</div></blockquote>
+<p><strong>fill</strong> : True or False, optional</p>
+<blockquote>
+<div><p>The mask value to be set everywhere</p>
+<dl class="docutils">
+<dt>Default: True (masked region is the whole image - meaning the whole</dt>
+<dd><p class="first last">image is exposed)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>blank_image</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>A blank mask of the requested size</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.bounds_false">
+<tt class="descname">bounds_false</tt><big>(</big><em>boundary=0</em>, <em>constrain_to_bounds=True</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.bounds_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.bounds_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum to maximum indices along all dimensions that the
+mask includes which fully surround the False mask values. In the case
+of a 2D Image for instance, the min and max define two corners of a
+rectangle bounding the False pixel values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary</strong> : int &gt;= 0, optional</p>
+<blockquote>
+<div><p>A number of pixels that should be added to the extent. A
+negative value can be used to shrink the bounds in.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_bounds: bool, optional</strong> :</p>
+<blockquote>
+<div><p>If True, the bounding extent is snapped to not go beyond
+the edge of the image. If False, the bounds are left unchanged.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the False mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the False mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.bounds_true">
+<tt class="descname">bounds_true</tt><big>(</big><em>boundary=0</em>, <em>constrain_to_bounds=True</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.bounds_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.bounds_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum to maximum indices along all dimensions that the
+mask includes which fully surround the True mask values. In the case
+of a 2D Image for instance, the min and max define two corners of a
+rectangle bounding the True pixel values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary</strong> : int, optional</p>
+<blockquote>
+<div><p>A number of pixels that should be added to the extent. A
+negative value can be used to shrink the bounds in.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_bounds: bool, optional</strong> :</p>
+<blockquote>
+<div><p>If True, the bounding extent is snapped to not go beyond
+the edge of the image. If False, the bounds are left unchanged.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the True mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the True mask region with the boundary
+along each dimension. If constrain_to_bounds was True,
+is clipped to legal image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.constrain_landmarks_to_bounds">
+<tt class="descname">constrain_landmarks_to_bounds</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.constrain_landmarks_to_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move landmarks that are located outside the image bounds on the bounds.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.constrain_points_to_bounds">
+<tt class="descname">constrain_points_to_bounds</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.constrain_points_to_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constrains the points provided to be within the bounds of this
+image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points: (d,) ndarray</strong> :</p>
+<blockquote>
+<div><p>points to be snapped to the image boundaries</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bounded_points: (d,) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>points snapped to not stray outside the image edges</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.crop">
+<tt class="descname">crop</tt><big>(</big><em>min_indices</em>, <em>max_indices</em>, <em>constrain_to_boundary=True</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crops this image using the given minimum and maximum indices.
+Landmarks are correctly adjusted so they maintain their position
+relative to the newly cropped image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>min_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The minimum index over each dimension</p>
+</div></blockquote>
+<p><strong>max_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The maximum index over each dimension</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True the crop will be snapped to not go beyond this images
+boundary. If False, an ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cropped_image</strong> : <tt class="xref py py-class docutils literal"><span class="pre">type(self)</span></tt></p>
+<blockquote>
+<div><p>This image, but cropped.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote>
+<div><p>min_indices and max_indices both have to be of length n_dims.
+All max_indices must be greater than min_indices.</p>
+</div></blockquote>
+<p><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is False, and an attempt is made
+to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.crop_to_landmarks">
+<tt class="descname">crop_to_landmarks</tt><big>(</big><em>group=None</em>, <em>label='all'</em>, <em>boundary=0</em>, <em>constrain_to_boundary=True</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.crop_to_landmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop this image to be bounded around a set of landmarks with an
+optional n_pixel boundary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If
+&#8216;all&#8217; all landmarks in the group are used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+<p><strong>boundary: int, Optional</strong> :</p>
+<blockquote>
+<div><p>An extra padding to be added all around the landmarks bounds.</p>
+<p>Default: 0</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True the crop will be snapped to not go beyond this images
+boundary. If False, an ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is False, and an attempt is made
+to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.crop_to_landmarks_proportion">
+<tt class="descname">crop_to_landmarks_proportion</tt><big>(</big><em>boundary_proportion</em>, <em>group=None</em>, <em>label='all'</em>, <em>minimum=True</em>, <em>constrain_to_boundary=True</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.crop_to_landmarks_proportion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop this image to be bounded around a set of landmarks with a
+border proportional to the landmark spread or range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary_proportion: float</strong> :</p>
+<blockquote>
+<div><p>Additional padding to be added all around the landmarks
+bounds defined as a proportion of the landmarks&#8217; range. See
+minimum for a definition of how the range is calculated.</p>
+</div></blockquote>
+<p><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If
+&#8216;all&#8217; all landmarks in the group are used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+<p><strong>minimum: bool, Optional</strong> :</p>
+<blockquote>
+<div><p>If True the specified proportion is relative to the minimum
+value of the landmarks&#8217; per-dimension range; if False wrt the
+maximum value of the landmarks&#8217; per-dimension range.</p>
+<p>Default: True</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True the crop will be snapped to not go beyond this images
+boundary. If False, an ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is False, and an attempt is made
+to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.cropped_copy">
+<tt class="descname">cropped_copy</tt><big>(</big><em>min_indices</em>, <em>max_indices</em>, <em>constrain_to_boundary=False</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.cropped_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a cropped copy of this image using the given minimum and
+maximum indices. Landmarks are correctly adjusted so they maintain
+their position relative to the newly cropped image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>min_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The minimum index over each dimension</p>
+</div></blockquote>
+<p><strong>max_indices: (n_dims, ) ndarray</strong> :</p>
+<blockquote>
+<div><p>The maximum index over each dimension</p>
+</div></blockquote>
+<p><strong>constrain_to_boundary: boolean, optional</strong> :</p>
+<blockquote>
+<div><p>If True the crop will be snapped to not go beyond this images
+boundary. If False, an ImageBoundaryError will be raised if an
+attempt is made to go beyond the edge of the image.</p>
+<p>Default: True</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cropped_image</strong> : <tt class="xref py py-class docutils literal"><span class="pre">type(self)</span></tt></p>
+<blockquote>
+<div><p>A new instance of self, but cropped.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong> :</p>
+<blockquote>
+<div><p>min_indices and max_indices both have to be of length n_dims.
+All max_indices must be greater than min_indices.</p>
+</div></blockquote>
+<p><strong>ImageBoundaryError</strong> :</p>
+<blockquote class="last">
+<div><p>Raised if constrain_to_boundary is False, and an attempt is made
+to crop the image in a way that violates the image bounds.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>flattened</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.from_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and returns a new
+<a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a> formed by
+reshaping the vector to the correct dimensions. Note that this is
+rebuilding a boolean image <strong>itself</strong> from boolean values. The mask
+is in no way interpreted in performing the operation, in contrast to
+MaskedImage, where only the masked region is used in from_vector()
+and as_vector(). Any image landmarks are transferred in the process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,) np.bool ndarray</p>
+<blockquote>
+<div><p>A flattened vector of all the pixels of a BooleanImage.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a></p>
+<blockquote class="last">
+<div><p>New BooleanImage of same shape as this image</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>vector</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a flattened vector and update this image by
+reshaping the vector to the correct dimensions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : (<tt class="docutils literal"><span class="pre">n_pixels</span></tt>,) np.bool ndarray</p>
+<blockquote class="last">
+<div><p>A vector vector of all the pixels of a BooleanImage.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>For BooleanImage&#8217;s this is rebuilding a boolean image <strong>itself</strong>
+from boolean values. The mask is in no way interpreted in performing
+the operation, in contrast to MaskedImage, where only the masked
+region is used in from_vector{_inplace}() and as_vector().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.gaussian_pyramid">
+<tt class="descname">gaussian_pyramid</tt><big>(</big><em>n_levels=3</em>, <em>downscale=2</em>, <em>sigma=None</em>, <em>order=1</em>, <em>mode='reflect'</em>, <em>cval=0</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.gaussian_pyramid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the gaussian pyramid of this image. The first image of the
+pyramid will be the original, unmodified, image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_levels</strong> : int</p>
+<blockquote>
+<div><p>Number of levels in the pyramid. When set to -1 the maximum
+number of levels will be build.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale</strong> : float, optional</p>
+<blockquote>
+<div><p>Downscale factor.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>sigma</strong> : float, optional</p>
+<blockquote>
+<div><p>Sigma for gaussian filter. Default is <cite>2 * downscale / 6.0</cite> which
+corresponds to a filter mask twice the size of the scale factor
+that covers more than 99% of the gaussian distribution.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>order</strong> : int, optional</p>
+<blockquote>
+<div><p>Order of splines used in interpolation of downsampling. See
+<cite>scipy.ndimage.map_coordinates</cite> for detail.</p>
+<p>Default: 1</p>
+</div></blockquote>
+<p><strong>mode</strong> :  {&#8216;reflect&#8217;, &#8216;constant&#8217;, &#8216;nearest&#8217;, &#8216;mirror&#8217;, &#8216;wrap&#8217;}, optional</p>
+<blockquote>
+<div><p>The mode parameter determines how the array borders are handled,
+where cval is the value when mode is equal to &#8216;constant&#8217;.</p>
+<p>Default: &#8216;reflect&#8217;</p>
+</div></blockquote>
+<p><strong>cval</strong> : float, optional</p>
+<blockquote>
+<div><p>Value to fill past edges of input if mode is &#8216;constant&#8217;.</p>
+<p>Default: 0</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image_pyramid:</strong> :</p>
+<blockquote class="last">
+<div><p>Generator yielding pyramid layers as menpo image objects.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.glyph">
+<tt class="descname">glyph</tt><big>(</big><em>vectors_block_size=10</em>, <em>use_negative=False</em>, <em>channels=None</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.glyph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create glyph of a feature image. If feature_data has negative values,
+the use_negative flag controls whether there will be created a glyph of
+both positive and negative values concatenated the one on top of the
+other.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vectors_block_size: int</strong> :</p>
+<blockquote>
+<div><p>Defines the size of each block with vectors of the glyph image.</p>
+</div></blockquote>
+<p><strong>use_negative: bool</strong> :</p>
+<blockquote class="last">
+<div><p>Defines whether to take into account possible negative values of
+feature_data.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.invert">
+<tt class="descname">invert</tt><big>(</big><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.invert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverts the current mask in place, setting all True values to False,
+and all False values to True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.inverted_copy">
+<tt class="descname">inverted_copy</tt><big>(</big><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.inverted_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.inverted_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of this Boolean image, which is inverted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>inverted_image: :class:`BooleanNSImage`</strong> :</p>
+<blockquote class="last">
+<div><p>An inverted copy of this boolean image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.rescale">
+<tt class="descname">rescale</tt><big>(</big><em>scale</em>, <em>interpolator='scipy'</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this image, rescaled by a given factor.
+All image information (landmarks) are rescaled appropriately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>scale</strong> : float or tuple</p>
+<blockquote>
+<div><p>The scale factor. If a tuple, the scale to apply to each dimension.
+If a single float, the scale will be applied uniformly across
+each dimension.</p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details. Note that mode is set to nearest to avoid numerical
+issues, and cannot be changed here by the user.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rescaled_image</strong> : type(self)</p>
+<blockquote>
+<div><p>A copy of this image, rescaled.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError:</strong> :</p>
+<blockquote class="last">
+<div><p>If less scales than dimensions are provided.
+If any scale is less than or equal to 0.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.rescale_landmarks_to_diagonal_range">
+<tt class="descname">rescale_landmarks_to_diagonal_range</tt><big>(</big><em>diagonal_range</em>, <em>group=None</em>, <em>label='all'</em>, <em>interpolator='scipy'</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.rescale_landmarks_to_diagonal_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this image, rescaled so that the diagonal_range of the
+bounding box containing its landmarks matches the specified diagonal_range
+range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>diagonal_range: :class:`menpo.shape.pointcloud`</strong> :</p>
+<blockquote>
+<div><p>The diagonal_range range that we want the landmarks of the returned
+image to have.</p>
+</div></blockquote>
+<p><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If
+&#8216;all&#8217; all landmarks in the group are used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rescaled_image</strong> : type(self)</p>
+<blockquote class="last">
+<div><p>A copy of this image, rescaled.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.rescale_to_reference_shape">
+<tt class="descname">rescale_to_reference_shape</tt><big>(</big><em>reference_shape</em>, <em>group=None</em>, <em>label='all'</em>, <em>interpolator='scipy'</em>, <em>round='ceil'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.rescale_to_reference_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this image, rescaled so that the scale of a
+particular group of landmarks matches the scale of the passed
+reference landmarks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>reference_shape: :class:`menpo.shape.pointcloud`</strong> :</p>
+<blockquote>
+<div><p>The reference shape to which the landmarks scale will be matched
+against.</p>
+</div></blockquote>
+<p><strong>group</strong> : string, Optional</p>
+<blockquote>
+<div><p>The key of the landmark set that should be used. If None,
+and if there is only one set of landmarks, this set will be used.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>label: string, Optional</strong> :</p>
+<blockquote>
+<div><p>The label of of the landmark manager that you wish to use. If
+&#8216;all&#8217; all landmarks in the group are used.</p>
+<p>Default: &#8216;all&#8217;</p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217; or &#8216;c&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+</div></blockquote>
+<p><strong>round: {&#8216;ceil&#8217;, &#8216;floor&#8217;, &#8216;round&#8217;}</strong> :</p>
+<blockquote>
+<div><p>Rounding function to be applied to floating point shapes.</p>
+<p>Default: &#8216;ceil&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>rescaled_image</strong> : type(self)</p>
+<blockquote class="last">
+<div><p>A copy of this image, rescaled.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.resize">
+<tt class="descname">resize</tt><big>(</big><em>shape</em>, <em>interpolator='scipy'</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this image, resized to a particular shape.
+All image information (landmarks, the mask in the case of
+<tt class="xref py py-class docutils literal"><span class="pre">MaskedImage</span></tt>) is resized appropriately.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>shape</strong> : tuple</p>
+<blockquote>
+<div><p>The new shape to resize to.</p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217; or &#8216;c&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>resized_image</strong> : type(self)</p>
+<blockquote>
+<div><p>A copy of this image, resized.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError:</strong> :</p>
+<blockquote class="last">
+<div><p>If the number of dimensions of the new shape does not match
+the number of dimensions of the image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.smoothing_pyramid">
+<tt class="descname">smoothing_pyramid</tt><big>(</big><em>n_levels=3</em>, <em>downscale=2</em>, <em>sigma=None</em>, <em>mode='reflect'</em>, <em>cval=0</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.smoothing_pyramid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the smoothing pyramid of this image. The first image of the
+pyramid will be the original, unmodified, image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>n_levels</strong> : int</p>
+<blockquote>
+<div><p>Number of levels in the pyramid. When set to -1 the maximum
+number of levels will be build.</p>
+<p>Default: 3</p>
+</div></blockquote>
+<p><strong>downscale</strong> : float, optional</p>
+<blockquote>
+<div><p>Downscale factor.</p>
+<p>Default: 2</p>
+</div></blockquote>
+<p><strong>sigma</strong> : float, optional</p>
+<blockquote>
+<div><p>Sigma for gaussian filter. Default is <cite>2 * downscale / 6.0</cite> which
+corresponds to a filter mask twice the size of the scale factor
+that covers more than 99% of the gaussian distribution.</p>
+<p>Default: None</p>
+</div></blockquote>
+<p><strong>mode</strong> :  {&#8216;reflect&#8217;, &#8216;constant&#8217;, &#8216;nearest&#8217;, &#8216;mirror&#8217;, &#8216;wrap&#8217;}, optional</p>
+<blockquote>
+<div><p>The mode parameter determines how the array borders are handled,
+where cval is the value when mode is equal to &#8216;constant&#8217;.</p>
+<p>Default: &#8216;reflect&#8217;</p>
+</div></blockquote>
+<p><strong>cval</strong> : float, optional</p>
+<blockquote>
+<div><p>Value to fill past edges of input if mode is &#8216;constant&#8217;.</p>
+<p>Default: 0</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>image_pyramid:</strong> :</p>
+<blockquote class="last">
+<div><p>Generator yielding pyramid layers as menpo image objects.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.view">
+<tt class="descname">view</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object using the default rendering engine figure handling.
+For example, the default behaviour for Matplotlib is that all draw
+commands are applied to the same <tt class="docutils literal"><span class="pre">figure</span></tt> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.view_new">
+<tt class="descname">view_new</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.view_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a new figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.view_on">
+<tt class="descname">view_on</tt><big>(</big><em>figure_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.image.boolean.BooleanImage.view_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a a specific figure specified by the given id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>figure_id</strong> : object</p>
+<blockquote>
+<div><p>A unique identifier for a figure.</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.image.boolean.BooleanImage.warp_to">
+<tt class="descname">warp_to</tt><big>(</big><em>template_mask</em>, <em>transform</em>, <em>warp_landmarks=False</em>, <em>interpolator='scipy'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.warp_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.warp_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Warps this BooleanImage into a different reference space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>template_mask</strong> : <a class="reference internal" href="#menpo.image.boolean.BooleanImage" title="menpo.image.boolean.BooleanImage"><tt class="xref py py-class docutils literal"><span class="pre">BooleanImage</span></tt></a></p>
+<blockquote>
+<div><p>Defines the shape of the result, and what pixels should be
+sampled.</p>
+</div></blockquote>
+<p><strong>transform</strong> : <a class="reference internal" href="../transform/Transform.html#menpo.transform.base.Transform" title="menpo.transform.base.Transform"><tt class="xref py py-class docutils literal"><span class="pre">Transform</span></tt></a></p>
+<blockquote>
+<div><p>Transform <strong>from the template space back to this image</strong>.
+Defines, for each True pixel location on the template, which pixel
+location should be sampled from on this image.</p>
+</div></blockquote>
+<p><strong>warp_landmarks</strong> : bool, optional</p>
+<blockquote>
+<div><p>If <tt class="docutils literal"><span class="pre">True</span></tt>, warped_image will have the same landmark dictionary
+as self, but with each landmark updated to the warped position.</p>
+<p>Default: <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</div></blockquote>
+<p><strong>interpolator</strong> : &#8216;scipy&#8217; or &#8216;c&#8217;, optional</p>
+<blockquote>
+<div><p>The interpolator that should be used to perform the warp.</p>
+<p>Default: &#8216;scipy&#8217;</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to the interpolator. See <cite>menpo.interpolation</cite>
+for details.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>warped_image</strong> : type(self)</p>
+<blockquote class="last">
+<div><p>A copy of this image, warped.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.all_indices">
+<tt class="descname">all_indices</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.all_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.all_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indices into all pixels of the mask, as consistent with
+true_indices and false_indices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_pixels</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.centre">
+<tt class="descname">centre</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.centre" title="Permalink to this definition">¶</a></dt>
+<dd><p>The geometric centre of the Image - the subpixel that is in the
+middle.</p>
+<p>Useful for aligning shapes and images.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(n_dims,) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.false_indices">
+<tt class="descname">false_indices</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.false_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.false_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The indices of pixels that are false.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_false</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.has_landmarks_outside_bounds">
+<tt class="descname">has_landmarks_outside_bounds</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.has_landmarks_outside_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates whether there are landmarks located outside the image bounds.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.height">
+<tt class="descname">height</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The height of the image.</p>
+<p>This is the height according to image semantics, and is thus the size
+of the <strong>first</strong> dimension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.mask">
+<tt class="descname">mask</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixels of the mask with no channel axis. This is what
+should be used to mask any k-dimensional image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(M, N, ..., L), np.bool ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_channels">
+<tt class="descname">n_channels</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of channels on each pixel in the image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_dims">
+<tt class="descname">n_dims</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of dimensions in the image. The minimum possible n_dims is
+2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_elements">
+<tt class="descname">n_elements</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of data points in the image (<tt class="docutils literal"><span class="pre">prod(shape)</span> <span class="pre">x</span>
+<span class="pre">n_channels</span></tt>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_false">
+<tt class="descname">n_false</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.n_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of <tt class="docutils literal"><span class="pre">False</span></tt> values in the mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_landmark_groups">
+<tt class="descname">n_landmark_groups</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_landmark_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of landmark groups on this object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_parameters">
+<tt class="descname">n_parameters</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the vector that this Vectorizable object produces.</p>
+<p>type: int</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_pixels">
+<tt class="descname">n_pixels</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of pixels in the image (<tt class="docutils literal"><span class="pre">prod(shape)</span></tt>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.n_true">
+<tt class="descname">n_true</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.n_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.n_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of <tt class="docutils literal"><span class="pre">True</span></tt> values in the mask</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.proportion_false">
+<tt class="descname">proportion_false</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.proportion_false"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.proportion_false" title="Permalink to this definition">¶</a></dt>
+<dd><p>The proportion of the mask which is <tt class="docutils literal"><span class="pre">False</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.proportion_true">
+<tt class="descname">proportion_true</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.proportion_true"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.proportion_true" title="Permalink to this definition">¶</a></dt>
+<dd><p>The proportion of the mask which is <tt class="docutils literal"><span class="pre">True</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.shape">
+<tt class="descname">shape</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The shape of the image
+(with <tt class="docutils literal"><span class="pre">n_channel</span></tt> values at each point).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.true_indices">
+<tt class="descname">true_indices</tt><a class="reference internal" href="../../../_modules/menpo/image/boolean.html#BooleanImage.true_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#menpo.image.boolean.BooleanImage.true_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The indices of pixels that are true.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_dims</span></tt>, <tt class="docutils literal"><span class="pre">n_true</span></tt>) ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.image.boolean.BooleanImage.width">
+<tt class="descname">width</tt><a class="headerlink" href="#menpo.image.boolean.BooleanImage.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The width of the image.</p>
+<p>This is the width according to image semantics, and is thus the size
+of the <strong>second</strong> dimension.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="MaskedImage.html" class="btn btn-neutral float-right" title="MaskedImage"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="Image.html" class="btn btn-neutral" title="Image"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

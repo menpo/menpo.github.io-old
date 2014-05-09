@@ -1,0 +1,720 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>menpo.visualize.base &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">The Menpo API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>menpo.visualize.base</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for menpo.visualize.base</h1><div class="highlight"><pre>
+<span class="c"># This has to go above the default importers to prevent cyclical importing</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+
+<span class="k">class</span> <span class="nc">Renderer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class for rendering visualizations. Framework specific</span>
+<span class="sd">    implementations of these classes are made in order to separate</span>
+<span class="sd">    implementation cleanly from the rest of the code.</span>
+
+<span class="sd">    It is assumed that the renderers follow some form of stateful pattern for</span>
+<span class="sd">    rendering to Figures. Therefore, the major interface for rendering involves</span>
+<span class="sd">    providing a ``figure_id`` or a boolean about whether a new figure should</span>
+<span class="sd">    be used. If neither are provided then the default state of the rendering</span>
+<span class="sd">    engine is assumed to maintained.</span>
+
+<span class="sd">    Providing a ``figure_id`` and ``new_figure == True`` is not a valid state.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure_id : object</span>
+<span class="sd">        A figure id. Could be any valid object that identifies</span>
+<span class="sd">        a figure in a given framework (string, int, etc)</span>
+<span class="sd">    new_figure : bool</span>
+<span class="sd">        Whether the rendering engine should create a new figure.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        It is not valid to provide a figure id AND request a new figure to</span>
+<span class="sd">        be rendered on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">figure_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">new_figure</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Conflicting arguments. figure_id cannot be &quot;</span>
+                             <span class="s">&quot;specified if the new_figure flag is True&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">figure_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span> <span class="o">=</span> <span class="n">new_figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Render the object on the figure given at instantiation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to specific rendering engine.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            Pointer to ``self``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Abstract method to be overridden the renderer. This will implement the</span>
+<span class="sd">        actual rendering code for a given object class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Options to be set when rendering.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            Pointer to ``self``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Abstract method for getting the correct figure to render on. Should</span>
+<span class="sd">        also set the correct ``figure_id`` for the figure.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        figure : object</span>
+<span class="sd">            The figure object that the renderer will render on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Viewable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Abstract interface for objects that can visualize themselves.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">view_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        View the object on a a specific figure specified by the given id.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figure_id : object</span>
+<span class="sd">            A unique identifier for a figure.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to specific rendering engine.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The renderer instantiated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">(</span><span class="n">figure_id</span><span class="o">=</span><span class="n">figure_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">view_new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        View the object on a new figure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to specific rendering engine.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The renderer instantiated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">(</span><span class="n">new_figure</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        View the object using the default rendering engine figure handling.</span>
+<span class="sd">        For example, the default behaviour for Matplotlib is that all draw</span>
+<span class="sd">        commands are applied to the same ``figure`` object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to specific rendering engine.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The renderer instantiated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">new_figure</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Abstract method to be overridden by viewable objects. This will</span>
+<span class="sd">        instantiate a specific visualisation implementation</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figure_id : object, optional</span>
+<span class="sd">            A unique identifier for a figure.</span>
+
+<span class="sd">            Default: ``None``</span>
+<span class="sd">        new_figure : bool, optional</span>
+<span class="sd">            Whether the rendering engine should create a new figure.</span>
+
+<span class="sd">            Default: ``False``</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to specific rendering engine.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The renderer instantiated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+
+<span class="kn">from</span> <span class="nn">menpo.visualize.viewmayavi</span> <span class="kn">import</span> <span class="n">MayaviPointCloudViewer3d</span><span class="p">,</span> \
+    <span class="n">MayaviTriMeshViewer3d</span><span class="p">,</span> <span class="n">MayaviTexturedTriMeshViewer3d</span><span class="p">,</span> \
+    <span class="n">MayaviLandmarkViewer3d</span><span class="p">,</span> <span class="n">MayaviVectorViewer3d</span><span class="p">,</span> <span class="n">MayaviSurfaceViewer3d</span><span class="p">,</span> \
+    <span class="n">MayaviColouredTriMeshViewer3d</span>
+<span class="kn">from</span> <span class="nn">menpo.visualize.viewmatplotlib</span> <span class="kn">import</span> <span class="n">MatplotlibImageViewer2d</span><span class="p">,</span> \
+    <span class="n">MatplotlibImageSubplotsViewer2d</span><span class="p">,</span> <span class="n">MatplotlibPointCloudViewer2d</span><span class="p">,</span> \
+    <span class="n">MatplotlibLandmarkViewer2d</span><span class="p">,</span> <span class="n">MatplotlibLandmarkViewer2dImage</span><span class="p">,</span> \
+    <span class="n">MatplotlibTriMeshViewer2d</span><span class="p">,</span> <span class="n">MatplotlibAlignmentViewer2d</span><span class="p">,</span> \
+    <span class="n">MatplotlibGraphPlotter</span><span class="p">,</span> <span class="n">MatplotlibMultiImageViewer2d</span><span class="p">,</span> \
+    <span class="n">MatplotlibMultiImageSubplotsViewer2d</span><span class="p">,</span> <span class="n">MatplotlibFittingViewer2d</span><span class="p">,</span> \
+    <span class="n">MatplotlibFittingSubplotsViewer2d</span>
+
+<span class="c"># Default importer types</span>
+<span class="n">PointCloudViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibPointCloudViewer2d</span>
+<span class="n">PointCloudViewer3d</span> <span class="o">=</span> <span class="n">MayaviPointCloudViewer3d</span>
+<span class="n">TriMeshViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibTriMeshViewer2d</span>
+<span class="n">TriMeshViewer3d</span> <span class="o">=</span> <span class="n">MayaviTriMeshViewer3d</span>
+<span class="n">TexturedTriMeshViewer3d</span> <span class="o">=</span> <span class="n">MayaviTexturedTriMeshViewer3d</span>
+<span class="n">ColouredTriMeshViewer3d</span> <span class="o">=</span> <span class="n">MayaviColouredTriMeshViewer3d</span>
+<span class="n">LandmarkViewer3d</span> <span class="o">=</span> <span class="n">MayaviLandmarkViewer3d</span>
+<span class="n">LandmarkViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibLandmarkViewer2d</span>
+<span class="n">LandmarkViewer2dImage</span> <span class="o">=</span> <span class="n">MatplotlibLandmarkViewer2dImage</span>
+<span class="n">ImageViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibImageViewer2d</span>
+<span class="n">ImageSubplotsViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibImageSubplotsViewer2d</span>
+<span class="n">VectorViewer3d</span> <span class="o">=</span> <span class="n">MayaviVectorViewer3d</span>
+<span class="n">DepthImageHeightViewer</span> <span class="o">=</span> <span class="n">MayaviSurfaceViewer3d</span>
+<span class="n">AlignmentViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibAlignmentViewer2d</span>
+<span class="n">GraphPlotter</span> <span class="o">=</span> <span class="n">MatplotlibGraphPlotter</span>
+<span class="n">MultiImageViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibMultiImageViewer2d</span>
+<span class="n">MultiImageSubplotsViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibMultiImageSubplotsViewer2d</span>
+<span class="n">FittingViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibFittingViewer2d</span>
+<span class="n">FittingSubplotsViewer2d</span> <span class="o">=</span> <span class="n">MatplotlibFittingSubplotsViewer2d</span>
+
+
+<div class="viewcode-block" id="LandmarkViewer"><a class="viewcode-back" href="../../../api/menpo/visualize/LandmarkViewer.html#menpo.visualize.base.LandmarkViewer">[docs]</a><span class="k">class</span> <span class="nc">LandmarkViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Base Landmark viewer that abstracts away dimensionality</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure_id : object</span>
+<span class="sd">        A figure id. Could be any valid object that identifies</span>
+<span class="sd">        a figure in a given framework (string, int, etc)</span>
+<span class="sd">    new_figure : bool</span>
+<span class="sd">        Whether the rendering engine should create a new figure.</span>
+<span class="sd">    group_label : string</span>
+<span class="sd">        The main label of the landmark set.</span>
+<span class="sd">    pointcloud : :class:`menpo.shape.pointcloud.PointCloud`</span>
+<span class="sd">        The pointclouds representing the landmarks.</span>
+<span class="sd">    labels_to_masks : dict(string, ndarray)</span>
+<span class="sd">        A dictionary of labels to masks into the pointcloud that represent</span>
+<span class="sd">        which points belong to the given label.</span>
+<span class="sd">    target : :class:`menpo.landmarks.base.Landmarkable`</span>
+<span class="sd">        The parent shape that we are drawing the landmarks for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span>
+                 <span class="n">group_label</span><span class="p">,</span> <span class="n">pointcloud</span><span class="p">,</span> <span class="n">labels_to_masks</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span> <span class="o">=</span> <span class="n">pointcloud</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span> <span class="o">=</span> <span class="n">group_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span> <span class="o">=</span> <span class="n">labels_to_masks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">figure_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span> <span class="o">=</span> <span class="n">new_figure</span>
+
+<div class="viewcode-block" id="LandmarkViewer.render"><a class="viewcode-back" href="../../../api/menpo/visualize/LandmarkViewer.html#menpo.visualize.base.LandmarkViewer.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Select the correct type of landmark viewer for the given parent shape.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to landmark viewer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The rendering object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            Only 2D and 3D viewers are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">menpo.image.base</span> <span class="kn">import</span> <span class="n">Image</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">Image</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">LandmarkViewer2dImage</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">LandmarkViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">LandmarkViewer3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">group_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointcloud</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">labels_to_masks</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D landmarks are &quot;</span>
+                             <span class="s">&quot;currently supported&quot;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="PointCloudViewer"><a class="viewcode-back" href="../../../api/menpo/visualize/PointCloudViewer.html#menpo.visualize.base.PointCloudViewer">[docs]</a><span class="k">class</span> <span class="nc">PointCloudViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Base PointCloud viewer that abstracts away dimensionality.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure_id : object</span>
+<span class="sd">        A figure id. Could be any valid object that identifies</span>
+<span class="sd">        a figure in a given framework (string, int, etc)</span>
+<span class="sd">    new_figure : bool</span>
+<span class="sd">        Whether the rendering engine should create a new figure.</span>
+<span class="sd">    points : (N, D) ndarray</span>
+<span class="sd">        The points to render.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">figure_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span> <span class="o">=</span> <span class="n">new_figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+
+<div class="viewcode-block" id="PointCloudViewer.render"><a class="viewcode-back" href="../../../api/menpo/visualize/PointCloudViewer.html#menpo.visualize.base.PointCloudViewer.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Select the correct type of pointcloud viewer for the given</span>
+<span class="sd">        pointcloud dimensionality.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to pointcloud viewer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The rendering object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            Only 2D and 3D viewers are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PointCloudViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PointCloudViewer3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D pointclouds are &quot;</span>
+                             <span class="s">&quot;currently supported&quot;</span><span class="p">)</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">ImageViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Base Image viewer that abstracts away dimensionality. It can visualize</span>
+<span class="sd">    multiple channels of an image in subplots.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure_id : object</span>
+<span class="sd">        A figure id. Could be any valid object that identifies</span>
+<span class="sd">        a figure in a given framework (string, int, etc)</span>
+<span class="sd">    new_figure : bool</span>
+<span class="sd">        Whether the rendering engine should create a new figure.</span>
+<span class="sd">    dimensions : {2, 3} int</span>
+<span class="sd">        The number of dimensions in the image</span>
+<span class="sd">    pixels : (N, D) ndarray</span>
+<span class="sd">        The pixels to render.</span>
+<span class="sd">    channels: int or list or &#39;all&#39; or None</span>
+<span class="sd">        A specific selection of channels to render. The user can choose either</span>
+<span class="sd">        a single or multiple channels. If all, render all channels in subplot</span>
+<span class="sd">        mode. If None and channels are less than 36, render them all. If None</span>
+<span class="sd">        and channels are more than 36, render the first 36.</span>
+
+<span class="sd">        Default: None</span>
+<span class="sd">    mask: (N, D) ndarray</span>
+<span class="sd">        A boolean mask to be applied to the image. All points outside the</span>
+<span class="sd">        mask are set to 0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span>
+                 <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">figure_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span> <span class="o">=</span> <span class="n">new_figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="n">dimensions</span>
+        <span class="n">pixels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_subplots</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parse_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_masked_pixels</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">pixels</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Parse channels parameter. If channels is int or list, keep it as is. If</span>
+<span class="sd">        channels is all, return a list of all the image&#39;s channels. If channels</span>
+<span class="sd">        is None, return the minimum between an upper_limit and the image&#39;s</span>
+<span class="sd">        number of channels. If image is grayscale or RGB and channels is None,</span>
+<span class="sd">        then do not plot channels in different subplots.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        channels: int or list or &#39;all&#39; or None</span>
+<span class="sd">            A specific selection of channels to render.</span>
+<span class="sd">        pixels : (N, D) ndarray</span>
+<span class="sd">            The image&#39;s pixels to render.</span>
+<span class="sd">        upper_limit: int</span>
+<span class="sd">            The upper limit of subplots for the channels=None case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Flag to trigger ImageSubplotsViewer2d or ImageViewer2d</span>
+        <span class="n">use_subplots</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">n_channels</span> <span class="o">=</span> <span class="n">pixels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_channels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">use_subplots</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="n">n_channels</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">use_subplots</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">elif</span> <span class="n">channels</span> <span class="o">!=</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                <span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="p">]</span>
+                <span class="n">use_subplots</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="n">pixels</span><span class="p">,</span> <span class="n">use_subplots</span>
+
+    <span class="k">def</span> <span class="nf">_masked_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Return the masked pixels using a given boolean mask. In order to make</span>
+<span class="sd">        sure that the non-masked pixels are visualized in black, their value</span>
+<span class="sd">        is set to the minimum between min(pixels) and 0.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixels : (N, D) ndarray</span>
+<span class="sd">            The image&#39;s pixels to render.</span>
+<span class="sd">        mask: (N, D) ndarray</span>
+<span class="sd">            A boolean mask to be applied to the image. All points outside the</span>
+<span class="sd">            mask are set to 0. If mask is None, then the initial pixels are</span>
+<span class="sd">            returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pixels</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pixels</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pixels</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Select the correct type of image viewer for the given</span>
+<span class="sd">        image dimensionality.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to image viewer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The rendering object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            Only 2D images are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_subplots</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ImageSubplotsViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ImageViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D images are currently supported&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TriMeshViewer"><a class="viewcode-back" href="../../../api/menpo/visualize/TriMeshViewer.html#menpo.visualize.base.TriMeshViewer">[docs]</a><span class="k">class</span> <span class="nc">TriMeshViewer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">    Base TriMesh viewer that abstracts away dimensionality.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure_id : object</span>
+<span class="sd">        A figure id. Could be any valid object that identifies</span>
+<span class="sd">        a figure in a given framework (string, int, etc)</span>
+<span class="sd">    new_figure : bool</span>
+<span class="sd">        Whether the rendering engine should create a new figure.</span>
+<span class="sd">    points : (N, D) ndarray</span>
+<span class="sd">        The points to render.</span>
+<span class="sd">    trilist : (M, 3) ndarray</span>
+<span class="sd">        The triangulation for the points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">trilist</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span> <span class="o">=</span> <span class="n">figure_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span> <span class="o">=</span> <span class="n">new_figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span> <span class="o">=</span> <span class="n">trilist</span>
+
+<div class="viewcode-block" id="TriMeshViewer.render"><a class="viewcode-back" href="../../../api/menpo/visualize/TriMeshViewer.html#menpo.visualize.base.TriMeshViewer.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">r&quot;&quot;&quot;</span>
+<span class="sd">        Select the correct type of trimesh viewer for the given</span>
+<span class="sd">        trimesh dimensionality.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Passed through to trimesh viewer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        viewer : :class:`Renderer`</span>
+<span class="sd">            The rendering object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DimensionalityError</span>
+<span class="sd">            Only 2D and 3D viewers are supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TriMeshViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TriMeshViewer3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trilist</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D and 3D TriMeshes &quot;</span>
+                             <span class="s">&quot;are currently supported&quot;</span><span class="p">)</span>
+
+</div></div>
+<span class="k">class</span> <span class="nc">MultipleImageViewer</span><span class="p">(</span><span class="n">ImageViewer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">pixels_list</span><span class="p">,</span>
+                 <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultipleImageViewer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">pixels_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">pixels_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_channels</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">p</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                       <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pixels_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_masked_pixels</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pixels_list</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_subplots</span><span class="p">:</span>
+                <span class="n">MultiImageSubplotsViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">pixels_list</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">MultiImageViewer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">pixels_list</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D images are currently supported&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">FittingViewer</span><span class="p">(</span><span class="n">ImageViewer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span>
+                 <span class="n">target_list</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FittingViewer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">figure_id</span><span class="p">,</span> <span class="n">new_figure</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_list</span> <span class="o">=</span> <span class="n">target_list</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_subplots</span><span class="p">:</span>
+                <span class="n">FittingSubplotsViewer2d</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">target_list</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">FittingViewer2d</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">figure_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_figure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">target_list</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Only 2D images are currently supported&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

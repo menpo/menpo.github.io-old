@@ -1,0 +1,674 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TriMesh &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.shape" href="index.html"/>
+        <link rel="next" title="ColouredTriMesh" href="ColouredTriMesh.html"/>
+        <link rel="prev" title="PointCloud" href="PointCloud.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.shape</span></tt></a> &raquo;</li>
+      
+    <li>TriMesh</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/shape/TriMesh.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="trimesh">
+<span id="menpo-shape-trimesh"></span><h1>TriMesh<a class="headerlink" href="#trimesh" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="menpo.shape.mesh.TriMesh">
+<em class="property">class </em><tt class="descclassname">menpo.shape.mesh.</tt><tt class="descname">TriMesh</tt><big>(</big><em>points</em>, <em>trilist=None</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="PointCloud.html#menpo.shape.pointcloud.PointCloud" title="menpo.shape.pointcloud.PointCloud"><tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></a></p>
+<p>A pointcloud with a connectivity defined by a triangle list. These are
+designed to be explicitly 2D or 3D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>points</strong> : (N, D) ndarray</p>
+<blockquote>
+<div><p>The set coordinates for the mesh.</p>
+</div></blockquote>
+<p><strong>trilist</strong> : (M, 3) ndarray, optional</p>
+<blockquote class="last">
+<div><p>The triangle list. If None is provided, a Delaunay triangulation of
+the points will be used instead.</p>
+<p>Default: None</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.as_vector">
+<tt class="descname">as_vector</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.as_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a flattened representation of the pointcloud.
+Note that the flattened representation is of the form
+<tt class="docutils literal"><span class="pre">[x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1,</span> <span class="pre">.....,</span> <span class="pre">xn,</span> <span class="pre">yn]</span></tt> for 2D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (N,) ndarray</p>
+<blockquote class="last">
+<div><p>The flattened points.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.bounds">
+<tt class="descname">bounds</tt><big>(</big><em>boundary=0</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum to maximum extent of the <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt>.
+An optional boundary argument can be provided to expand the bounds
+by a constant margin.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary: b float</strong> :</p>
+<blockquote>
+<div><p>A optional padding distance that is added to the bounds. Default
+is zero, meaning the max/min of tightest possible containing
+square/cube/hypercube is returned.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>min_b</strong> : (D,) ndarray</p>
+<blockquote>
+<div><p>The minimum extent of the <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt> and boundary along
+each dimension</p>
+</div></blockquote>
+<p><strong>max_b</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The maximum extent of the <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt> and boundary along
+each dimension</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.distance_to">
+<tt class="descname">distance_to</tt><big>(</big><em>pointcloud</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.distance_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a distance matrix between this point cloud and another.
+By default the Euclidian distance is calculated - see
+<tt class="docutils literal"><span class="pre">scipy.spatial.distance.cdist</span></tt> for valid kwargs to change the metric
+and other properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></p>
+<blockquote>
+<div><p>The second pointcloud to compute distances between. This must be
+of the same dimension as this PointCloud.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>distance_matrix: (N, M) ndarray</strong> :</p>
+<blockquote class="last">
+<div><p>The symmetric pairwise distance matrix between the two PointClouds
+s.t. distance_matrix[i, j] is the distance between the i&#8217;th
+point of this PointCloud and the j&#8217;th point of the input
+PointCloud.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.from_mask">
+<tt class="descname">from_mask</tt><big>(</big><em>mask</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.from_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 1D boolean array with the same number of elements as the number of
+points in the pointcloud. This is then broadcast across the dimensions
+of the pointcloud and returns a new pointcloud containing only those
+points that were <cite>True</cite> in the mask.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>1D array of booleans</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></p>
+<blockquote class="last">
+<div><p>A new pointcloud that has been masked.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.from_vector">
+<tt class="descname">from_vector</tt><big>(</big><em>flattened</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.from_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a new <a class="reference internal" href="#menpo.shape.mesh.TriMesh" title="menpo.shape.mesh.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">TriMesh</span></tt></a> given then <tt class="docutils literal"><span class="pre">flattened</span></tt> vector.
+This allows rebuilding pointclouds with the correct number of
+dimensions from a vector. Note that the trilist will be drawn from
+self.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>flattened</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>Vector representing a set of points.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>trimesh</strong> : <a class="reference internal" href="#menpo.shape.mesh.TriMesh" title="menpo.shape.mesh.TriMesh"><tt class="xref py py-class docutils literal"><span class="pre">TriMesh</span></tt></a></p>
+<blockquote class="last">
+<div><p>A new trimesh created from the vector with self&#8217;s trilist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.from_vector_inplace">
+<tt class="descname">from_vector_inplace</tt><big>(</big><em>vector</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.from_vector_inplace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates this PointCloud in-place with a new vector of parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.norm">
+<tt class="descname">norm</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the norm of this point cloud. This is a translation and
+rotation invariant measure of the point cloud&#8217;s intrinsic size - in
+other words, it is always taken around the point cloud&#8217;s centre.</p>
+<p>By default, the Frobenius norm is taken, but this can be changed by
+setting kwargs - see numpy.linalg.norm for valid options.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>norm: float</strong> :</p>
+<blockquote class="last">
+<div><p>The norm of this <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.range">
+<tt class="descname">range</tt><big>(</big><em>boundary=0</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>The range of the extent of the <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>boundary: b float</strong> :</p>
+<blockquote>
+<div><p>A optional padding distance that is used to extend the bounds
+from which the range is computed. Default is zero, no extension
+is performed.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>range</strong> : (D,) ndarray</p>
+<blockquote class="last">
+<div><p>The range of the :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>PointCloud`s extent in each dimension.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.tojson">
+<tt class="descname">tojson</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.tojson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this <cite>TriMesh</cite> to a dictionary JSON representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dictionary with &#8216;points&#8217; and &#8216;trilist&#8217; keys. Both are lists suitable</strong> :</p>
+<p class="last"><strong>for use in the by the `json` standard library package.</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.update_from_mask">
+<tt class="descname">update_from_mask</tt><big>(</big><em>mask</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.update_from_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 1D boolean array with the same number of elements as the number of
+points in the pointcloud. This is then broadcast across the dimensions
+of the pointcloud. The same pointcloud is updated in place.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>mask</strong> : (N,) ndarray</p>
+<blockquote>
+<div><p>1D array of booleans</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pointcloud</strong> : <tt class="xref py py-class docutils literal"><span class="pre">PointCloud</span></tt></p>
+<blockquote class="last">
+<div><p>A pointer to self.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.view">
+<tt class="descname">view</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object using the default rendering engine figure handling.
+For example, the default behaviour for Matplotlib is that all draw
+commands are applied to the same <tt class="docutils literal"><span class="pre">figure</span></tt> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.view_new">
+<tt class="descname">view_new</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.view_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a new figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="menpo.shape.mesh.TriMesh.view_on">
+<tt class="descname">view_on</tt><big>(</big><em>figure_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#menpo.shape.mesh.TriMesh.view_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>View the object on a a specific figure specified by the given id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>figure_id</strong> : object</p>
+<blockquote>
+<div><p>A unique identifier for a figure.</p>
+</div></blockquote>
+<p><strong>kwargs</strong> : dict</p>
+<blockquote>
+<div><p>Passed through to specific rendering engine.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>viewer</strong> : <tt class="xref py py-class docutils literal"><span class="pre">Renderer</span></tt></p>
+<blockquote class="last">
+<div><p>The renderer instantiated.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.centre">
+<tt class="descname">centre</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.centre" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mean of all the points in this PointCloud (in the centre of mass
+sense)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D,) ndarray
+The mean of this PointCloud&#8217;s points.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.centre_of_bounds">
+<tt class="descname">centre_of_bounds</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.centre_of_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>The centre of the absolute bounds of this PointCloud. Contrast with
+centre, which is the mean point position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(D,) ndarray
+The centre of the bounds of this PointCloud.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.face_normals">
+<tt class="descname">face_normals</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.face_normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal at each face.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_tris</span></tt>, 3) ndarray</td>
+</tr>
+</tbody>
+</table>
+<p>Compute the face normals from the current set of points and
+triangle list. Only valid for 3D dimensional meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p>If mesh is not 3D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.h_points">
+<tt class="descname">h_points</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.h_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>homogeneous points of shape (n_dims + 1, n_points)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.n_dims">
+<tt class="descname">n_dims</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.n_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of dimensions in the pointcloud.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.n_landmark_groups">
+<tt class="descname">n_landmark_groups</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.n_landmark_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of landmark groups on this object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.n_parameters">
+<tt class="descname">n_parameters</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.n_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the vector that this Vectorizable object produces.</p>
+<p>type: int</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.n_points">
+<tt class="descname">n_points</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.n_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of points in the pointcloud.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.n_tris">
+<tt class="descname">n_tris</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.n_tris" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of triangles in the triangle list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="menpo.shape.mesh.TriMesh.vertex_normals">
+<tt class="descname">vertex_normals</tt><a class="headerlink" href="#menpo.shape.mesh.TriMesh.vertex_normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal at each point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">(<tt class="docutils literal"><span class="pre">n_points</span></tt>, 3) ndarray</td>
+</tr>
+</tbody>
+</table>
+<p>Compute the per-vertex normals from the current set of points and
+triangle list. Only valid for 3D dimensional meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>DimensionalityError</strong> :</p>
+<blockquote class="last">
+<div><p>If mesh is not 3D</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ColouredTriMesh.html" class="btn btn-neutral float-right" title="ColouredTriMesh"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="PointCloud.html" class="btn btn-neutral" title="PointCloud"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

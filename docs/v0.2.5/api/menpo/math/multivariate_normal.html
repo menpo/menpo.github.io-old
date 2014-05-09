@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>multivariate_normal &mdash; Menpo 0.2.5 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Menpo 0.2.5 documentation" href="../../../index.html"/>
+        <link rel="up" title="menpo.math" href="index.html"/>
+        <link rel="next" title="menpo.model" href="../model/index.html"/>
+        <link rel="prev" title="principal_component_decomposition" href="principal_component_decomposition.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Menpo</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../overview.html#id1">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">The Menpo API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#packages">Packages</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Menpo</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">The Menpo API</a> &raquo;</li>
+      
+          <li><a href="index.html"><tt class="docutils literal"><span class="pre">menpo.math</span></tt></a> &raquo;</li>
+      
+    <li>multivariate_normal</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../../../_sources/api/menpo/math/multivariate_normal.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="multivariate-normal">
+<span id="menpo-math-multivariate-normal"></span><h1>multivariate_normal<a class="headerlink" href="#multivariate-normal" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="menpo.math.multivariate.multivariate_normal">
+<tt class="descclassname">menpo.math.multivariate.</tt><tt class="descname">multivariate_normal</tt><big>(</big><big>)</big><a class="headerlink" href="#menpo.math.multivariate.multivariate_normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A multivariate normal random variable.</p>
+<p>The <cite>mean</cite> keyword specifies the mean. The <cite>cov</cite> keyword specifies the
+covariance matrix.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.14.0.</span></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x</strong> : array_like</p>
+<blockquote>
+<div><p>Quantiles, with the last axis of <cite>x</cite> denoting the components.</p>
+</div></blockquote>
+<p><strong>mean</strong> : array_like, optional</p>
+<blockquote>
+<div><p>Mean of the distribution (default zero)</p>
+</div></blockquote>
+<p><strong>cov</strong> : array_like, optional</p>
+<blockquote>
+<div><p>Covariance matrix of the distribution (default one)</p>
+</div></blockquote>
+<p><strong>Alternatively, the object may be called (as a function) to fix the mean</strong> :</p>
+<p><strong>and covariance parameters, returning a &#8220;frozen&#8221; multivariate normal</strong> :</p>
+<p><strong>random variable:</strong> :</p>
+<p><strong>rv = multivariate_normal(mean=None, scale=1)</strong> :</p>
+<blockquote class="last">
+<div><ul class="simple">
+<li>Frozen  object with the same methods but holding the given
+mean and covariance fixed.</li>
+</ul>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Setting the parameter <cite>mean</cite> to <cite>None</cite> is equivalent to having <cite>mean</cite>
+be the zero-vector. The parameter <cite>cov</cite> can be a scalar, in which case
+the covariance matrix is the identity times that value, a vector of
+diagonal entries for the covariance matrix, or a two-dimensional
+array_like.</p>
+<p>The covariance matrix <cite>cov</cite> must be a (symmetric) positive
+semi-definite matrix. The determinant and inverse of <cite>cov</cite> are computed
+as the pseudo-determinant and pseudo-inverse, respectively, so
+that <cite>cov</cite> does not need to have full rank.</p>
+<p>The probability density function for <cite>multivariate_normal</cite> is</p>
+<div class="math">
+\[f(x) = \frac{1}{\sqrt{(2 \pi)^k \det \Sigma}} \exp\left( -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) \right),\]</div>
+<p>where <span class="math">\(\mu\)</span> is the mean, <span class="math">\(\Sigma\)</span> the covariance matrix,
+and <span class="math">\(k\)</span> is the dimension of the space where <span class="math">\(x\)</span> takes values.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">multivariate_normal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span> <span class="n">y</span>
+<span class="go">array([ 0.00108914,  0.01033349,  0.05946514,  0.20755375,  0.43939129,</span>
+<span class="go">        0.56418958,  0.43939129,  0.20755375,  0.05946514,  0.01033349])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The input quantiles can be any shape of array, as long as the last
+axis labels the components.  This allows us for instance to
+display the frozen pdf for a non-isotropic random variable in 2D as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="o">.</span><span class="mo">01</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="o">.</span><span class="mo">01</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="n">pos</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rv</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">],</span> <span class="p">[[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rv</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>pdf(x, mean=None, cov=1)</td>
+<td>Probability density function.</td>
+</tr>
+<tr class="row-even"><td>logpdf(x, mean=None, cov=1)</td>
+<td>Log of the probability density function.</td>
+</tr>
+<tr class="row-odd"><td>rvs(mean=None, cov=1)</td>
+<td>Draw random samples from a multivariate normal distribution.</td>
+</tr>
+<tr class="row-even"><td>entropy()</td>
+<td>Compute the differential entropy of the multivariate normal.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../model/index.html" class="btn btn-neutral float-right" title="menpo.model"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="principal_component_decomposition.html" class="btn btn-neutral" title="principal_component_decomposition"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Patrick Snape, James Booth, Joan Alabort-i-Medina and Nontas Antonakos.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

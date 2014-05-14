@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <!-- Set the viewport width to device width for mobile -->
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Windows Installation</title>
+
+    <link rel="stylesheet" href="./theme/css/normalize.css" />
+    <link rel="stylesheet" href="./theme/css/foundation.min.css" />
+    <link rel="stylesheet" href="./theme/css/style.css" />
+    <link rel="stylesheet" href="./theme/css/pygments.css" />
+</head>
+
+<body>
+<!-- Fork us on Github link -->
+<a href="https://github.com/menpo/menpo">
+    <img style="z-index:9999; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+</a>
+
+<!-- Nav Bar -->
+<nav>
+<div class="top-bar">
+<div class="row">
+    <div class="large-9 large-centered columns">
+	    <h1><a href=".">menpo</a></h1>
+    </div>
+</div>
+</div>
+
+<!-- Show menu items and pages -->
+<div class="row">
+<div class="large-9 columns">
+    <ul class="button-group navigation">
+        <li><a href="." class="button secondary small">Home</a></li>
+        <li><a href="./installation.html" class="button secondary small">Installation</a></li>
+        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation</a></li>
+        <li><a href="./notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="http://www.github.com/menpo/menpo" class="button secondary small">Source Code</a></li>
+        <li><a href="./blog" class="button secondary small">Blog</a></li>
+    </ul>
+</div>
+</div>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns">
+        
+    <h3>Windows Installation</h3>
+    
+    <h4 id="novice">Novice</h4>
+<p>In these instructions we aim to make it very simple to install Menpo.
+If anything is <em>at all</em> unclear, please let us know on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
+<h5>Install a Python environment</h5>
+<p>First, we need to install a Python environment. The Python environment we will
+use is called <strong>conda</strong>, and it is provided by an installation package
+called <strong>Miniconda</strong>.</p>
+<p><strong><a href="http://conda.pydata.org/miniconda.html">Download Miniconda from here</a></strong></p>
+<p>Download the <strong>Python 2.7</strong> copy of Miniconda for your architecture of Windows
+(32-bit or 64-bit). If you are unsure what version of Windows you are running,
+you can find out by visiting
+<a href="http://support.microsoft.com/kb/827218">this page</a>.</p>
+<p>![Miniconda Windows Download]</p>
+<h4 id="expert">Expert</h4>
+<p>We assume you are very familiar with the Windows environment and with entering
+commands in to the command prompt. If you feel uncomfortable with this, or at
+any time you feel confused, please refer to the
+<a href="#novice">novice instructions above.</a></p>
+<ol>
+<li>Download and install
+     <a href="http://conda.pydata.org/miniconda.html">Miniconda for Python 2.7</a>
+     on Windows. Make sure to choose the correct architecture (32/64) for your
+     copy of Windows.</li>
+<li>After following the instructions you should be able to access <code>python</code>
+     and <code>conda</code> from a command prompt.</li>
+<li>Create a fresh conda environment by using<ul>
+<li><code>conda create -n menpo python</code></li>
+</ul>
+</li>
+<li>Activate the environment by executing:<ul>
+<li><code>activate menpo</code></li>
+</ul>
+</li>
+<li>Install Menpo and <strong>all</strong> of it's dependancies:<ul>
+<li><code>conda install -c menpo menpo</code></li>
+</ul>
+</li>
+<li>Download the notebooks from:<ul>
+<li><a href="https://github.com/menpo/menpo-notebooks/releases">Menpo Notebooks</a></li>
+<li>Make sure you choose the version of the notebooks that corresponds to
+  your copy of Menpo. In general, this will be the version at the top of the
+  page.</li>
+</ul>
+</li>
+<li>In a command prompt, navigate to where the notebooks were downloaded, make
+     sure the Menpo conda environment is activated, and run:<ul>
+<li><code>ipython notebook</code></li>
+</ul>
+</li>
+<li>Open any of the notebooks to begin learning how to use Menpo. For a more
+     in-depth user guide, head to the
+     <a href="http://menpo.readthedocs.org">documentation</a>.</li>
+</ol>
+    </div>
+    <!-- End Main Content -->
+    <!--
+    <aside class="large-3 columns">
+        <h5 class="sidebar-title">Site</h5>
+        <ul class="side-nav">
+            <li><a href="./">Archives</a>
+            <li><a href="./blog/tags.html">Tags</a>
+        </ul>
+
+		
+        <h5 class="sidebar-title">Categories</h5>
+        <ul class="side-nav">
+            <li><a href="./blog/category/blog.html">Blog</a></li>
+   
+        </ul>
+
+		
+
+    </aside>
+    -->
+</div> <!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+<footer class="row">
+    <div class="large-12 columns">
+        <hr />
+        <div class="row">
+            <div class="large-6 columns">
+            </div>
+            </div>
+    </div>
+</footer>

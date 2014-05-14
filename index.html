@@ -4,16 +4,19 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>Home</title>
+    <title>Welcome to Menpo!</title>
 
     <link rel="stylesheet" href="./theme/css/normalize.css" />
     <link rel="stylesheet" href="./theme/css/foundation.min.css" />
     <link rel="stylesheet" href="./theme/css/style.css" />
-    <link rel="stylesheet" href="./theme/css/pygments.css" />	
-    <script src="./theme/js/custom.modernizr.js"></script>
+    <link rel="stylesheet" href="./theme/css/pygments.css" />
 </head>
 
 <body>
+<!-- Fork us on Github link -->
+<a href="https://github.com/menpo/menpo">
+    <img style="z-index:9999; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+</a>
 
 <!-- Nav Bar -->
 <nav>
@@ -30,8 +33,10 @@
 <div class="large-9 columns">
     <ul class="button-group navigation">
         <li><a href="." class="button secondary small">Home</a></li>
-        <li><a href="./notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="./installation/" class="button secondary small">Installation</a></li>
         <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation</a></li>
+        <li><a href="./notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="http://www.github.com/menpo/menpo" class="button secondary small">Source Code</a></li>
         <li><a href="./blog" class="button secondary small">Blog</a></li>
     </ul>
 </div>
@@ -46,9 +51,20 @@
     <!-- Main Blog Content -->
     <div class="large-9 columns">
         
-    <h3>Home</h3>
+    <h1>Welcome to Menpo!</h1>
     
-    <p>A Static home page!</p>
+    <p>Menpo is a statistical modelling toolkit, providing all the tools required to
+build, fit, visualize, and test generative deformable models like
+<strong>Active Appearance Models</strong>, <strong>Constrained Local Models</strong>, <strong>Supervised Descent
+Method</strong> and <strong>Morphable Models</strong>.</p>
+<p>We aim to provide a <strong>free</strong> and <strong>open source</strong> (BSD Licensed) implementation
+of common deformable model paradigms. These techniques are applicable to a
+broad class of rigid objects and have been heavily researched for use with
+faces.</p>
+<p>Menpo is written in <strong>Python</strong> and we provide a simple and easy method of
+installation using <a href="http://conda.pydata.org/">conda</a>. We suggest you head over
+to the <a href="./installation/index.html">installation instructions</a>
+to get started.</p>
     </div>
     <!-- End Main Content -->
     <!--
@@ -79,7 +95,6 @@
         <hr />
         <div class="row">
             <div class="large-6 columns">
-              <!--                  <p>menpo by Patrick Snape</p> -->
             </div>
             </div>
     </div>

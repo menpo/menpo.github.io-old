@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <!-- Set the viewport width to device width for mobile -->
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Windows Novice Installation</title>
+
+    <link rel="stylesheet" href="../../theme/css/normalize.css" />
+    <link rel="stylesheet" href="../../theme/css/foundation.min.css" />
+    <link rel="stylesheet" href="../../theme/css/style.css" />
+    <link rel="stylesheet" href="../../theme/css/pygments.css" />
+</head>
+
+<body>
+<!-- Fork us on Github link -->
+<a href="https://github.com/menpo/menpo">
+    <img style="z-index:9999; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+</a>
+
+<!-- Nav Bar -->
+<nav>
+<div class="top-bar">
+<div class="row">
+    <div class="large-9 large-centered columns">
+	    <h1><a href="../..">menpo</a></h1>
+    </div>
+</div>
+</div>
+
+<!-- Show menu items and pages -->
+<div class="row">
+<div class="large-9 columns">
+    <ul class="button-group navigation">
+        <li><a href="../.." class="button secondary small">Home</a></li>
+        <li><a href="../../installation/" class="button secondary small">Installation</a></li>
+        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation</a></li>
+        <li><a href="../../notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="http://www.github.com/menpo/menpo" class="button secondary small">Source Code</a></li>
+        <li><a href="../../blog" class="button secondary small">Blog</a></li>
+    </ul>
+</div>
+</div>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns">
+        
+    <h1>Windows Novice Installation</h1>
+    
+    <p>In these instructions we aim to make it very simple to install Menpo.
+If anything is <em>at all</em> unclear, please let us know on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
+<p>The installation instructions are split up in to a number of sections. Please
+follow them carefully, in order:</p>
+<ol>
+<li><a href="#install_miniconda">Install A Python Environment</a></li>
+<li><a href="#using_conda">Using Conda</a></li>
+<li><a href="#conda_env">Setting Up A Fresh Environment</a></li>
+<li><a href="#install_menpo">Installing Menpo Into Conda</a></li>
+<li><a href="#notebooks">Begin Using Menpo</a></li>
+</ol>
+<h3 id="install_miniconda">Install A Python Environment</h3>
+<p>First, we need to install a Python environment. The Python environment we will
+use is called <strong>conda</strong>, and it is provided by an installation package
+called <strong>Miniconda</strong>.</p>
+<p><strong><a href="http://conda.pydata.org/miniconda.html">Download Miniconda from here</a></strong></p>
+<p>Download the <strong>Python 2</strong> copy of Miniconda for your architecture of Windows
+(32-bit or 64-bit). If you are unsure what version of Windows you are running,
+you can find out by visiting
+<a href="http://support.microsoft.com/kb/827218">this page</a>.</p>
+<hr />
+<p><img alt="Miniconda Windows Download" src="../../pages/installation/windows/images/Windows-Miniconda-Landing.png" /></p>
+<hr />
+<p>After downloading Miniconda, run the installer and click <code>Next &gt;</code> on each
+screen that is presented. It is particularly important that both checkboxes are
+ticked on the <strong>Advanced Installation Options</strong> page as shown below:</p>
+<hr />
+<p><img alt="Miniconda Advanced Installation Options" src="../../pages/installation/windows/images/Windows-Miniconda-Settings.png" /></p>
+<hr />
+<h3 id="using_conda">Using Conda</h3>
+<p>After installing Miniconda, we should have access to two new commands within
+the command prompt. Python, unlike Matlab, does not come with an integrated
+development environment and so commands have to be run using the command prompt.
+To continue, we need to open a command prompt, which can be found by selecting
+<strong>Start</strong> and typing <code>command prompt</code></p>
+<hr />
+<p><img alt="Windows Find Command Prompt" src="../../pages/installation/windows/images/Windows-Find-CommandPrompt.png" /></p>
+<hr />
+<h3 id="conda_env">Setting Up A Fresh Environment</h3>
+<p>We now need to create an environment to store all of our Python packages inside.
+It doesn't matter what path you are inside within the command prompt, the
+<code>conda</code> command will not create any files <em>locally</em>. So, we use the command</p>
+<div class="highlight"><pre><span class="go">C:\&gt;conda create -n menpo python</span>
+</pre></div>
+
+
+<hr />
+<p><img alt="Create New Environment Command" src="../../pages/installation/windows/images/Windows-Create-Env-Command.png" /></p>
+<hr />
+<p>This will inform you that you are creating a new environment and installing
+Python inside of it. The environment name is given by <code>-n menpo</code> (the
+environment will be called <code>menpo</code>) and only <code>python</code> will be installed inside
+by default.</p>
+<p>To ensure you want to continue, Conda will prompt you
+about if you wish to proceed. Press <strong>Enter</strong> to continue. Conda will create
+a new environment for you and give you some information about activating
+your new environment called <code>menpo</code>.</p>
+<hr />
+<p><img alt="Environment Created" src="../../pages/installation/windows/images/Windows-Env-Created.png" /></p>
+<hr />
+<p>Now, activate the <code>menpo</code> environment with the command:</p>
+<div class="highlight"><pre><span class="go">C:\&gt;activate menpo</span>
+</pre></div>
+
+
+<hr />
+<p><img alt="Activate Menpo Environment" src="../../pages/installation/windows/images/Windows-Activate-Env.png" /></p>
+<hr />
+<p>Notice that the command prompt is new prefixed with a label:</p>
+<div class="highlight"><pre><span class="go">[menpo] C:\&gt;</span>
+</pre></div>
+
+
+<p>This let's you know that the <code>menpo</code> environment is enabled.</p>
+<h3 id="install_menpo">Installing Menpo Into Conda</h3>
+<p>Installing Menpo only requires a single command:</p>
+<div class="highlight"><pre><span class="go">[menpo] C:\&gt;conda install -c menpo menpo</span>
+</pre></div>
+
+
+<p>Conda will then attempt to install all of our requirements. It appears there are
+many, but this is due to the minimal nature of the environment we originally
+created. As before, Conda will prompt you to proceed, press <strong>Enter</strong> to
+continue.</p>
+<hr />
+<p><img alt="Accept Install" src="../../pages/installation/windows/images/Windows-Install-Accept.png" /></p>
+<hr />
+<p>It may take a short time to download and install all of Menpo's dependencies,
+during which you will see a number of progress bars. The command is complete
+when the extracting and linking processes show <strong>COMPLETE</strong>.</p>
+<hr />
+<p><img alt="Installation Complete" src="../../pages/installation/windows/images/Windows-Install-Complete.png" /></p>
+<hr />
+<p><strong>Congratulations! You have now installed the latest version of Menpo!</strong></p>
+<h3 id="notebooks">Begin Using Menpo</h3>
+<p>In order to start using Menpo, we suggest you have a look through our collection
+of IPython notebooks. They can be found <a href="../../notebooks.html">here</a>.
+Follow the instructions there to download the notebooks and run them. If you
+need more help you can consult the
+<a href="http://menpo.readthedocs.org">documentation</a> or ask for help on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
+    </div>
+    <!-- End Main Content -->
+    <!--
+    <aside class="large-3 columns">
+        <h5 class="sidebar-title">Site</h5>
+        <ul class="side-nav">
+            <li><a href="../../">Archives</a>
+            <li><a href="../../blog/tags.html">Tags</a>
+        </ul>
+
+		
+        <h5 class="sidebar-title">Categories</h5>
+        <ul class="side-nav">
+            <li><a href="../../blog/category/blog.html">Blog</a></li>
+   
+        </ul>
+
+		
+
+    </aside>
+    -->
+</div> <!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+<footer class="row">
+    <div class="large-12 columns">
+        <hr />
+        <div class="row">
+            <div class="large-6 columns">
+            </div>
+            </div>
+    </div>
+</footer>

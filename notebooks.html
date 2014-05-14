@@ -4,16 +4,19 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>Notebooks Versions</title>
+    <title>Notebooks</title>
 
     <link rel="stylesheet" href="./theme/css/normalize.css" />
     <link rel="stylesheet" href="./theme/css/foundation.min.css" />
     <link rel="stylesheet" href="./theme/css/style.css" />
-    <link rel="stylesheet" href="./theme/css/pygments.css" />	
-    <script src="./theme/js/custom.modernizr.js"></script>
+    <link rel="stylesheet" href="./theme/css/pygments.css" />
 </head>
 
 <body>
+<!-- Fork us on Github link -->
+<a href="https://github.com/menpo/menpo">
+    <img style="z-index:9999; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+</a>
 
 <!-- Nav Bar -->
 <nav>
@@ -30,8 +33,10 @@
 <div class="large-9 columns">
     <ul class="button-group navigation">
         <li><a href="." class="button secondary small">Home</a></li>
-        <li><a href="./notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="./installation/" class="button secondary small">Installation</a></li>
         <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation</a></li>
+        <li><a href="./notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="http://www.github.com/menpo/menpo" class="button secondary small">Source Code</a></li>
         <li><a href="./blog" class="button secondary small">Blog</a></li>
     </ul>
 </div>
@@ -46,16 +51,88 @@
     <!-- Main Blog Content -->
     <div class="large-9 columns">
         
-    <h3>Notebooks Versions</h3>
+    <h1>Notebooks</h1>
     
-    <ul>
-<li><big><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.5/notebooks/">v0.2.5 - Latest Notebooks</a></big></li>
-</ul>
-<h4>Previous Notebooks</h4>
+    <p>As part of the project, we maintain a set of IPython notebooks that help
+illustrate how Menpo should be used.</p>
+<p>The notebooks are kept inside their
+<a href="http://www.github.com/menpo/menpo-notebooks">own Github repository</a>.
+If you wish to view the static output of the notebooks, feel free to browse
+them online using the provided links. This gives a great way to passively read
+the notebooks without needing a full Python environment. Note that these copies
+of the notebook contain only static output and thus cannot be run.</p>
+<p>To download the notebooks and use them within your copy of Menpo, use the
+links provided.</p>
+<h3><strong>(v0.2.5) - Latest Notebooks</strong></h3>
 <ul>
-<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.4/notebooks/">v0.2.4</a></li>
-<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.3/notebooks/">v0.2.3</a></li>
-<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.2/notebooks/">v0.2.2</a></li>
+<li><strong><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.5/notebooks/">Browse Online</a></strong></li>
+<li><strong><a href="https://github.com/menpo/menpo-notebooks/archive/v0.2.5.zip">Download</a></strong></li>
+</ul>
+<h3>Running The Notebooks Locally</h3>
+<p>In order to experiment with the Menpo codebase, we suggest you download the
+notebooks and run them yourself. Before being able to run the notebooks you
+<strong>must install menpo</strong>. Head to the
+<a href="./installation/index.html">installation instructions</a> before
+continuing.</p>
+<ol>
+<li>Start by downloading the notebooks and extracting the zip somewhere on your
+    local disk. Please substitute <strong>NOTEBOOKS_PATH</strong> with this path in the
+    following instructions.</li>
+<li>
+<p>We then need to run the notebooks using the <code>ipython notebook</code> application.
+    Begin by opening a command prompt/terminal and changing to the directory
+    where you extracted the notebooks:</p>
+<p><strong>OSX/Linux</strong></p>
+<div class="highlight"><pre><span class="gp">$</span> <span class="nb">cd </span>NOTEBOOKS_PATH
+<span class="gp">$</span> <span class="nb">source </span>activate menpo
+<span class="go">(menpo) $ ipython notebook</span>
+</pre></div>
+
+
+<p><strong>Windows</strong></p>
+<div class="highlight"><pre><span class="go">C:\&gt;cd NOTEBOOKS_PATH</span>
+<span class="go">NOTEBOOKS_PATH&gt;activate menpo</span>
+<span class="go">[menpo] NOTEBOOKS_PATH&gt;ipython notebook</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>A browser should open and show the ipython notebook browser. Click a
+    notebook to open it. You can now run the notebooks by executing each code
+    cell and following the documentation provided inside the notebook. If you
+    are unfamiliar with the IPython notebook environment, please consult
+    their <a href="http://ipython.org/notebook.html">documentation</a>.</p>
+</li>
+</ol>
+<h3>Previous Notebooks</h3>
+<p>These notebooks are versioned in an identical manner
+to the main Menpo project. Therefore, you should make sure to use the version
+of the notebooks that matches the version of Menpo you are using.</p>
+<p>To check which version of Menpo you are using, run:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">menpo</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">menpo</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+
+
+<p>inside of a Python interpreter.</p>
+<h4>Versions</h4>
+<ul>
+<li>v0.2.4<ul>
+<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.4/notebooks/">Browse</a></li>
+<li><a href="https://github.com/menpo/menpo-notebooks/archive/v0.2.4.zip">Download</a></li>
+</ul>
+</li>
+<li>v0.2.3<ul>
+<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.3/notebooks/">Browse</a></li>
+<li><a href="https://github.com/menpo/menpo-notebooks/archive/v0.2.3.zip">Download</a></li>
+</ul>
+</li>
+<li>v0.2.2<ul>
+<li><a href="http://nbviewer.ipython.org/github/menpo/menpo-notebooks/tree/v0.2.2/notebooks/">Browse</a></li>
+<li><a href="https://github.com/menpo/menpo-notebooks/archive/v0.2.2.zip">Download</a></li>
+</ul>
+</li>
 </ul>
     </div>
     <!-- End Main Content -->
@@ -87,7 +164,6 @@
         <hr />
         <div class="row">
             <div class="large-6 columns">
-              <!--                  <p>menpo by Patrick Snape</p> -->
             </div>
             </div>
     </div>

@@ -4,7 +4,7 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>menpo - example</title>
+    <title>Windows Expert Installation</title>
 
     <link rel="stylesheet" href="../../theme/css/normalize.css" />
     <link rel="stylesheet" href="../../theme/css/foundation.min.css" />
@@ -51,41 +51,46 @@
     <!-- Main Blog Content -->
     <div class="large-9 columns">
         
-        
-
-            <article>
-                <a href="../../blog/2014/example_article/"><h3 class="article-title">Example Article</h3></a>
-<h6 class="subheader" title="2014-01-11T00:00:00">Sat 11 January 2014
-</h6>
-
-
-<p>An Example article! With some code:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">offscreen</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">test_contour3d</span><span class="p">()</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;example.png&#39;</span><span class="p">)</span>
-</pre></div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
-
-    Tagged: 
-    <a href="../../blog/tag/example.html">example </a>
-</p>
-
+    <h1>Windows Expert Installation</h1>
+    
+    <p>We assume you are very familiar with the Windows environment and with entering
+commands in to the command prompt. If you feel uncomfortable with this, or at
+any time you feel confused, please refer to the
+<a href="../../installation/windows/novice.html">novice instructions.</a></p>
+<ol>
+<li>Download and install
+     <a href="http://conda.pydata.org/miniconda.html">Miniconda for Python 2.7</a>
+     on Windows. Make sure to choose the correct architecture (32/64) for your
+     copy of Windows.</li>
+<li>After following the instructions you should be able to access <code>python</code>
+     and <code>conda</code> from a command prompt.</li>
+<li>
+<p>Create a fresh conda environment by using</p>
+<div class="highlight"><pre><span class="go">C:\&gt;conda create -n menpo python</span>
+</pre></div>
 
 
-<p><a href="../../blog/2014/example_article/#disqus_thread">comments</a></p>            </article>
-
-<div class="pagination-centered">
-<h6 class="subheader">Page 1 of 1</h6>
-
-<p>
-
-</p>
-</div>
+</li>
+<li>
+<p>Activate the environment by executing:</p>
+<div class="highlight"><pre><span class="go">C:\&gt;activate menpo</span>
+<span class="go">[menpo] C:\&gt;</span>
+</pre></div>
 
 
+</li>
+<li>
+<p>Install Menpo and <strong>all</strong> of it's dependancies:</p>
+<div class="highlight"><pre><span class="go">[menpo] C:\&gt;conda install -c menpo menpo</span>
+</pre></div>
 
-            <!-- /#posts-list -->
 
+</li>
+<li>
+<p>Head over to the <a href="../../notebooks.html">notebooks page</a> to begin
+     experimenting with Menpo.</p>
+</li>
+</ol>
     </div>
     <!-- End Main Content -->
     <!--

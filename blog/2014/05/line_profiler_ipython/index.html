@@ -4,12 +4,12 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>menpo - Blog</title>
+    <title>Quick tip: Using line_profiler in an IPython notebook</title>
 
-    <link rel="stylesheet" href="../../theme/css/normalize.css" />
-    <link rel="stylesheet" href="../../theme/css/foundation.min.css" />
-    <link rel="stylesheet" href="../../theme/css/style.css" />
-    <link rel="stylesheet" href="../../theme/css/pygments.css" />
+    <link rel="stylesheet" href="../../../../theme/css/normalize.css" />
+    <link rel="stylesheet" href="../../../../theme/css/foundation.min.css" />
+    <link rel="stylesheet" href="../../../../theme/css/style.css" />
+    <link rel="stylesheet" href="../../../../theme/css/pygments.css" />
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 
@@ -24,7 +24,7 @@
 <div class="top-bar">
 <div class="row">
     <div class="large-9 large-centered columns">
-	    <h1><a href="../..">menpo</a></h1>
+	    <h1><a href="../../../..">menpo</a></h1>
     </div>
 </div>
 </div>
@@ -33,11 +33,11 @@
 <div class="row">
 <div class="large-9 columns">
     <ul class="button-group navigation">
-        <li><a href="../.." class="button secondary small">Home</a></li>
-        <li><a href="../../installation/" class="button secondary small">Installation</a></li>
-        <li><a href="../../notebooks.html" class="button secondary small">Notebooks</a></li>
-        <li><a href="../../team.html" class="button secondary small">Team</a></li>
-        <li><a href="../../blog" class="button secondary small">Blog</a></li>
+        <li><a href="../../../.." class="button secondary small">Home</a></li>
+        <li><a href="../../../../installation/" class="button secondary small">Installation</a></li>
+        <li><a href="../../../../notebooks.html" class="button secondary small">Notebooks</a></li>
+        <li><a href="../../../../team.html" class="button secondary small">Team</a></li>
+        <li><a href="../../../../blog" class="button secondary small">Blog</a></li>
         <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation <i class="fa fa-external-link-square"></i></a></li>
     </ul>
 </div>
@@ -51,16 +51,17 @@
 
     <!-- Main Blog Content -->
     <div class="large-9 columns">
-        
-        
+<article>
+    <header>
+        <h3 class="article-title"><a href="../../../../blog/2014/05/line_profiler_ipython/" rel="bookmark"
+        title="Permalink to Quick tip: Using line_profiler in an IPython notebook">Quick tip: Using line_profiler in an IPython notebook</a></h3>
+    </header>
 
-            <article>
-                <a href="../../blog/2014/05/line_profiler_ipython/"><h3 class="article-title">Quick tip: Using line_profiler in an IPython notebook</h3></a>
 <h6 class="subheader" title="2014-05-17T00:00:00">Sat 17 May 2014
 </h6>
 
 
-<h3>Installation</h3>
+    <h3>Installation</h3>
 <p>Install line profiler<sup id="fnref:version"><a class="footnote-ref" href="#fn:version" rel="footnote">1</a></sup></p>
 <div class="highlight"><pre><span class="o">&gt;</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">pre</span> <span class="n">line_profiler</span>
 </pre></div>
@@ -96,30 +97,33 @@
 <p>As of May 2014 we need <code>--pre</code> because later versions of pip <a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions">won't install betas</a> by default, and the <a href="https://pypi.python.org/pypi/line_profiler/">current version</a> of line_profiler is <code>1.0b3</code>. Once there's no longer a <code>b</code> at the end of the version string <code>pip install line_profiler</code> will be sufficient.&#160;<a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
-</div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
+</div>
+<p class="subheader">Category: <a href="../../../../blog/category/blog.html">Blog</a>
 
     Tagged: 
-    <a href="../../blog/tag/ipython.html">IPython </a>
-    <a href="../../blog/tag/profiling.html">profiling </a>
-    <a href="../../blog/tag/tip.html">tip </a>
+    <a href="../../../../blog/tag/ipython.html">IPython </a>
+    <a href="../../../../blog/tag/profiling.html">profiling </a>
+    <a href="../../../../blog/tag/tip.html">tip </a>
 </p>
 
 
 
-<p><a href="../../blog/2014/05/line_profiler_ipython/#disqus_thread">comments</a></p>            </article>
 
-<div class="pagination-centered">
-<h6 class="subheader">Page 1 of 1</h6>
+	<h4>Comments</h4>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'menpo'
+        var disqus_identifier = "blog/2014/05/line_profiler_ipython/";
+        var disqus_url = "../../../../blog/2014/05/line_profiler_ipython/";
 
-<p>
-
-</p>
-</div>
-
-
-
-            <!-- /#posts-list -->
-
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</article>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">

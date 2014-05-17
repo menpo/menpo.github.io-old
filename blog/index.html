@@ -55,25 +55,58 @@
         
 
             <article>
-                <a href="../blog/2014/example_article/"><h3 class="article-title">Example Article</h3></a>
-<h6 class="subheader" title="2014-01-11T00:00:00">Sat 11 January 2014
+                <a href="../blog/2014/05/line_profiler_ipython/"><h3 class="article-title">Quick tip: Using line_profiler in an IPython notebook</h3></a>
+<h6 class="subheader" title="2014-05-17T00:00:00">Sat 17 May 2014
 </h6>
 
 
-<p>An Example article! With some code:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">offscreen</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">test_contour3d</span><span class="p">()</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;example.png&#39;</span><span class="p">)</span>
-</pre></div><p class="subheader">Category: <a href="../blog/category/blog.html">Blog</a>
+<h3>Installation</h3>
+<p>Install line profiler<sup id="fnref:version"><a class="footnote-ref" href="#fn:version" rel="footnote">1</a></sup></p>
+<div class="highlight"><pre><span class="o">&gt;</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">pre</span> <span class="n">line_profiler</span>
+</pre></div>
+
+
+<p>You can install line_profiler as a proper IPython extension, but I like the simplicity of just activating it when I need it. just run </p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">line_profiler</span>
+<span class="kn">import</span> <span class="nn">IPython</span>
+<span class="n">ip</span> <span class="o">=</span> <span class="n">IPython</span><span class="o">.</span><span class="n">get_ipython</span><span class="p">()</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">define_magic</span><span class="p">(</span><span class="s">&#39;lprun&#39;</span><span class="p">,</span> <span class="n">line_profiler</span><span class="o">.</span><span class="n">magic_lprun</span><span class="p">)</span>
+</pre></div>
+
+
+<p>in a cell and you're good for the session.</p>
+<h3>Usage</h3>
+<p>Let's say we have a function call <code>foo()</code>which is taking a long time, and we strongly suspect that it's the <code>bar</code> function call inside it that's taking a while. We tell line profiler of all functions we are interested in with the <code>-f</code> flag (you can have multiple!) and finally tell it the function to actually execute at the end:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
+<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">bar</span> <span class="n">foo</span><span class="p">()</span>
+</pre></div>
+
+
+<p>This works perfectly well with objects and methods too, just specify the method you want to profile with it's full name (i.e. in it's class namespace)</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">MyClass</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">MyClass</span><span class="o">.</span><span class="n">bar</span> <span class="n">instance</span><span class="o">.</span><span class="n">foo</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:version">
+<p>As of May 2014 we need <code>--pre</code> because later versions of pip <a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions">won't install betas</a> by default, and the <a href="https://pypi.python.org/pypi/line_profiler/">current version</a> of line_profiler is <code>1.0b3</code>. Once there's no longer a <code>b</code> at the end of the version string <code>pip install line_profiler</code> will be sufficient.&#160;<a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div><p class="subheader">Category: <a href="../blog/category/blog.html">Blog</a>
 
     Tagged: 
-    <a href="../blog/tag/example.html">example </a>
+    <a href="../blog/tag/ipython.html">IPython </a>
+    <a href="../blog/tag/profiling.html">profiling </a>
+    <a href="../blog/tag/tip.html">tip </a>
 </p>
 
 
 
-<p><a href="../blog/2014/example_article/#disqus_thread">comments</a></p>            </article>
+<p><a href="../blog/2014/05/line_profiler_ipython/#disqus_thread">comments</a></p>            </article>
 
 <div class="pagination-centered">
 <h6 class="subheader">Page 1 of 1</h6>

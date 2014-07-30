@@ -55,6 +55,92 @@
         
 
             <article>
+                <a href="../../blog/2014/07/python_windows_development/"><h3 class="article-title">Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</h3></a>
+<h6 class="subheader" title="2014-07-30T00:00:00">Wed 30 July 2014
+</h6>
+
+
+<h2>Why develop on Windows?</h2>
+<p>The Menpo team is dedicated to providing conda packages for all platforms. By far the biggest hurdle towards this goal was successfully building our package on Windows. There is one major reason for this: <strong>Visual Studio 2008</strong> <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>. Visual Studio 2008 (VS2008) is a requirement for building Python extensions on Windows. This is due to the fact that compiled extensions link against a specific C++ redistributable. <a href="http://stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app">According to advice that I have read</a>, linking against different redistributables in the same application can cause instabilities. Although there is meant to be some limited support for building with cygwin, I've also read numerous StackOverflow/forum posts that lament strange segmentation faults with cygwin compiled extensions. </p>
+<p>Therefore, since Python 2.7 is compiled with VS2008, our extensions must be compiled against it as well. The added bonus of using conda in this equation is that conda ships with the required VS redistributable packages so anything compiled correctly against VS2008 will be fine. The conda build command also does a really fantastic job of 'just working'. If you want to try building using something like <code>python setup.py install</code> you are likely to run into more issues around correctly setting environment variables.</p>
+<p>However, VS2008 has two really major issues:</p>
+<ol>
+<li>Really ridiculous installation requirements (outlined in detail <a href="#installation">below</a>).</li>
+<li>VS2008 only supports C89 compatible C-code. This means you really need to build all your extensions using C++ (or refactor all your code to be C89 compliant).</li>
+</ol>
+<p>Therefore, if you want C++11 support, you are in uncharted territory as you will have to build your extension using a different compiler. Not only will this potentially cause instability, but it also means you will likely to have manually edit lots of environment variables. At the moment, the current existing Python build scripts make some very strong assumptions about where appropriate compilers can be found.</p>
+<p>For those crazy enough to try and setup a working Windows development environment for Python 2.7 within conda, I've outlined the steps below. <strong>In particular, I am assuming that you want to setup a correct conda build environment. If you want to use setuptools/distribute I'm afraid I don't have much experience.</strong></p>
+<h2 id="installation">The Saga Begins</h2>
+<p>Before beginning, it's important to note that if you are on a 64-bit version of Windows, you can cross-compile 32-bit C-extensions. All you need to ensure is that you have the appropriate version of conda on your path. Personally, I have a small batch script that switches me between my 32-bit and 64-bit miniconda installations. If the following steps are followed, no other commands need to be run to build a 32-bit extension on a 64-bit machine (other than using the 32-bit conda environment).</p>
+<h3>Install Visual Studio 2008</h3>
+<p>Download and install <a href="http://go.microsoft.com/?linkid=7729279">Visual Studio 2008 Express</a>. It is not necessary to install either silverlight or SQL server and these options can be safely unchecked. If you are lucky enough to only require 32-bit Windows builds (and you are happy with using 32-bit conda), then your woes are over.</p>
+<h3>64 bit</h3>
+<p>Unfortunately, preparing a 64-bit environment is non-trivial. We need to download and install a specific version of the Windows SDK in order to give VS access to a 64-bit compiler. It is important that the following instructions are completed in <strong>the order given!</strong></p>
+<ol>
+<li>Download and install the <a href="http://www.microsoft.com/en-ca/download/details.aspx?id=3138">Windows SDK</a> to install the 64-bit compiler. It's important to use that exact file.<ul>
+<li>The options to choose are given below <img alt="Win SDK options" src="../../articles/images/winsdk_options.png" /></li>
+</ul>
+</li>
+<li>Run the <code>Windows SDK Configuration Tool</code> from the Start Menu and choose <code>7.0</code></li>
+<li>After installing the Windows SDK, go to <code>Programs And Features</code><ul>
+<li>Run <code>Repair</code> or <code>Change-&gt;Repair</code> (unbelievable, but you actually <strong>have</strong> to do this)</li>
+<li>Restart your computer</li>
+</ul>
+</li>
+<li>Install <a href="../../articles/files/VCE64BIT_WIN7SDK.zip">this patch</a><sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup> and run the appropriate batch file for your system version (32 or 64)<ul>
+<li>Run the command from a prompt so that you can see the output -&gt; A number of registry entries will be edited</li>
+<li>Two file copies will happen and <strong>both should be successful</strong> <img alt="Output of successful patching" src="../../articles/images/successful_patch.png" /></li>
+<li><strong>In the event the files do not copy, manually copy them as described in the copy command</strong></li>
+</ul>
+</li>
+<li>
+<p>Copy the following file</p>
+<div class="highlight"><pre><span class="go">C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</span>
+</pre></div>
+
+
+<p>to</p>
+<div class="highlight"><pre><span class="go">C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\amd64\vcvarsamd64.bat</span>
+</pre></div>
+
+
+</li>
+</ol>
+<p>So that the conda build scripts can find your VS2008 setup variables. Now, in theory, you can build Python extensions on a 64-bit machine.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Due to the timeframe that Menpo was created within, our primary Python distrubution is 2.7 (though we are working on Python 3+ support!).&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>If you do need to compile for Python 3+ (at the time of writing this) the required Visual Studio is Visual Studio 2010.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:3">
+<p>This is a mirror of the original file which was provided by <a href="http://www.cppblog.com/xcpp/archive/2009/09/09/vc2008express_64bit_win7sdk.html">the author of cppblog</a>. Thank you!&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
+
+    Tagged: 
+    <a href="../../blog/tag/windows.html">Windows </a>
+    <a href="../../blog/tag/python.html">Python </a>
+    <a href="../../blog/tag/visual-studio.html">Visual Studio </a>
+    <a href="../../blog/tag/c.html">C </a>
+</p>
+
+
+
+<p><a href="../../blog/2014/07/python_windows_development/#disqus_thread">comments</a></p>            </article>
+
+
+                <hr  class="gradient"/>
+
+
+        
+
+
+            <article>
                 <a href="../../blog/2014/05/line_profiler_ipython/"><h3 class="article-title">Quick tip: Using line_profiler in an IPython notebook</h3></a>
 <h6 class="subheader" title="2014-05-17T00:00:00">Sat 17 May 2014
 </h6>
@@ -74,29 +160,7 @@
 </pre></div>
 
 
-<p>in a cell and you're good for the session.</p>
-<h3>Usage</h3>
-<p>Let's say we have a function call <code>foo()</code>which is taking a long time, and we strongly suspect that it's the <code>bar</code> function call inside it that's taking a while. We tell line profiler of all functions we are interested in with the <code>-f</code> flag (you can have multiple!) and finally tell it the function to actually execute at the end:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
-<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">bar</span> <span class="n">foo</span><span class="p">()</span>
-</pre></div>
-
-
-<p>This works perfectly well with objects and methods too, just specify the method you want to profile with it's full name (i.e. in it's class namespace)</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">MyClass</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
-<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">MyClass</span><span class="o">.</span><span class="n">bar</span> <span class="n">instance</span><span class="o">.</span><span class="n">foo</span><span class="p">()</span>
-</pre></div>
-
-
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:version">
-<p>As of May 2014 we need <code>--pre</code> because later versions of pip <a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions">won't install betas</a> by default, and the <a href="https://pypi.python.org/pypi/line_profiler/">current version</a> of line_profiler is <code>1.0b3</code>. Once there's no longer a <code>b</code> at the end of the version string <code>pip install line_profiler</code> will be sufficient.&#160;<a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
+<p>in a cell and you ...</p><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
 
     Tagged: 
     <a href="../../blog/tag/ipython.html">IPython </a>
@@ -106,8 +170,11 @@
 
 
 
-<p><a href="../../blog/2014/05/line_profiler_ipython/#disqus_thread">comments</a></p>            </article>
+<p><a href="../../blog/2014/05/line_profiler_ipython/#disqus_thread">comments</a></p>                <a class="button radius secondary small right" href="../../blog/2014/05/line_profiler_ipython/">Read More</a>
+                <hr  class="gradient"/>
+            </article>
 
+            <!-- /#posts-list -->
 <div class="pagination-centered">
 <h6 class="subheader">Page 1 of 1</h6>
 
@@ -116,16 +183,12 @@
 </p>
 </div>
 
-
-
-            <!-- /#posts-list -->
-
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
         <h5 class="sidebar-title">Latest Release</h5>
         <ul class="side-nav">
-            <li>v0.2.5</li>
+            <li>v0.3.0</li>
         </ul>
     </aside>
 </div> <!-- End Main Content and Sidebar -->
@@ -141,3 +204,13 @@
             </div>
     </div>
 </footer>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52093814-1', 'menpo.io');
+  ga('send', 'pageview');
+</script>

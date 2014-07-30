@@ -54,25 +54,122 @@
         
     <h1>Windows Installation</h1>
     
-    <p>On Windows, we only provide one set of installation instructions. We assume you
-are going to use <a href="https://store.continuum.io/cshop/anaconda/">Anaconda</a> in order
-to provide a Python installation. If you are an advanced Windows users that
-uses a different Python ecosystem, we are happy to hear from you on the
-<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list
-so that we can extend these instructions!</p>
-<p><strong>Python assumes some basic knowledge of using a command prompt within
-Windows.</strong></p>
-<p><strong>Please let us know your skill level in this area:</strong></p>
-<ul>
-<li><big><a href="../../installation/windows/novice.html">Novice</a></big></li>
-<li><big><a href="../../installation/windows/expert.html">Expert</a></big></li>
-</ul>
+    <p>In these instructions we aim to make it very simple to install Menpo.
+If anything is <em>at all</em> unclear, please let us know on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
+<p><em>If you already have a conda environment, and consider yourself a conda expert,
+you may want to view the 
+<a href="../../installation/windows/expert.html">short instructions</a>.</em></p>
+<p><strong>It is important to note that as part of the installation, you will be creating
+an isolated environment to execute Python inside. Make sure that this
+environment is activated in order to be able to use Menpo!</strong></p>
+<p>The installation instructions are split up in to a number of sections. Please
+follow them carefully, in order:</p>
+<ol>
+<li><a href="#install_miniconda">Install A Python Environment</a></li>
+<li><a href="#using_conda">Using Conda</a></li>
+<li><a href="#conda_env">Setting Up A Fresh Environment</a></li>
+<li><a href="#install_menpo">Installing Menpo Into Conda</a></li>
+<li><a href="#notebooks">Begin Using Menpo</a></li>
+</ol>
+<h3 id="install_miniconda">Install A Python Environment</h3>
+<p>First, we need to install a Python environment. The Python environment we will
+use is called <strong>conda</strong>, and it is provided by an installation package
+called <strong>Miniconda</strong>.</p>
+<p><strong><a href="http://conda.pydata.org/miniconda.html">Download Miniconda from here</a></strong></p>
+<p>Download the <strong>Python 2</strong> copy of Miniconda for your architecture of Windows
+(32-bit or 64-bit). If you are unsure what version of Windows you are running,
+you can find out by visiting
+<a href="http://support.microsoft.com/kb/827218">this page</a>.</p>
+<hr />
+<p><img alt="Miniconda Windows Download" src="../../pages/installation/windows/images/Windows-Miniconda-Landing.png" /></p>
+<hr />
+<p>After downloading Miniconda, run the installer and click <code>Next &gt;</code> on each
+screen that is presented. It is particularly important that both checkboxes are
+ticked on the <strong>Advanced Installation Options</strong> page as shown below:</p>
+<hr />
+<p><img alt="Miniconda Advanced Installation Options" src="../../pages/installation/windows/images/Windows-Miniconda-Settings.png" /></p>
+<hr />
+<h3 id="using_conda">Using Conda</h3>
+<p>After installing Miniconda, we should have access to two new commands within
+the command prompt. Python, unlike Matlab, does not come with an integrated
+development environment and so commands have to be run using the command prompt.
+To continue, we need to open a command prompt, which can be found by selecting
+<strong>Start</strong> and typing <code>command prompt</code></p>
+<hr />
+<p><img alt="Windows Find Command Prompt" src="../../pages/installation/windows/images/Windows-Find-CommandPrompt.png" /></p>
+<hr />
+<h3 id="conda_env">Setting Up A Fresh Environment</h3>
+<p>We now need to create an environment to store all of our Python packages inside.
+It doesn't matter what path you are inside within the command prompt, the
+<code>conda</code> command will not create any files <em>locally</em>. So, we use the command</p>
+<div class="highlight"><pre><span class="go">C:\&gt;conda create -n menpo python</span>
+</pre></div>
+
+
+<hr />
+<p><img alt="Create New Environment Command" src="../../pages/installation/windows/images/Windows-Create-Env-Command.png" /></p>
+<hr />
+<p>This will inform you that you are creating a new environment and installing
+Python inside of it. The environment name is given by <code>-n menpo</code> (the
+environment will be called <code>menpo</code>) and only <code>python</code> will be installed inside
+by default.</p>
+<p>To ensure you want to continue, Conda will prompt you
+about if you wish to proceed. Press <strong>Enter</strong> to continue. Conda will create
+a new environment for you and give you some information about activating
+your new environment called <code>menpo</code>.</p>
+<hr />
+<p><img alt="Environment Created" src="../../pages/installation/windows/images/Windows-Env-Created.png" /></p>
+<hr />
+<p>Now, activate the <code>menpo</code> environment with the command:</p>
+<div class="highlight"><pre><span class="go">C:\&gt;activate menpo</span>
+</pre></div>
+
+
+<hr />
+<p><img alt="Activate Menpo Environment" src="../../pages/installation/windows/images/Windows-Activate-Env.png" /></p>
+<hr />
+<p>Notice that the command prompt is new prefixed with a label:</p>
+<div class="highlight"><pre><span class="go">[menpo] C:\&gt;</span>
+</pre></div>
+
+
+<p>This let's you know that the <code>menpo</code> environment is enabled. It is important
+to ensure that the <code>menpo</code> environment is activated before attempting to
+use Menpo in any way!</p>
+<h3 id="install_menpo">Installing Menpo Into Conda</h3>
+<p>Installing Menpo only requires a single command:</p>
+<div class="highlight"><pre><span class="go">[menpo] C:\&gt;conda install -c menpo menpo</span>
+</pre></div>
+
+
+<p>Conda will then attempt to install all of our requirements. It appears there are
+many, but this is due to the minimal nature of the environment we originally
+created. As before, Conda will prompt you to proceed, press <strong>Enter</strong> to
+continue.</p>
+<hr />
+<p><img alt="Accept Install" src="../../pages/installation/windows/images/Windows-Install-Accept.png" /></p>
+<hr />
+<p>It may take a short time to download and install all of Menpo's dependencies,
+during which you will see a number of progress bars. The command is complete
+when the extracting and linking processes show <strong>COMPLETE</strong>.</p>
+<hr />
+<p><img alt="Installation Complete" src="../../pages/installation/windows/images/Windows-Install-Complete.png" /></p>
+<hr />
+<p><strong>Congratulations! You have now installed the latest version of Menpo!</strong></p>
+<h3 id="notebooks">Begin Using Menpo</h3>
+<p>In order to start using Menpo, we suggest you have a look through our collection
+of IPython notebooks. They can be found <a href="../../notebooks.html">here</a>.
+Follow the instructions there to download the notebooks and run them. If you
+need more help you can consult the
+<a href="http://menpo.readthedocs.org">documentation</a> or ask for help on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
         <h5 class="sidebar-title">Latest Release</h5>
         <ul class="side-nav">
-            <li>v0.2.5</li>
+            <li>v0.3.0</li>
         </ul>
     </aside>
 </div> <!-- End Main Content and Sidebar -->
@@ -88,3 +185,13 @@ Windows.</strong></p>
             </div>
     </div>
 </footer>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52093814-1', 'menpo.io');
+  ga('send', 'pageview');
+</script>

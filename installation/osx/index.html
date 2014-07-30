@@ -54,21 +54,141 @@
         
     <h1>OS X Installation</h1>
     
-    <p>Although OS X comes with a Python installation, it is generally regarded as
-dangerous to alter this environment. Therefore, to ensure the system
-Python environment is isolated, we advocate the use of
-<a href="http://conda.pydata.org/">Conda</a>.</p>
-<p><strong>Please let us know your skill level with the Terminal in OSX:</strong></p>
-<ul>
-<li><big><a href="../../installation/osx/novice.html">Novice</a></big></li>
-<li><big><a href="../../installation/osx/expert.html">Expert</a></big></li>
-</ul>
+    <p>In these instructions we aim to make it very simple to install Menpo.
+If anything is <em>at all</em> unclear, please let us know on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
+<p><em>If you already have a conda environment, and consider yourself a conda expert,
+you may want to view the 
+<a href="../../installation/osx/expert.html">short instructions</a>.</em></p>
+<p><strong>It is important to note that as part of the installation, you will be creating
+an isolated environment to execute Python inside. Make sure that this
+environment is activated in order to be able to use Menpo!</strong></p>
+<p>The installation instructions are split up in to a number of sections. Please
+follow them carefully, in order:</p>
+<ol>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#install_miniconda">Install A Python Environment</a></li>
+<li><a href="#using_conda">Using Conda</a></li>
+<li><a href="#conda_env">Setting Up A Fresh Environment</a></li>
+<li><a href="#install_menpo">Installing Menpo Into Conda</a></li>
+<li><a href="#notebooks">Begin Using Menpo</a></li>
+</ol>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>First, we need to install an isolated Python environment.
+Python does not come with a graphical user interface and so we will need to run
+a number of commands in the terminal. You can access the terminal by pressing
+<strong>Command + Space</strong> to open spotlight and search for <strong>terminal</strong>.</p>
+<hr />
+<p><img alt="OS X Find Terminal" src="../../pages/installation/osx/images/OSX-Terminal.png" /></p>
+<hr />
+<p>We only support Menpo on the newer Intel Mac machines, all of which are 64-bit.
+Therefore, we assume you are using one of these machines.</p>
+<h3 id="install_miniconda">Install A Python Environment</h3>
+<p>The Python environment we will use is called <strong>conda</strong>, and it is provided by
+an installation package called <strong>Miniconda</strong>.</p>
+<p><strong><a href="http://conda.pydata.org/miniconda.html">Download Miniconda from here</a></strong></p>
+<p>Download the <strong>Python 2</strong> copy of Miniconda for OSX.</p>
+<hr />
+<p><img alt="OS X Miniconda Landing Page" src="../../pages/installation/osx/images/OSX-Miniconda-Landing.png" /></p>
+<hr />
+<p>After downloading Miniconda, you need to change to that directory within a
+terminal so that we can run the installation shell script. Assuming that your
+browser downloaded the script to <code>~/Downloads</code>, you can start the installer
+by running:</p>
+<div class="highlight"><pre><span class="gp">$</span> <span class="nb">cd</span> ~/Downloads
+<span class="gp">$</span> chmod +x Miniconda-3.4.2-MacOSX-x86_64.sh
+<span class="gp">$</span> ./Miniconda-3.4.2-MacOSX-x86_64.sh
+</pre></div>
+
+
+<p>The name of the Miniconda <strong>may</strong> be different, but you just need to run <code>chmod</code>
+in order to make the script executable. Once the installation has begun, accept
+the license terms when prompted by typing <strong>yes</strong> and press <strong>Enter</strong> to accept
+the default installation location. It is important that you say <strong>yes</strong> when
+prompted whether or not the installer should prepend the Miniconda install
+location to your <strong>PATH</strong>:</p>
+<hr />
+<p><img alt="Miniconda Advanced Installation Options" src="../../pages/installation/osx/images/OSX-Miniconda-Settings.png" /></p>
+<hr />
+<h3 id="using_conda">Using Conda</h3>
+<p>After installing Miniconda, close your current terminal and open another in
+order to activate the installation. You should have access to a new command
+within the terminal, <code>conda</code>. You can test this is working by entering the
+command</p>
+<div class="highlight"><pre><span class="gp">$</span> conda -V
+</pre></div>
+
+
+<p>Which will print something like <code>conda 3.4.2</code>, though the version number <em>may</em>
+differ.</p>
+<h3 id="conda_env">Setting Up A Fresh Environment</h3>
+<p>We now need to create an environment to store all of our Python packages inside.
+It doesn't matter what path you are within the terminal, the
+<code>conda</code> command will not create any files <em>locally</em>. So, we use the command</p>
+<div class="highlight"><pre><span class="gp">$</span> conda create -n menpo python
+</pre></div>
+
+
+<p>This will inform you that you are creating a new environment and installing
+Python inside of it. The environment name is given by <code>-n menpo</code> (the
+environment will be called <code>menpo</code>) and only <code>python</code> and it's direct
+dependencies will be installed inside by default.</p>
+<p>To ensure you want to continue, Conda will prompt you
+about if you wish to proceed. Type <strong>y</strong> and <strong>Enter</strong> to continue.
+Conda will create a new environment for you and give you some information
+about activating your new environment called <code>menpo</code>.</p>
+<hr />
+<p><img alt="Environment Created" src="../../pages/installation/osx/images/OSX-Env-Created.png" /></p>
+<hr />
+<p>Now, activate the <code>menpo</code> environment with the command:</p>
+<div class="highlight"><pre><span class="gp">$</span> <span class="nb">source </span>activate menpo
+</pre></div>
+
+
+<hr />
+<p><img alt="Activate Menpo Environment" src="../../pages/installation/osx/images/OSX-Activate-Env.png" /></p>
+<hr />
+<p>Notice that the terminal is new prefixed with a label:</p>
+<div class="highlight"><pre><span class="gp">(menpo)$</span>
+</pre></div>
+
+
+<p>This let's you know that the <code>menpo</code> environment is enabled. It is important
+to ensure that the <code>menpo</code> environment is activated before attempting to
+use Menpo in any way!</p>
+<h3 id="install_menpo">Installing Menpo Into Conda</h3>
+<p>Installing Menpo only requires a single command:</p>
+<div class="highlight"><pre><span class="gp">(menpo)$</span> conda install -c menpo menpo
+</pre></div>
+
+
+<p>Conda will then attempt to install all of our requirements. It appears there are
+many, but this is due to the minimal nature of the environment we originally
+created. As before, Conda will prompt you to proceed, type <strong>y</strong> and press
+<strong>Enter</strong> to continue.</p>
+<hr />
+<p><img alt="Accept Install" src="../../pages/installation/osx/images/OSX-Install-Accept.png" /></p>
+<hr />
+<p>It may take a short time to download and install all of Menpo's dependencies,
+during which you will see a number of progress bars. The command is complete
+when the extracting and linking processes show <strong>COMPLETE</strong>.</p>
+<hr />
+<p><img alt="Installation Complete" src="../../pages/installation/osx/images/OSX-Install-Complete.png" /></p>
+<hr />
+<p><strong>Congratulations! You have now installed the latest version of Menpo!</strong></p>
+<h3 id="notebooks">Begin Using Menpo</h3>
+<p>In order to start using Menpo, we suggest you have a look through our collection
+of IPython notebooks. They can be found <a href="../../notebooks.html">here</a>.
+Follow the instructions there to download the notebooks and run them. If you
+need more help you can consult the
+<a href="http://menpo.readthedocs.org">documentation</a> or ask for help on the
+<a href="https://groups.google.com/forum/#!forum/menpo-users">menpo-users</a> mailing list.</p>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
         <h5 class="sidebar-title">Latest Release</h5>
         <ul class="side-nav">
-            <li>v0.2.5</li>
+            <li>v0.3.0</li>
         </ul>
     </aside>
 </div> <!-- End Main Content and Sidebar -->
@@ -84,3 +204,13 @@ Python environment is isolated, we advocate the use of
             </div>
     </div>
 </footer>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-52093814-1', 'menpo.io');
+  ga('send', 'pageview');
+</script>

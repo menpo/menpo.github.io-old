@@ -4,13 +4,13 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>menpo - C</title>
+    <title>menpo.io - C</title>
 
     <link rel="stylesheet" href="../../theme/css/normalize.css" />
     <link rel="stylesheet" href="../../theme/css/foundation.min.css" />
     <link rel="stylesheet" href="../../theme/css/style.css" />
     <link rel="stylesheet" href="../../theme/css/pygments.css" />
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://apis.google.com/js/plusone.js"></script>
 </head>
 
@@ -25,7 +25,7 @@
 <div class="top-bar">
 <div class="row">
     <div class="large-9 large-centered columns">
-	    <h1><a href="../..">menpo</a></h1>
+	    <h1><a href="../..">menpo.io</a></h1>
     </div>
 </div>
 </div>
@@ -39,7 +39,8 @@
         <li><a href="../../notebooks.html" class="button secondary small">Notebooks</a></li>
         <li><a href="../../team.html" class="button secondary small">Team</a></li>
         <li><a href="../../blog" class="button secondary small">Blog</a></li>
-        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation <i class="fa fa-external-link-square"></i></a></li>
+		<li><a href="../../faq.html" class="button secondary small">FAQ</a></li>
+        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Docs <i class="fa fa-external-link-square"></i></a></li>
     </ul>
 </div>
 </div>
@@ -54,74 +55,27 @@
     <div class="large-9 columns">
         
         
-
-            <article>
-                <a href="../../blog/2014/07/python_windows_development/"><h3 class="article-title">Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</h3></a>
+        <article>
+            <a href="../../blog/2014/07/python_windows_development/"><h3 class="article-title">Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</h3></a>
 <h6 class="subheader" title="2014-07-30T00:00:00">Wed 30 July 2014
+		[
+			<a href="../../blog/author/patrick-snape.html">Patrick Snape</a>
+        ]
+
+		<span id="post-share-links" style="float:right">
+			<a href="http://twitter.com/home?status=Building%20Python%202.7%20extensions%20on%20Windows%207%20%2864%20and%2032%20bit%29%20 http%3A//menpo.io/blog/2014/07/python_windows_development/" target="_blank" title="Share on Twitter"><i class="fa fa-twitter-square fa-lg"></i></a>
+			|
+			<a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http%3A//menpo.io/blog/2014/07/python_windows_development/&p[images][0]=&p[title]=Building%20Python%202.7%20extensions%20on%20Windows%207%20%2864%20and%2032%20bit%29%20&p[summary]=%3Ch2%3EWhy%20develop%20on%20Windows%3F%3C/h2%3E%0A%3Cp%3EThe%20Menpo%20team%20is%20dedicated%20to%20providing%20conda%20packages%20for%20all%20platforms.%20By%20far%20the%20biggest%20hurdle%20towards%20this%20goal%20was%20successfully%20building%20our%20package%20on%20Windows.%20There%20is%20one%20major%20reason%20for%20this%3A%20%3Cstrong%3EVisual%20Studio%202008%3C/strong%3E%20%3Csup%20id%3D%22fnref%3A1%22%3E%3Ca%20class%3D%22footnote-ref%22%20href%3D%22%23fn%3A1%22%20rel%3D%22footnote%22%3E1%3C/a%3E%3C/sup%3E%20%3Csup%20id%3D%22fnref%3A2%22%3E%3Ca%20class%3D%22footnote-ref%22%20href%3D%22%23fn%3A2%22%20rel%3D%22footnote%22%3E2%3C/a%3E%3C/sup%3E.%20Visual%20Studio%202008%20%28VS2008%29%20is%20a%20requirement%20for%20building%20Python%20extensions%20on%20Windows.%20This%20is%20due%20to%20the%20fact%20that%20compiled%20extensions%20link%20against%20a%20specific%20C%2B%2B%20redistributable.%20%3Ca%20href%3D%22http%3A//stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app%22%3EAccording%20to%20advice%20that%20I%20have%20read%3C/a%3E%2C%20linking%20against%20different%20redistributables%20in%20the%20same%20application%20can%20cause%20instabilities.%20Although%20there%20is%20meant%20to%20be%20some%20limited%20support%20for%20building%20...%3C/p%3E" target="_blank" title="Share on Facebook"><i class="fa fa-facebook-square fa-lg"></i></a>
+			|
+			<a href="https://plus.google.com/share?url=http%3A//menpo.io/blog/2014/07/python_windows_development/" target="_blank" title="Share on Google Plus"><i class="fa fa-google-plus-square fa-lg"></i></a>
+			|
+			<a href="mailto:?subject=Building%20Python%202.7%20extensions%20on%20Windows%207%20%2864%20and%2032%20bit%29%20&body=http%3A//menpo.io/blog/2014/07/python_windows_development/" target="_blank" title="Share via Email"><i class="fa fa-envelope-square fa-lg"></i></a>
+		</span>
 </h6>
 
 
 <h2>Why develop on Windows?</h2>
-<p>The Menpo team is dedicated to providing conda packages for all platforms. By far the biggest hurdle towards this goal was successfully building our package on Windows. There is one major reason for this: <strong>Visual Studio 2008</strong> <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>. Visual Studio 2008 (VS2008) is a requirement for building Python extensions on Windows. This is due to the fact that compiled extensions link against a specific C++ redistributable. <a href="http://stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app">According to advice that I have read</a>, linking against different redistributables in the same application can cause instabilities. Although there is meant to be some limited support for building with cygwin, I've also read numerous StackOverflow/forum posts that lament strange segmentation faults with cygwin compiled extensions. </p>
-<p>Therefore, since Python 2.7 is compiled with VS2008, our extensions must be compiled against it as well. The added bonus of using conda in this equation is that conda ships with the required VS redistributable packages so anything compiled correctly against VS2008 will be fine. The conda build command also does a really fantastic job of 'just working'. If you want to try building using something like <code>python setup.py install</code> you are likely to run into more issues around correctly setting environment variables.</p>
-<p>However, VS2008 has two really major issues:</p>
-<ol>
-<li>Really ridiculous installation requirements (outlined in detail <a href="#installation">below</a>).</li>
-<li>VS2008 only supports C89 compatible C-code. This means you really need to build all your extensions using C++ (or refactor all your code to be C89 compliant).</li>
-</ol>
-<p>Therefore, if you want C++11 support, you are in uncharted territory as you will have to build your extension using a different compiler. Not only will this potentially cause instability, but it also means you will likely to have manually edit lots of environment variables. At the moment, the current existing Python build scripts make some very strong assumptions about where appropriate compilers can be found.</p>
-<p>For those crazy enough to try and setup a working Windows development environment for Python 2.7 within conda, I've outlined the steps below. <strong>In particular, I am assuming that you want to setup a correct conda build environment. If you want to use setuptools/distribute I'm afraid I don't have much experience.</strong></p>
-<h2 id="installation">The Saga Begins</h2>
-<p>Before beginning, it's important to note that if you are on a 64-bit version of Windows, you can cross-compile 32-bit C-extensions. All you need to ensure is that you have the appropriate version of conda on your path. Personally, I have a small batch script that switches me between my 32-bit and 64-bit miniconda installations. If the following steps are followed, no other commands need to be run to build a 32-bit extension on a 64-bit machine (other than using the 32-bit conda environment).</p>
-<h3>Install Visual Studio 2008</h3>
-<p>Download and install <a href="http://go.microsoft.com/?linkid=7729279">Visual Studio 2008 Express</a>. It is not necessary to install either silverlight or SQL server and these options can be safely unchecked. If you are lucky enough to only require 32-bit Windows builds (and you are happy with using 32-bit conda), then your woes are over.</p>
-<h3>64 bit</h3>
-<p>Unfortunately, preparing a 64-bit environment is non-trivial. We need to download and install a specific version of the Windows SDK in order to give VS access to a 64-bit compiler. It is important that the following instructions are completed in <strong>the order given!</strong></p>
-<ol>
-<li>Download and install the <a href="http://www.microsoft.com/en-ca/download/details.aspx?id=3138">Windows SDK</a> to install the 64-bit compiler. It's important to use that exact file.<ul>
-<li>The options to choose are given below <img alt="Win SDK options" src="../../articles/images/winsdk_options.png" /></li>
-</ul>
-</li>
-<li>Run the <code>Windows SDK Configuration Tool</code> from the Start Menu and choose <code>7.0</code></li>
-<li>After installing the Windows SDK, go to <code>Programs And Features</code><ul>
-<li>Run <code>Repair</code> or <code>Change-&gt;Repair</code> (unbelievable, but you actually <strong>have</strong> to do this)</li>
-<li>Restart your computer</li>
-</ul>
-</li>
-<li>Install <a href="../../articles/files/VCE64BIT_WIN7SDK.zip">this patch</a><sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup> and run the appropriate batch file for your system version (32 or 64)<ul>
-<li>Run the command from a prompt so that you can see the output -&gt; A number of registry entries will be edited</li>
-<li>Two file copies will happen and <strong>both should be successful</strong> <img alt="Output of successful patching" src="../../articles/images/successful_patch.png" /></li>
-<li><strong>In the event the files do not copy, manually copy them as described in the copy command</strong></li>
-</ul>
-</li>
-<li>
-<p>Copy the following file</p>
-<div class="highlight"><pre><span class="go">C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</span>
-</pre></div>
-
-
-<p>to</p>
-<div class="highlight"><pre><span class="go">C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\amd64\vcvarsamd64.bat</span>
-</pre></div>
-
-
-</li>
-</ol>
-<p>So that the conda build scripts can find your VS2008 setup variables. Now, in theory, you can build Python extensions on a 64-bit machine.</p>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Due to the timeframe that Menpo was created within, our primary Python distrubution is 2.7 (though we are working on Python 3+ support!).&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>If you do need to compile for Python 3+ (at the time of writing this) the required Visual Studio is Visual Studio 2010.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-<li id="fn:3">
-<p>This is a mirror of the original file which was provided by <a href="http://www.cppblog.com/xcpp/archive/2009/09/09/vc2008express_64bit_win7sdk.html">the author of cppblog</a>. Thank you!&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
+<p>The Menpo team is dedicated to providing conda packages for all platforms. By far the biggest hurdle towards this goal was successfully building our package on Windows. There is one major reason for this: <strong>Visual Studio 2008</strong> <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> <sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>. Visual Studio 2008 (VS2008) is a requirement for building Python extensions on Windows. This is due to the fact that compiled extensions link against a specific C++ redistributable. <a href="http://stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app">According to advice that I have read</a>, linking against different redistributables in the same application can cause instabilities. Although there is meant to be some limited support for building ...</p><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
 
     Tagged: 
     <a href="../../blog/tag/windows.html">Windows </a>
@@ -131,18 +85,9 @@
 </p>
 
 
-
-            </article>
-
-<div class="pagination-centered">
-<h6 class="subheader">Page 1 of 1</h6>
-
-<p>
-
-</p>
-</div>
-
-
+            <a class="button radius secondary small right" href="../../blog/2014/07/python_windows_development/">Read More</a>
+            <hr  class="gradient"/>
+        </article>
 
             <!-- /#posts-list -->
 

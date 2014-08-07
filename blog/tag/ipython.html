@@ -4,13 +4,13 @@
     <!-- Set the viewport width to device width for mobile -->
     <meta name="viewport" content="width=device-width" />
 
-    <title>menpo - IPython</title>
+    <title>menpo.io - IPython</title>
 
     <link rel="stylesheet" href="../../theme/css/normalize.css" />
     <link rel="stylesheet" href="../../theme/css/foundation.min.css" />
     <link rel="stylesheet" href="../../theme/css/style.css" />
     <link rel="stylesheet" href="../../theme/css/pygments.css" />
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://apis.google.com/js/plusone.js"></script>
 </head>
 
@@ -25,7 +25,7 @@
 <div class="top-bar">
 <div class="row">
     <div class="large-9 large-centered columns">
-	    <h1><a href="../..">menpo</a></h1>
+	    <h1><a href="../..">menpo.io</a></h1>
     </div>
 </div>
 </div>
@@ -39,7 +39,8 @@
         <li><a href="../../notebooks.html" class="button secondary small">Notebooks</a></li>
         <li><a href="../../team.html" class="button secondary small">Team</a></li>
         <li><a href="../../blog" class="button secondary small">Blog</a></li>
-        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Documentation <i class="fa fa-external-link-square"></i></a></li>
+		<li><a href="../../faq.html" class="button secondary small">FAQ</a></li>
+        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Docs <i class="fa fa-external-link-square"></i></a></li>
     </ul>
 </div>
 </div>
@@ -54,10 +55,22 @@
     <div class="large-9 columns">
         
         
-
-            <article>
-                <a href="../../blog/2014/05/line_profiler_ipython/"><h3 class="article-title">Quick tip: Using line_profiler in an IPython notebook</h3></a>
+        <article>
+            <a href="../../blog/2014/05/line_profiler_ipython/"><h3 class="article-title">Quick tip: Using line_profiler in an IPython notebook</h3></a>
 <h6 class="subheader" title="2014-05-17T00:00:00">Sat 17 May 2014
+		[
+			<a href="../../blog/author/james-booth.html">James Booth</a>
+        ]
+
+		<span id="post-share-links" style="float:right">
+			<a href="http://twitter.com/home?status=Quick%20tip%3A%20Using%20line_profiler%20in%20an%20IPython%20notebook%20 http%3A//menpo.io/blog/2014/05/line_profiler_ipython/" target="_blank" title="Share on Twitter"><i class="fa fa-twitter-square fa-lg"></i></a>
+			|
+			<a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http%3A//menpo.io/blog/2014/05/line_profiler_ipython/&p[images][0]=&p[title]=Quick%20tip%3A%20Using%20line_profiler%20in%20an%20IPython%20notebook%20&p[summary]=%3Ch3%3EInstallation%3C/h3%3E%0A%3Cp%3EInstall%20line%20profiler%3Csup%20id%3D%22fnref%3Aversion%22%3E%3Ca%20class%3D%22footnote-ref%22%20href%3D%22%23fn%3Aversion%22%20rel%3D%22footnote%22%3E1%3C/a%3E%3C/sup%3E%3C/p%3E%0A%3Cdiv%20class%3D%22highlight%22%3E%3Cpre%3E%3Cspan%20class%3D%22o%22%3E%26gt%3B%3C/span%3E%20%3Cspan%20class%3D%22n%22%3Epip%3C/span%3E%20%3Cspan%20class%3D%22n%22%3Einstall%3C/span%3E%20%3Cspan%20class%3D%22o%22%3E--%3C/span%3E%3Cspan%20class%3D%22n%22%3Epre%3C/span%3E%20%3Cspan%20class%3D%22n%22%3Eline_profiler%3C/span%3E%0A%3C/pre%3E%3C/div%3E%0A%0A%0A%3Cp%3EYou%20can%20install%20line_profiler%20as%20a%20proper%20IPython%20extension%2C%20but%20I%20like%20the%20simplicity%20of%20just%20activating%20it%20when%20I%20need%20it.%20just%20run%20%3C/p%3E%0A%3Cdiv%20class%3D%22highlight%22%3E%3Cpre%3E%3Cspan%20class%3D%22kn%22%3Eimport%3C/span%3E%20%3Cspan%20class%3D%22nn%22%3Eline_profiler%3C/span%3E%0A%3Cspan%20class%3D%22kn%22%3Eimport%3C/span%3E%20%3Cspan%20class%3D%22nn%22%3EIPython%3C/span%3E%0A%3Cspan%20class%3D%22n%22%3Eip%3C/span%3E%20%3Cspan%20class%3D%22o%22%3E%3D%3C/span%3E%20%3Cspan%20class%3D%22n%22%3EIPython%3C/span%3E%3Cspan%20class%3D%22o%22%3E.%3C/span%3E%3Cspan%20class%3D%22n%22%3Eget_ipython%3C/span%3E%3Cspan%20class%3D%22p%22%3E%28%29%3C/span%3E%0A%3Cspan%20class%3D%22n%22%3Eip%3C/span%3E%3Cspan%20class%3D%22o%22%3E.%3C/span%3E%3Cspan%20class%3D%22n%22%3Edefine_magic%3C/span%3E%3Cspan%20class%3D%22p%22%3E%28%3C/span%3E%3Cspan%20class%3D%22s%22%3E%26%2339%3Blprun%26%2339%3B%3C/span%3E%3Cspan%20class%3D%22p%22%3E%2C%3C/span%3E%20%3Cspan%20class%3D%22n%22%3Eline_profiler%3C/span%3E%3Cspan%20class%3D%22o%22%3E.%3C/span%3E%3Cspan%20class%3D%22n%22%3Emagic_lprun%3C/span%3E%3Cspan%20class%3D%22p%22%3E%29%3C/span%3E%0A%3C/pre%3E%3C/div%3E%0A%0A%0A%3Cp%3Ein%20a%20cell%20and%20you%27re%20good%20for%20the%20session.%3C/p%3E%0A%3Ch3%3EUsage%3C/h3%3E%0A%3Cp%3ELet%27s%20say%20we%20have%20a%20function%20call%20%3Ccode%3Efoo%28%29%3C/code%3Ewhich%20is%20taking%20a%20long%20time%2C%20and%20we%20strongly%20suspect%20that%20it%27s%20the%20%3Ccode%3Ebar%3C/code%3E%20function%20call%20inside%20it%20that%27s%20taking%20a%20while.%20We%20tell%20line%20profiler%20of%20all%20functions%20we%20are%20interested%20in%20...%3C/p%3E" target="_blank" title="Share on Facebook"><i class="fa fa-facebook-square fa-lg"></i></a>
+			|
+			<a href="https://plus.google.com/share?url=http%3A//menpo.io/blog/2014/05/line_profiler_ipython/" target="_blank" title="Share on Google Plus"><i class="fa fa-google-plus-square fa-lg"></i></a>
+			|
+			<a href="mailto:?subject=Quick%20tip%3A%20Using%20line_profiler%20in%20an%20IPython%20notebook%20&body=http%3A//menpo.io/blog/2014/05/line_profiler_ipython/" target="_blank" title="Share via Email"><i class="fa fa-envelope-square fa-lg"></i></a>
+		</span>
 </h6>
 
 
@@ -77,27 +90,7 @@
 
 <p>in a cell and you're good for the session.</p>
 <h3>Usage</h3>
-<p>Let's say we have a function call <code>foo()</code>which is taking a long time, and we strongly suspect that it's the <code>bar</code> function call inside it that's taking a while. We tell line profiler of all functions we are interested in with the <code>-f</code> flag (you can have multiple!) and finally tell it the function to actually execute at the end:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span>
-<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">bar</span> <span class="n">foo</span><span class="p">()</span>
-</pre></div>
-
-
-<p>This works perfectly well with objects and methods too, just specify the method you want to profile with it's full name (i.e. in it's class namespace)</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">MyClass</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
-<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">MyClass</span><span class="o">.</span><span class="n">bar</span> <span class="n">instance</span><span class="o">.</span><span class="n">foo</span><span class="p">()</span>
-</pre></div>
-
-
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:version">
-<p>As of May 2014 we need <code>--pre</code> because later versions of pip <a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions">won't install betas</a> by default, and the <a href="https://pypi.python.org/pypi/line_profiler/">current version</a> of line_profiler is <code>1.0b3</code>. Once there's no longer a <code>b</code> at the end of the version string <code>pip install line_profiler</code> will be sufficient.&#160;<a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
+<p>Let's say we have a function call <code>foo()</code>which is taking a long time, and we strongly suspect that it's the <code>bar</code> function call inside it that's taking a while. We tell line profiler of all functions we are interested in ...</p><p class="subheader">Category: <a href="../../blog/category/blog.html">Blog</a>
 
     Tagged: 
     <a href="../../blog/tag/ipython.html">IPython </a>
@@ -106,18 +99,9 @@
 </p>
 
 
-
-            </article>
-
-<div class="pagination-centered">
-<h6 class="subheader">Page 1 of 1</h6>
-
-<p>
-
-</p>
-</div>
-
-
+            <a class="button radius secondary small right" href="../../blog/2014/05/line_profiler_ipython/">Read More</a>
+            <hr  class="gradient"/>
+        </article>
 
             <!-- /#posts-list -->
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>menpo.io</title><link href="http://menpo.io/" rel="alternate"></link><link href="http://menpo.io/feeds/patrick-snape.atom.xml" rel="self"></link><id>http://menpo.io/</id><updated>2014-07-30T00:00:00+01:00</updated><entry><title>Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</title><link href="http://menpo.io/blog/2014/07/python_windows_development/" rel="alternate"></link><updated>2014-07-30T00:00:00+01:00</updated><author><name>Patrick Snape</name></author><id>tag:menpo.io,2014-07-30:blog/2014/07/python_windows_development/</id><summary type="html">&lt;h2&gt;Why develop on Windows?&lt;/h2&gt;
+&lt;p&gt;The Menpo team is dedicated to providing conda packages for all platforms. By far the biggest hurdle towards this goal was successfully building our package on Windows. There is one major reason for this: &lt;strong&gt;Visual Studio 2008&lt;/strong&gt; &lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2" rel="footnote"&gt;2&lt;/a&gt;&lt;/sup&gt;. Visual Studio 2008 (VS2008) is a requirement for building Python extensions on Windows. This is due to the fact that compiled extensions link against a specific C++ redistributable. &lt;a href="http://stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app"&gt;According to advice that I have read&lt;/a&gt;, linking against different redistributables in the same application can cause instabilities. Although there is meant to be some limited support for building with cygwin, I've also read numerous StackOverflow/forum posts that lament strange segmentation faults with cygwin compiled extensions. &lt;/p&gt;
+&lt;p&gt;Therefore, since Python 2.7 is compiled with VS2008, our extensions must be compiled against it as well. The added bonus of using conda in this equation is that conda ships with the required VS redistributable packages so anything compiled correctly against VS2008 will be fine. The conda build command also does a really fantastic job of 'just working'. If you want to try building using something like &lt;code&gt;python setup.py install&lt;/code&gt; you are likely to run into more issues around correctly setting environment variables.&lt;/p&gt;
+&lt;p&gt;However, VS2008 has two really major issues:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Really ridiculous installation requirements (outlined in detail &lt;a href="#installation"&gt;below&lt;/a&gt;).&lt;/li&gt;
+&lt;li&gt;VS2008 only supports C89 compatible C-code. This means you really need to build all your extensions using C++ (or refactor all your code to be C89 compliant).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Therefore, if you want C++11 support, you are in uncharted territory as you will have to build your extension using a different compiler. Not only will this potentially cause instability, but it also means you will likely to have manually edit lots of environment variables. At the moment, the current existing Python build scripts make some very strong assumptions about where appropriate compilers can be found.&lt;/p&gt;
+&lt;p&gt;For those crazy enough to try and setup a working Windows development environment for Python 2.7 within conda, I've outlined the steps below. &lt;strong&gt;In particular, I am assuming that you want to setup a correct conda build environment. If you want to use setuptools/distribute I'm afraid I don't have much experience.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id="installation"&gt;The Saga Begins&lt;/h2&gt;
+&lt;p&gt;Before beginning, it's important to note that if you are on a 64-bit version of Windows, you can cross-compile 32-bit C-extensions. All you need to ensure is that you have the appropriate version of conda on your path. Personally, I have a small batch script that switches me between my 32-bit and 64-bit miniconda installations. If the following steps are followed, no other commands need to be run to build a 32-bit extension on a 64-bit machine (other than using the 32-bit conda environment).&lt;/p&gt;
+&lt;h3&gt;Install Visual Studio 2008&lt;/h3&gt;
+&lt;p&gt;Download and install &lt;a href="http://go.microsoft.com/?linkid=7729279"&gt;Visual Studio 2008 Express&lt;/a&gt;. It is not necessary to install either silverlight or SQL server and these options can be safely unchecked. If you are lucky enough to only require 32-bit Windows builds (and you are happy with using 32-bit conda), then your woes are over.&lt;/p&gt;
+&lt;h3&gt;64 bit&lt;/h3&gt;
+&lt;p&gt;Unfortunately, preparing a 64-bit environment is non-trivial. We need to download and install a specific version of the Windows SDK in order to give VS access to a 64-bit compiler. It is important that the following instructions are completed in &lt;strong&gt;the order given!&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Download and install the &lt;a href="http://www.microsoft.com/en-ca/download/details.aspx?id=3138"&gt;Windows SDK&lt;/a&gt; to install the 64-bit compiler. It's important to use that exact file.&lt;ul&gt;
+&lt;li&gt;The options to choose are given below &lt;img alt="Win SDK options" src="http://menpo.io/articles/images/winsdk_options.png" /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the &lt;code&gt;Windows SDK Configuration Tool&lt;/code&gt; from the Start Menu and choose &lt;code&gt;7.0&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;After installing the Windows SDK, go to &lt;code&gt;Programs And Features&lt;/code&gt;&lt;ul&gt;
+&lt;li&gt;Run &lt;code&gt;Repair&lt;/code&gt; or &lt;code&gt;Change-&amp;gt;Repair&lt;/code&gt; (unbelievable, but you actually &lt;strong&gt;have&lt;/strong&gt; to do this)&lt;/li&gt;
+&lt;li&gt;Restart your computer&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Install &lt;a href="http://menpo.io/articles/files/VCE64BIT_WIN7SDK.zip"&gt;this patch&lt;/a&gt;&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3" rel="footnote"&gt;3&lt;/a&gt;&lt;/sup&gt; and run the appropriate batch file for your system version (32 or 64)&lt;ul&gt;
+&lt;li&gt;Run the command from a prompt so that you can see the output -&amp;gt; A number of registry entries will be edited&lt;/li&gt;
+&lt;li&gt;Two file copies will happen and &lt;strong&gt;both should be successful&lt;/strong&gt; &lt;img alt="Output of successful patching" src="http://menpo.io/articles/images/successful_patch.png" /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;In the event the files do not copy, manually copy them as described in the copy command&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Copy the following file&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;to&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\amd64\vcvarsamd64.bat&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So that the conda build scripts can find your VS2008 setup variables. Now, in theory, you can build Python extensions on a 64-bit machine.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id="fn:1"&gt;
+&lt;p&gt;Due to the timeframe that Menpo was created within, our primary Python distrubution is 2.7 (though we are working on Python 3+ support!).&amp;#160;&lt;a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;If you do need to compile for Python 3+ (at the time of writing this) the required Visual Studio is Visual Studio 2010.&amp;#160;&lt;a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:3"&gt;
+&lt;p&gt;This is a mirror of the original file which was provided by &lt;a href="http://www.cppblog.com/xcpp/archive/2009/09/09/vc2008express_64bit_win7sdk.html"&gt;the author of cppblog&lt;/a&gt;. Thank you!&amp;#160;&lt;a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</summary><category term="Windows"></category><category term="Python"></category><category term="Visual Studio"></category><category term="C"></category></entry></feed>

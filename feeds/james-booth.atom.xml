@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>menpo.io</title><link href="http://menpo.io/" rel="alternate"></link><link href="http://menpo.io/feeds/james-booth.atom.xml" rel="self"></link><id>http://menpo.io/</id><updated>2014-05-17T00:00:00+01:00</updated><entry><title>Quick tip: Using line_profiler in an IPython notebook</title><link href="http://menpo.io/blog/2014/05/line_profiler_ipython/" rel="alternate"></link><updated>2014-05-17T00:00:00+01:00</updated><author><name>James Booth</name></author><id>tag:menpo.io,2014-05-17:blog/2014/05/line_profiler_ipython/</id><summary type="html">&lt;h3&gt;Installation&lt;/h3&gt;
+&lt;p&gt;Install line profiler&lt;sup id="fnref:version"&gt;&lt;a class="footnote-ref" href="#fn:version" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;pre&lt;/span&gt; &lt;span class="n"&gt;line_profiler&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;You can install line_profiler as a proper IPython extension, but I like the simplicity of just activating it when I need it. just run &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;line_profiler&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;IPython&lt;/span&gt;
+&lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;IPython&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_ipython&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;define_magic&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;lprun&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line_profiler&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;magic_lprun&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;in a cell and you're good for the session.&lt;/p&gt;
+&lt;h3&gt;Usage&lt;/h3&gt;
+&lt;p&gt;Let's say we have a function call &lt;code&gt;foo()&lt;/code&gt;which is taking a long time, and we strongly suspect that it's the &lt;code&gt;bar&lt;/code&gt; function call inside it that's taking a while. We tell line profiler of all functions we are interested in with the &lt;code&gt;-f&lt;/code&gt; flag (you can have multiple!) and finally tell it the function to actually execute at the end:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;mypackage&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bar&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;lprun&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;bar&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This works perfectly well with objects and methods too, just specify the method you want to profile with it's full name (i.e. in it's class namespace)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;mypackage&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;MyClass&lt;/span&gt;
+&lt;span class="n"&gt;instance&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MyClass&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;lprun&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;MyClass&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt; &lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="footnote"&gt;
+&lt;hr /&gt;
+&lt;ol&gt;
+&lt;li id="fn:version"&gt;
+&lt;p&gt;As of May 2014 we need &lt;code&gt;--pre&lt;/code&gt; because later versions of pip &lt;a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions"&gt;won't install betas&lt;/a&gt; by default, and the &lt;a href="https://pypi.python.org/pypi/line_profiler/"&gt;current version&lt;/a&gt; of line_profiler is &lt;code&gt;1.0b3&lt;/code&gt;. Once there's no longer a &lt;code&gt;b&lt;/code&gt; at the end of the version string &lt;code&gt;pip install line_profiler&lt;/code&gt; will be sufficient.&amp;#160;&lt;a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</summary><category term="IPython"></category><category term="profiling"></category><category term="tip"></category></entry></feed>

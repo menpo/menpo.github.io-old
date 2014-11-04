@@ -59,6 +59,7 @@
     <ol>
 <li><a href="#license">What license is Menpo under?</a></li>
 <li><a href="#citation">How do I cite Menpo?</a></li>
+<li><a href="#development">How do I install a development version?</a></li>
 </ol>
 <h3 id="license">What license is Menpo under?</h3>
 <p>Menpo is under the 3-clause BSD license which can be found 
@@ -78,12 +79,65 @@ Joan Alabort-i-Medina, Epameinondas Antonakos, James Booth, Patrick Snape and St
 <p>Therefore, this publication is the reference paper to cite if you use Menpo 
 within <strong>any academic paper</strong>. We request that you if do use Menpo for an
 academic publication within any displicine that you cite Menpo!</p>
+<h3 id="development">How do I install a development version?</h3>
+<p>To install a development version of Menpo (or any of the libraries), we suggest
+the following workflow:</p>
+<ol>
+<li>
+<p>Install the latest <em>development</em> version of Menpo from conda. This will 
+     install the most recently successful commit from the git repository and
+     ensure you receive all the latest, correct dependencies:</p>
+<div class="highlight"><pre><span class="gp">$</span> conda create -n menpodev python
+<span class="gp">$</span> <span class="nb">source </span>activate menpodev
+<span class="go">(menpodev) $ conda install -c menpo/channel/master menpo</span>
+</pre></div>
+
+
+</li>
+<li>
+<p><strong>Remove</strong> Menpo so that we can install the development version from
+     Github:</p>
+<div class="highlight"><pre><span class="go">(menpodev) $ conda remove menpo</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Checkout the Menpo git repository. You may wish to fork the project
+     on Github so that you can make pull requests back to the Menpo project. In
+     this case, just replace <code>https://github.com/menpo/menpo.git</code> with
+     <code>https://github.com/GITHUB_USERNAME/menpo.git</code> below:</p>
+<div class="highlight"><pre><span class="go">(menpodev) $ git clone https://github.com/menpo/menpo.git</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Install <em>pip</em> <strong>inside</strong> the conda environment and then install an editable
+     version of your Menpo repository inside:</p>
+<div class="highlight"><pre><span class="go">(menpodev) $ conda install pip</span>
+<span class="go">(menpodev) $ pip install -e ./menpo --no-deps</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Any edits you make within the <code>./menpo</code> folder will be reflected inside
+     this conda environment! This procedure is identical for any of the Menpo
+     libraries, primarily steps <strong>3</strong> and <strong>4</strong>.</p>
+</li>
+</ol>
+<p>The instructions above were specific to Unix operating systems, but Windows
+should be identical outside of activating the conda environment.</p>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
-        <h5 class="sidebar-title">Latest Release</h5>
+        <h5 class="sidebar-title">Latest Releases</h5>
         <ul class="side-nav">
-            <li>v0.3.0</li>
+            <li><img src="http://img.shields.io/badge/menpo-v0.4.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpofit-v0.1.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpo3d-v0.1.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpodetect-v0.1.0a1-orange.svg" /></li>
         </ul>
     </aside>
 </div> <!-- End Main Content and Sidebar -->

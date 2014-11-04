@@ -56,18 +56,41 @@
         
     <h1>Installation</h1>
     
-    <p>We provide detailed guides for installing Menpo on each of the 3 major operating
-systems. Menpo is designed to provide a suite of tools to solve a complex
-problem and therefore has a complex set of dependencies. In order to make
-things as simple as possible for new Python developers, we advocate the use
-of <a href="http://conda.pydata.org/">Conda</a>. Therefore, our installation instructions
-focus on getting Conda installed on each of the platforms.</p>
+    <p>We provide detailed guides for installing <code>menpo</code> on each of the 3 major 
+operating systems. The Menpo project is designed to provide a suite of tools to 
+solve a complex problem and therefore has a complex set of dependencies. In 
+order to make things as simple as possible for new Python developers, we 
+advocate the use of <a href="http://conda.pydata.org/">Conda</a>. Therefore, our 
+installation instructions focus on getting Conda installed on each of the 
+platforms.</p>
 <p><strong>Before we begin, please choose an operating system:</strong></p>
 <ul>
 <li><a href="../installation/windows/index.html">Windows</a></li>
 <li><a href="../installation/osx/index.html">OS X</a></li>
 <li><a href="../installation/linux/index.html">Linux</a></li>
 </ul>
+<h3>Installing The Other Libraries</h3>
+<p>All of the Menpo project libraries rely on the <code>menpo</code> core. Therefore,
+you are encouraged to follow the instructions above before attempting to install
+any of the Menpo libraries. Once you have verified that <code>menpo</code> is correctly
+installed, you can install any of the Menpo libraries within your Menpo 
+environment by running one of the following commands:</p>
+<p><strong>OSX/Linux</strong></p>
+<div class="highlight"><pre><span class="gp">$</span> <span class="nb">source </span>activate menpo
+<span class="go">(menpo) $ conda install -c menpo menpofit</span>
+<span class="go">(menpo) $ conda install -c menpo menpo3d</span>
+<span class="go">(menpo) $ conda install -c menpo menpodetect</span>
+</pre></div>
+
+
+<p><strong>Windows</strong></p>
+<div class="highlight"><pre><span class="gp">$</span> <span class="nb">source </span>activate menpo
+<span class="go">(menpo) C:\&gt;conda install -c menpo menpofit</span>
+<span class="go">(menpo) C:\&gt;conda install -c menpo menpo3d</span>
+<span class="go">(menpo) C:\&gt;conda install -c menpo menpodetect</span>
+</pre></div>
+
+
 <h3>Upgrading</h3>
 <p>Assuming you have followed the installation instructions above, you may need
 to upgrade your version of Menpo to that latest. You can check if you
@@ -93,9 +116,12 @@ the sure the <code>menpo</code> environment is activated)</strong>:</p>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
-        <h5 class="sidebar-title">Latest Release</h5>
+        <h5 class="sidebar-title">Latest Releases</h5>
         <ul class="side-nav">
-            <li>v0.3.0</li>
+            <li><img src="http://img.shields.io/badge/menpo-v0.4.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpofit-v0.1.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpo3d-v0.1.0a1-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpodetect-v0.1.0a1-orange.svg" /></li>
         </ul>
     </aside>
 </div> <!-- End Main Content and Sidebar -->

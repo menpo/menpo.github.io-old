@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>menpo.io</title><link>http://menpo.io/</link><description></description><atom:link href="http://menpo.io/feeds/james-booth.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 17 May 2014 00:00:00 +0100</lastBuildDate><item><title>Quick tip: Using line_profiler in an IPython notebook</title><link>http://menpo.io/blog/2014/05/line_profiler_ipython/</link><description>&lt;h3&gt;Installation&lt;/h3&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>menpo</title><link>http://menpo.org/</link><description></description><atom:link href="http://menpo.org/feeds/james-booth.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 17 May 2014 00:00:00 +0100</lastBuildDate><item><title>Quick tip: Using line_profiler in an IPython notebook</title><link>http://menpo.org/blog/2014/05/line_profiler_ipython/</link><description>&lt;h3&gt;Installation&lt;/h3&gt;
 &lt;p&gt;Install line profiler&lt;sup id="fnref:version"&gt;&lt;a class="footnote-ref" href="#fn:version" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;pre&lt;/span&gt; &lt;span class="n"&gt;line_profiler&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;gt; pip install --pre line_profiler
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -35,4 +35,4 @@
 &lt;p&gt;As of May 2014 we need &lt;code&gt;--pre&lt;/code&gt; because later versions of pip &lt;a href="http://pip.readthedocs.org/en/latest/reference/pip_install.html#pre-release-versions"&gt;won't install betas&lt;/a&gt; by default, and the &lt;a href="https://pypi.python.org/pypi/line_profiler/"&gt;current version&lt;/a&gt; of line_profiler is &lt;code&gt;1.0b3&lt;/code&gt;. Once there's no longer a &lt;code&gt;b&lt;/code&gt; at the end of the version string &lt;code&gt;pip install line_profiler&lt;/code&gt; will be sufficient.&amp;#160;&lt;a class="footnote-backref" href="#fnref:version" rev="footnote" title="Jump back to footnote 1 in the text"&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">James Booth</dc:creator><pubDate>Sat, 17 May 2014 00:00:00 +0100</pubDate><guid>tag:menpo.io,2014-05-17:blog/2014/05/line_profiler_ipython/</guid><category>IPython</category><category>profiling</category><category>tip</category></item></channel></rss>
+&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">James Booth</dc:creator><pubDate>Sat, 17 May 2014 00:00:00 +0100</pubDate><guid>tag:menpo.org,2014-05-17:blog/2014/05/line_profiler_ipython/</guid><category>IPython</category><category>profiling</category><category>tip</category></item></channel></rss>

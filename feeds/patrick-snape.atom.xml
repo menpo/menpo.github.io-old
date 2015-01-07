@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>menpo.io</title><link href="http://menpo.io/" rel="alternate"></link><link href="http://menpo.io/feeds/patrick-snape.atom.xml" rel="self"></link><id>http://menpo.io/</id><updated>2014-07-30T00:00:00+01:00</updated><entry><title>Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</title><link href="http://menpo.io/blog/2014/07/python_windows_development/" rel="alternate"></link><updated>2014-07-30T00:00:00+01:00</updated><author><name>Patrick Snape</name></author><id>tag:menpo.io,2014-07-30:blog/2014/07/python_windows_development/</id><summary type="html">&lt;h2&gt;Why develop on Windows?&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>menpo</title><link href="http://menpo.org/" rel="alternate"></link><link href="http://menpo.org/feeds/patrick-snape.atom.xml" rel="self"></link><id>http://menpo.org/</id><updated>2014-07-30T00:00:00+01:00</updated><entry><title>Building Python 2.7 extensions on Windows 7 (64 and 32 bit)</title><link href="http://menpo.org/blog/2014/07/python_windows_development/" rel="alternate"></link><updated>2014-07-30T00:00:00+01:00</updated><author><name>Patrick Snape</name></author><id>tag:menpo.org,2014-07-30:blog/2014/07/python_windows_development/</id><summary type="html">&lt;h2&gt;Why develop on Windows?&lt;/h2&gt;
 &lt;p&gt;The Menpo team is dedicated to providing conda packages for all platforms. By far the biggest hurdle towards this goal was successfully building our package on Windows. There is one major reason for this: &lt;strong&gt;Visual Studio 2008&lt;/strong&gt; &lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2" rel="footnote"&gt;2&lt;/a&gt;&lt;/sup&gt;. Visual Studio 2008 (VS2008) is a requirement for building Python extensions on Windows. This is due to the fact that compiled extensions link against a specific C++ redistributable. &lt;a href="http://stackoverflow.com/questions/15311492/linking-libs-compiled-against-msvcrt-dll-into-a-visual-studio-10-c-app"&gt;According to advice that I have read&lt;/a&gt;, linking against different redistributables in the same application can cause instabilities. Although there is meant to be some limited support for building with cygwin, I've also read numerous StackOverflow/forum posts that lament strange segmentation faults with cygwin compiled extensions. &lt;/p&gt;
 &lt;p&gt;Therefore, since Python 2.7 is compiled with VS2008, our extensions must be compiled against it as well. The added bonus of using conda in this equation is that conda ships with the required VS redistributable packages so anything compiled correctly against VS2008 will be fine. The conda build command also does a really fantastic job of 'just working'. If you want to try building using something like &lt;code&gt;python setup.py install&lt;/code&gt; you are likely to run into more issues around correctly setting environment variables.&lt;/p&gt;
 &lt;p&gt;However, VS2008 has two really major issues:&lt;/p&gt;
@@ -17,7 +17,7 @@
 &lt;p&gt;Unfortunately, preparing a 64-bit environment is non-trivial. We need to download and install a specific version of the Windows SDK in order to give VS access to a 64-bit compiler. It is important that the following instructions are completed in &lt;strong&gt;the order given!&lt;/strong&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Download and install the &lt;a href="http://www.microsoft.com/en-ca/download/details.aspx?id=3138"&gt;Windows SDK&lt;/a&gt; to install the 64-bit compiler. It's important to use that exact file.&lt;ul&gt;
-&lt;li&gt;The options to choose are given below &lt;img alt="Win SDK options" src="http://menpo.io/articles/images/winsdk_options.png" /&gt;&lt;/li&gt;
+&lt;li&gt;The options to choose are given below &lt;img alt="Win SDK options" src="{filename}/articles/images/winsdk_options.png" /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;Run the &lt;code&gt;Windows SDK Configuration Tool&lt;/code&gt; from the Start Menu and choose &lt;code&gt;7.0&lt;/code&gt;&lt;/li&gt;
@@ -26,9 +26,9 @@
 &lt;li&gt;Restart your computer&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Install &lt;a href="http://menpo.io/articles/files/VCE64BIT_WIN7SDK.zip"&gt;this patch&lt;/a&gt;&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3" rel="footnote"&gt;3&lt;/a&gt;&lt;/sup&gt; and run the appropriate batch file for your system version (32 or 64)&lt;ul&gt;
+&lt;li&gt;Install &lt;a href="{filename}/articles/files/VCE64BIT_WIN7SDK.zip"&gt;this patch&lt;/a&gt;&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="#fn:3" rel="footnote"&gt;3&lt;/a&gt;&lt;/sup&gt; and run the appropriate batch file for your system version (32 or 64)&lt;ul&gt;
 &lt;li&gt;Run the command from a prompt so that you can see the output -&amp;gt; A number of registry entries will be edited&lt;/li&gt;
-&lt;li&gt;Two file copies will happen and &lt;strong&gt;both should be successful&lt;/strong&gt; &lt;img alt="Output of successful patching" src="http://menpo.io/articles/images/successful_patch.png" /&gt;&lt;/li&gt;
+&lt;li&gt;Two file copies will happen and &lt;strong&gt;both should be successful&lt;/strong&gt; &lt;img alt="Output of successful patching" src="{filename}/articles/images/successful_patch.png" /&gt;&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;In the event the files do not copy, manually copy them as described in the copy command&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;

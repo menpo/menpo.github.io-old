@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>menpo</title><link>http://menpo.org/</link><description></description><atom:link href="http://menpo.org/feeds/james-booth.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 17 May 2014 00:00:00 +0100</lastBuildDate><item><title>Quick tip: Using line_profiler in an IPython notebook</title><link>http://menpo.org/blog/2014/05/line_profiler_ipython/</link><description>&lt;h3&gt;Installation&lt;/h3&gt;
 &lt;p&gt;Install line profiler&lt;sup id="fnref:version"&gt;&lt;a class="footnote-ref" href="#fn:version" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&amp;gt; pip install --pre line_profiler
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;pre&lt;/span&gt; &lt;span class="n"&gt;line_profiler&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 

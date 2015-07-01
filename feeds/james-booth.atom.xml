@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>The Menpo Project</title><link href="http://menpo.org/" rel="alternate"></link><link href="http://menpo.org/feeds/james-booth.atom.xml" rel="self"></link><id>http://menpo.org/</id><updated>2014-05-17T00:00:00+01:00</updated><entry><title>Quick tip: Using line_profiler in an IPython notebook</title><link href="http://menpo.org/blog/2014/05/line_profiler_ipython/" rel="alternate"></link><updated>2014-05-17T00:00:00+01:00</updated><author><name>James Booth</name></author><id>tag:menpo.org,2014-05-17:blog/2014/05/line_profiler_ipython/</id><summary type="html">&lt;h3&gt;Installation&lt;/h3&gt;
 &lt;p&gt;Install line profiler&lt;sup id="fnref:version"&gt;&lt;a class="footnote-ref" href="#fn:version" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;pre&lt;/span&gt; &lt;span class="n"&gt;line_profiler&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;gt; pip install --pre line_profiler
 &lt;/pre&gt;&lt;/div&gt;
 
 

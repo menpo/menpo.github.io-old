@@ -41,7 +41,7 @@
         <li><a href="../team.html" class="button secondary small">Team</a></li>
         <li><a href="../blog" class="button secondary small">Blog</a></li>
 		<li><a href="../faq.html" class="button secondary small">FAQ</a></li>
-        <li><a href="http://docs.menpo.org/en/stable/" class="button secondary small">Docs <i class="fa fa-external-link-square"></i></a></li>
+        <li><a href="http://menpo.readthedocs.org/" class="button secondary small">Docs <i class="fa fa-external-link-square"></i></a></li>
     </ul>
 </div>
 </div>
@@ -81,6 +81,7 @@ environment by running one of the following commands:</p>
 <span class="go">(menpo) $ conda install -c menpo menpofit</span>
 <span class="go">(menpo) $ conda install -c menpo menpo3d</span>
 <span class="go">(menpo) $ conda install -c menpo menpodetect</span>
+<span class="go">(menpo) $ conda install -c menpo menpowidgets</span>
 </pre></div>
 
 
@@ -89,6 +90,7 @@ environment by running one of the following commands:</p>
 <span class="go">(menpo) C:\&gt;conda install -c menpo menpofit</span>
 <span class="go">(menpo) C:\&gt;conda install -c menpo menpo3d</span>
 <span class="go">(menpo) C:\&gt;conda install -c menpo menpodetect</span>
+<span class="go">(menpo) C:\&gt;conda install -c menpo menpowidgets</span>
 </pre></div>
 
 
@@ -114,13 +116,59 @@ the sure the <code>menpo</code> environment is activated)</strong>:</p>
 <div class="highlight"><pre><span class="go">C:\&gt;activate menpo</span>
 <span class="go">[menpo] C:\&gt;conda update -c menpo menpo</span>
 </pre></div>
+
+
+<h3>Setting Up A Development Environment</h3>
+<p>If you want to develop within the Menpo project you will need to follow a different workflow than the one described above. Although different developers follow different development workflows, we give the following advice on how to set up a <strong>menpo</strong> development environment. As above, the instructions for the Menpo subprojects is identical.</p>
+<p>A brief outline of the required steps for setting up a <strong>menpo</strong> (or really any Python project hosted on Github) develoment environment is as follows:</p>
+<ol>
+<li>Clone the source code from Github</li>
+<li>Install the development requirements</li>
+<li>Install/build the <strong>menpo</strong> source code</li>
+</ol>
+<h4>Getting The Source Code</h4>
+<p>Go to <a href="https://github.com/menpo/menpo">Github</a> and fork the <strong>menpo</strong> repository. This should provide you with a newly created git repository on your Github account that contains the <strong>menpo</strong> Python code. For the rest of the tutorial, let us assume the Github username is <code>username</code>. You can now clone the <strong>menpo</strong> source to your machine:</p>
+<div class="highlight"><pre><span class="gp">$</span> git clone https://github.com/username/menpo.git
+</pre></div>
+
+
+<p>If you are using Windows you may want to use <a href="https://desktop.github.com/">Github Desktop</a>. You should now have a folder that contains all of the <strong>menpo</strong> source code.</p>
+<h4>Installing The Dependencies</h4>
+<p>We advise that you create a new <code>conda</code> environment for your Menpo development, which we will call <code>menpo_dev</code>:</p>
+<div class="highlight"><pre><span class="gp">$</span> conda create -n menpo_dev python
+<span class="gp">$</span> <span class="nb">source </span>activate menpo_dev
+<span class="go">(menpo_dev) $</span>
+</pre></div>
+
+
+<p>Now, it is necessary to acquire all of the <strong>menpo</strong> dependencies. The simplest way to do this is just <code>conda install</code>, and then <code>conda remove</code> <strong>menpo</strong>!</p>
+<div class="highlight"><pre><span class="go">(menpo_dev) $ conda install -c menpo menpo</span>
+<span class="go">(menpo_dev) $ conda remove menpo</span>
+</pre></div>
+
+
+<p>Now all the <strong>menpo</strong> dependencies are satisfied and in your environment. We do this because we believe it is easier to use <code>conda</code> than pip to satsify the dependencies, particularly for packages such as <code>vlfeat</code> that have complex building processes.</p>
+<h3>Installing A Development Copy Of <strong>menpo</strong></h3>
+<p>To install a development copy of <strong>menpo</strong> (one that you can edit and then see those changes reflected in your environment) - we will use <code>pip</code>. Now, it is important to note that this is contrary to the previous instructions whereby we are always using <code>conda</code> to satisfy our dependencies. However, <code>pip</code> has an excellent editable workflow and will create all the necessary <code>egg</code> links that are required for using source that doesn't exist directly within <code>site-packages</code>. In short, we want to do:</p>
+<div class="highlight"><pre><span class="go">(menpo_dev) $ conda install pip cython</span>
+<span class="go">(menpo_dev) $ pip install -e ./menpo --no-deps</span>
+</pre></div>
+
+
+<p>There are a few things to note:</p>
+<ol>
+<li>We installed <code>pip</code> <em>inside</em> the <code>menpo_dev</code> environment. <code>conda</code> and <code>pip</code> play well together - however you may only install a package using <em>either</em> <code>conda</code> installed <em>or</em> <code>pip</code> installed. If you install a package using both <code>conda</code> and <code>pip</code>, the <code>conda</code> package will always be preferred. You can check the state of your environment by using the <code>conda list</code> command.</li>
+<li>We use <code>pip</code> to perform an editable install (<code>-e</code>), on the <code>./menpo</code> root source folder, and told <code>pip</code> <strong>not to install any dependencies, since we already satisfied them with <code>conda</code></strong>.</li>
+<li>We also installed <code>Cython</code>. <strong>menpo</strong> contains a number of Cythonized files that provide access to more efficient C-based code. You will notice that during install, <code>pip</code> also uses <code>Cython</code> to build the code into Python extensions. On Linux, this should work out of the box. On OSX, you will need to install XCode. On Windows, you will need to have the correct version of Visual Studio installed for your chosen version of Python (Visual Studio 2008 for Python 2.7, Visual Studio 2010 for Python 3.4 and Visual Studio 2015 for Python 3.5). Note that setting up a working build environment on Windows is very complicated and for this reason Unix is recommended for development.</li>
+</ol>
+<p>Now, any changes made in the <strong>menpo</strong> source folder will now be reflected by any Python interpreter run from within the <code>menpo_dev</code> <code>conda</code> environment.</p>
     </div>
     <!-- End Main Content -->
     <aside class="large-3 columns">
         <h5 class="sidebar-title">Latest Releases</h5>
         <ul class="side-nav">
             <li><img src="http://img.shields.io/badge/menpo-v0.6.2-orange.svg" /></li>
-            <li><img src="http://img.shields.io/badge/menpofit-v0.3.0-orange.svg" /></li>
+            <li><img src="http://img.shields.io/badge/menpofit-v0.3.1-orange.svg" /></li>
             <li><img src="http://img.shields.io/badge/menpo3d-v0.3.0-orange.svg" /></li>
             <li><img src="http://img.shields.io/badge/menpodetect-v0.3.0-orange.svg" /></li>
         </ul>
